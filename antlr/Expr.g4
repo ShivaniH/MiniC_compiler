@@ -1,10 +1,23 @@
 grammar Expr;
 
-prog: (expr ';') + EOF
+prog: (statement ';') + EOF
     ;
 
+statement: ID assignOp expr
+         | expr
+         ;
 
-expr: '-' expr
+assignOp: '='
+        | '+='
+        | '-='
+        ;
+
+expr: ID
+    | INT
+    | FLOAT
+    | '(' expr ')'
+    | methodCall
+    | '-' expr
     | '!' expr
     | expr ('*'|'/'|'%') expr
     | expr ('+'|'-') expr
@@ -12,11 +25,10 @@ expr: '-' expr
     | expr ('=='|'!=') expr
     | expr '&&' expr
     | expr '||' expr
-    | ID
-    | INT
-    | FLOAT
     ;
 
+
+methodCall: ID'('(expr ','?)*')';
 
 /*Tokens*/
 
