@@ -1,4 +1,3 @@
-#include <stdio.h>
 
 // Enumerating pythagorean triplets
 
@@ -9,7 +8,7 @@ int main()
     limit = 100000000;
     count = 0;
 
-    printf("List of all pythagorean triplets:\n");
+    callout("printf", "List of all pythagorean triplets:\n");
 
     for (x = 1; x < limit; x += 1) 
     {
@@ -27,7 +26,7 @@ int main()
             }
             if (z * z == x2y2 && z <= limit) 
             {
-                printf("%lu %lu %lu\n",x, y, z);
+                callout("printf", "%lu %lu %lu\n", x, y, z);
                 count += 1;
             }
             
@@ -35,7 +34,7 @@ int main()
         }
     }
 
-    printf("The total number of pythagorean triplets printed is %lu\n", count);
+    callout("printf", "The total number of pythagorean triplets printed is %lu\n", count);
 
     return 0;
 }

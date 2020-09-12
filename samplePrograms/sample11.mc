@@ -1,5 +1,3 @@
-#include <stdio.h>
-#include <string.h>
 
 // Alphabet histogram (Note: Bonus file support not done. Reading text from stdin)
 
@@ -15,23 +13,24 @@ int main()
         histogram[i] = 0;
     }
 
-    printf("Enter some lowercase text (less than 10000 characters)\n");
-    scanf("%[^\n]%*c", text);
+    callout("printf", "Enter some lowercase text (less than 10000 characters)\n");
+    // scanf("%[^\n]%*c", text);
+    text = callout("scanString");
 
-    n = strlen(text);
+    n = callout("strlen", text);
 
     for(i = 0; i < n; i += 1)
     {
         if(text[i] >= 'a' && text[i] <= 'z')
         {
-            histogram[text[i] - 'a'] += 1;
+            histogram[text[i] - 97] += 1;
         }
     }
 
-    printf("Alphabet histogram: (values from a to z)\n");
+    callout("printf", "Alphabet histogram: (values from a to z)\n");
     for(i = 0; i < 26; i += 1)
     {
-        printf("%d ", histogram[i]);
+        callout("printf", "%d ", histogram[i]);
     }
     
     return 0;

@@ -1,4 +1,3 @@
-#include <stdio.h>
 
 int a[10000], n;
 
@@ -11,10 +10,10 @@ int permutation(int start, int end)
         int j;
         for(j = 0; j < n; j += 1)
         {
-            printf("%d ", a[j]);
+            callout("printf", "%d ", a[j]);
         }
 
-        printf("\n");
+        callout("printf", "\n");
     }
     else 
     {
@@ -39,15 +38,17 @@ int main()
 {
     int i;
     
-    printf("Enter a positive integer (less than or equal to 10000): ");
-    scanf("%d", &n);
+    callout("printf", "Enter a positive integer (less than or equal to 10000): ");
+
+    // scanf("%d", &n);
+    n = callout("scanInt");
 
     for(i = 0; i < n; i += 1)
     {
         a[i] = i + 1;
     }
 
-    printf("The list of all permutations of numbers from 1 to %d:\n", n);
+    callout("printf", "The list of all permutations of numbers from 1 to %d:\n", n);
 
     permutation(0, n-1);
 

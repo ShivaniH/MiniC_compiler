@@ -1,4 +1,3 @@
-#include <stdio.h> 
 
 // Merge sort
 
@@ -74,10 +73,10 @@ int main()
 
 	for (i = 0; i < n; i += 1) 
     {
-		printf("%d ", a[i]); 
+		callout("printf", "%d ", a[i]);
     }
 
-	printf("\n"); 
+	callout("printf", "\n");
 
 	return 0; 
 } 

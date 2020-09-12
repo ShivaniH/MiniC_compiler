@@ -1,5 +1,3 @@
-#include <stdio.h>
-#include <string.h>
 
 // Unique words (Note: Bonus file support not done. Reading text from stdin)
 
@@ -11,10 +9,11 @@ int main()
 { 
     int i, j, k, n, m;
 
-    printf("Enter a sentence in lowercase (less than 10000 characters)\n");
-    scanf("%[^\n]%*c", text);
+    callout("printf", "Enter a sentence in lowercase (less than 10000 characters)\n");
+    // scanf("%[^\n]%*c", text);
+    text = callout("scanString");
 
-    n = strlen(text);
+    n = callout("strlen", text);
 
     int numWords, wordStart;
     numWords = 1;
@@ -48,7 +47,7 @@ int main()
     }
     words[k][m] = '\0';
 
-    strcpy(uniqueWords[0], words[0]);
+    callout("strcpy", uniqueWords[0], words[0]);
 
     int uniqueIndex, flag;
     uniqueIndex = 0;
@@ -58,7 +57,7 @@ int main()
         flag = 0;
         for(j = 0; j <= uniqueIndex; j += 1)
         {
-            if(strcmp(words[i], uniqueWords[j]) == 0)
+            if(callout("strcmp", words[i], uniqueWords[j]) == 0)
             {
                 flag = 1;
                 break;
@@ -67,15 +66,15 @@ int main()
         if(flag == 0)
         {
             uniqueIndex += 1;
-            strcpy(uniqueWords[uniqueIndex], words[i]);
+            callout("strcpy", uniqueWords[uniqueIndex], words[i]);
         }
     }
 
-    printf("The list of unique words in this text is:\n");
+    callout("printf", "The list of unique words in this text is:\n");
 
     for(i = 0; i <= uniqueIndex; i += 1)
     {
-        printf("%s\n", uniqueWords[i]);
+        callout("printf", "%s\n", uniqueWords[i]);
     }
 
     return 0;

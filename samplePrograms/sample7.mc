@@ -1,4 +1,3 @@
-#include <stdio.h> 
 
 // Radix sort
 
@@ -35,7 +34,8 @@ int NumOfDig(int y)
         y = y / 10;
         num += 1;
     }
-    printf("num of digits in biggest number = %d \n", num);
+
+    callout("printf", "num of digits in biggest number = %d \n", num);
     return (num);
 }
 
@@ -108,10 +108,10 @@ int main()
 
 	for (i = 0; i < n; i += 1) 
     {
-		printf("%d ", a[i]); 
+        callout("printf", "%d ", a[i]);
     }
 
-	printf("\n"); 
+    callout("printf", "\n");
 
 	return 0; 
 } 

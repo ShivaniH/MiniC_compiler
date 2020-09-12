@@ -1,4 +1,3 @@
-#include <stdio.h>
 
 // Sum of prime numbers strictly less than n
 
@@ -7,18 +6,20 @@ int main()
     int n, i, j, sum, flag;
     sum = 2;
 
-    printf("Enter a positive integer: ");
-    scanf("%d", &n);
+    callout("printf", "Enter a positive integer: ");
+
+    // scanf("%d", &n);
+    n = callout("scanInt");
 
     if(n == 1 || n == 2)
     {
-        printf("The sum is %d \n", 0);
+        callout("printf", "The sum is %d \n", 0);
     }
     else
     {
         if(n == 3)
         {
-            printf("The sum is %d \n", 2);
+            callout("printf", "The sum is %d \n", 2);
         }
         else
         {
@@ -40,7 +41,7 @@ int main()
                 }
             }
 
-            printf("The sum is %d \n", sum);
+            callout("printf", "The sum is %d \n", sum);
         }
     }
 
