@@ -1,0 +1,33 @@
+[shivanih@katzchen minic-grammar-ShivaniH]$ cd antlr/
+[shivanih@katzchen antlr]$ antlr4 Expr.g4 
+[shivanih@katzchen antlr]$ javac Expr*.java
+[shivanih@katzchen antlr]$ grun Expr prog ../tests/test0.mc -gui
+line 1:2 token recognition error at: '='
+line 1:4 missing ';' at 'x'
+Sep 02, 2020 6:57:10 PM java.util.prefs.FileSystemPreferences$1 run
+INFO: Created user preferences directory.
+[shivanih@katzchen antlr]$ grun Expr prog ../tests/test0.mc -gui
+[shivanih@katzchen antlr]$ 
+
+
+
+*****************************************************************************************************
+
+To work with Antlr's C++ target:
+(Download and build antlr's cpp runtime, instructions on github)
+
+antlr4 -no-listener -visitor -Dlanguage=Cpp miniCgrammar.g4 
+
+g++ -I /usr/local/include/antlr4-runtime -L /usr/local/lib/antlr4cppRuntime/run/usr/local -lantlr  -o trial  *.cpp
+
+
+
+For your folder structure: (from the semantic analyzer folder, where semanticAnalyzerMain.cpp is)
+
+export LD_LIBRARY_PATH="/usr/local/lib:$LD_LIBRARY_PATH"
+
+g++ -I ../miniCParser/antlr -I /usr/local/include/antlr4-runtime -L /usr/local/lib -lantlr4-runtime  -o trial  ../miniCParser/antlr/miniCgrammarLexer.cpp ../miniCParser/antlr/miniCgrammarParser.cpp semanticAnalyzerMain.cpp
+
+./trial ../samplePrograms/sample1.mc
+
+

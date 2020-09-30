@@ -2,7 +2,7 @@
 // Generated from miniCgrammar.g4 by ANTLR 4.8
 
 
-#include "miniCgrammarListener.h"
+#include "miniCgrammarVisitor.h"
 
 #include "miniCgrammarParser.h"
 
@@ -50,16 +50,12 @@ size_t miniCgrammarParser::ProgramContext::getRuleIndex() const {
   return miniCgrammarParser::RuleProgram;
 }
 
-void miniCgrammarParser::ProgramContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<miniCgrammarListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterProgram(this);
-}
 
-void miniCgrammarParser::ProgramContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<miniCgrammarListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitProgram(this);
+antlrcpp::Any miniCgrammarParser::ProgramContext::accept(tree::ParseTreeVisitor *visitor) {
+  if (auto parserVisitor = dynamic_cast<miniCgrammarVisitor*>(visitor))
+    return parserVisitor->visitProgram(this);
+  else
+    return visitor->visitChildren(this);
 }
 
 miniCgrammarParser::ProgramContext* miniCgrammarParser::program() {
@@ -92,12 +88,12 @@ miniCgrammarParser::DeclarationListContext::DeclarationListContext(ParserRuleCon
   : ParserRuleContext(parent, invokingState) {
 }
 
-miniCgrammarParser::DeclarationContext* miniCgrammarParser::DeclarationListContext::declaration() {
-  return getRuleContext<miniCgrammarParser::DeclarationContext>(0);
+std::vector<miniCgrammarParser::DeclarationContext *> miniCgrammarParser::DeclarationListContext::declaration() {
+  return getRuleContexts<miniCgrammarParser::DeclarationContext>();
 }
 
-miniCgrammarParser::DeclarationListContext* miniCgrammarParser::DeclarationListContext::declarationList() {
-  return getRuleContext<miniCgrammarParser::DeclarationListContext>(0);
+miniCgrammarParser::DeclarationContext* miniCgrammarParser::DeclarationListContext::declaration(size_t i) {
+  return getRuleContext<miniCgrammarParser::DeclarationContext>(i);
 }
 
 
@@ -105,46 +101,40 @@ size_t miniCgrammarParser::DeclarationListContext::getRuleIndex() const {
   return miniCgrammarParser::RuleDeclarationList;
 }
 
-void miniCgrammarParser::DeclarationListContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<miniCgrammarListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterDeclarationList(this);
-}
 
-void miniCgrammarParser::DeclarationListContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<miniCgrammarListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitDeclarationList(this);
+antlrcpp::Any miniCgrammarParser::DeclarationListContext::accept(tree::ParseTreeVisitor *visitor) {
+  if (auto parserVisitor = dynamic_cast<miniCgrammarVisitor*>(visitor))
+    return parserVisitor->visitDeclarationList(this);
+  else
+    return visitor->visitChildren(this);
 }
 
 miniCgrammarParser::DeclarationListContext* miniCgrammarParser::declarationList() {
   DeclarationListContext *_localctx = _tracker.createInstance<DeclarationListContext>(_ctx, getState());
   enterRule(_localctx, 2, miniCgrammarParser::RuleDeclarationList);
+  size_t _la = 0;
 
   auto onExit = finally([=] {
     exitRule();
   });
   try {
-    setState(47);
+    enterOuterAlt(_localctx, 1);
+    setState(44); 
     _errHandler->sync(this);
-    switch (getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 0, _ctx)) {
-    case 1: {
-      enterOuterAlt(_localctx, 1);
+    _la = _input->LA(1);
+    do {
       setState(43);
       declaration();
-      setState(44);
-      declarationList();
-      break;
-    }
-
-    case 2: {
-      enterOuterAlt(_localctx, 2);
-      setState(46);
-      declaration();
-      break;
-    }
-
-    }
+      setState(46); 
+      _errHandler->sync(this);
+      _la = _input->LA(1);
+    } while ((((_la & ~ 0x3fULL) == 0) &&
+      ((1ULL << _la) & ((1ULL << miniCgrammarParser::Bool)
+      | (1ULL << miniCgrammarParser::Char)
+      | (1ULL << miniCgrammarParser::Int)
+      | (1ULL << miniCgrammarParser::Long)
+      | (1ULL << miniCgrammarParser::Uint)
+      | (1ULL << miniCgrammarParser::Ulong))) != 0));
    
   }
   catch (RecognitionException &e) {
@@ -162,31 +152,45 @@ miniCgrammarParser::DeclarationContext::DeclarationContext(ParserRuleContext *pa
   : ParserRuleContext(parent, invokingState) {
 }
 
-miniCgrammarParser::VariableDeclContext* miniCgrammarParser::DeclarationContext::variableDecl() {
-  return getRuleContext<miniCgrammarParser::VariableDeclContext>(0);
-}
-
-miniCgrammarParser::FunctionDeclContext* miniCgrammarParser::DeclarationContext::functionDecl() {
-  return getRuleContext<miniCgrammarParser::FunctionDeclContext>(0);
-}
-
 
 size_t miniCgrammarParser::DeclarationContext::getRuleIndex() const {
   return miniCgrammarParser::RuleDeclaration;
 }
 
-void miniCgrammarParser::DeclarationContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<miniCgrammarListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterDeclaration(this);
+void miniCgrammarParser::DeclarationContext::copyFrom(DeclarationContext *ctx) {
+  ParserRuleContext::copyFrom(ctx);
 }
 
-void miniCgrammarParser::DeclarationContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<miniCgrammarListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitDeclaration(this);
+//----------------- FunctionDeclarationContext ------------------------------------------------------------------
+
+miniCgrammarParser::FunctionDeclContext* miniCgrammarParser::FunctionDeclarationContext::functionDecl() {
+  return getRuleContext<miniCgrammarParser::FunctionDeclContext>(0);
 }
 
+miniCgrammarParser::FunctionDeclarationContext::FunctionDeclarationContext(DeclarationContext *ctx) { copyFrom(ctx); }
+
+
+antlrcpp::Any miniCgrammarParser::FunctionDeclarationContext::accept(tree::ParseTreeVisitor *visitor) {
+  if (auto parserVisitor = dynamic_cast<miniCgrammarVisitor*>(visitor))
+    return parserVisitor->visitFunctionDeclaration(this);
+  else
+    return visitor->visitChildren(this);
+}
+//----------------- VariableDeclarationContext ------------------------------------------------------------------
+
+miniCgrammarParser::VariableDeclContext* miniCgrammarParser::VariableDeclarationContext::variableDecl() {
+  return getRuleContext<miniCgrammarParser::VariableDeclContext>(0);
+}
+
+miniCgrammarParser::VariableDeclarationContext::VariableDeclarationContext(DeclarationContext *ctx) { copyFrom(ctx); }
+
+
+antlrcpp::Any miniCgrammarParser::VariableDeclarationContext::accept(tree::ParseTreeVisitor *visitor) {
+  if (auto parserVisitor = dynamic_cast<miniCgrammarVisitor*>(visitor))
+    return parserVisitor->visitVariableDeclaration(this);
+  else
+    return visitor->visitChildren(this);
+}
 miniCgrammarParser::DeclarationContext* miniCgrammarParser::declaration() {
   DeclarationContext *_localctx = _tracker.createInstance<DeclarationContext>(_ctx, getState());
   enterRule(_localctx, 4, miniCgrammarParser::RuleDeclaration);
@@ -195,19 +199,21 @@ miniCgrammarParser::DeclarationContext* miniCgrammarParser::declaration() {
     exitRule();
   });
   try {
-    setState(51);
+    setState(50);
     _errHandler->sync(this);
     switch (getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 1, _ctx)) {
     case 1: {
+      _localctx = dynamic_cast<DeclarationContext *>(_tracker.createInstance<miniCgrammarParser::VariableDeclarationContext>(_localctx));
       enterOuterAlt(_localctx, 1);
-      setState(49);
+      setState(48);
       variableDecl();
       break;
     }
 
     case 2: {
+      _localctx = dynamic_cast<DeclarationContext *>(_tracker.createInstance<miniCgrammarParser::FunctionDeclarationContext>(_localctx));
       enterOuterAlt(_localctx, 2);
-      setState(50);
+      setState(49);
       functionDecl();
       break;
     }
@@ -247,16 +253,12 @@ size_t miniCgrammarParser::VariableDeclContext::getRuleIndex() const {
   return miniCgrammarParser::RuleVariableDecl;
 }
 
-void miniCgrammarParser::VariableDeclContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<miniCgrammarListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterVariableDecl(this);
-}
 
-void miniCgrammarParser::VariableDeclContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<miniCgrammarListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitVariableDecl(this);
+antlrcpp::Any miniCgrammarParser::VariableDeclContext::accept(tree::ParseTreeVisitor *visitor) {
+  if (auto parserVisitor = dynamic_cast<miniCgrammarVisitor*>(visitor))
+    return parserVisitor->visitVariableDecl(this);
+  else
+    return visitor->visitChildren(this);
 }
 
 miniCgrammarParser::VariableDeclContext* miniCgrammarParser::variableDecl() {
@@ -268,11 +270,11 @@ miniCgrammarParser::VariableDeclContext* miniCgrammarParser::variableDecl() {
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(53);
+    setState(52);
     dataType();
-    setState(54);
+    setState(53);
     variableDeclList();
-    setState(55);
+    setState(54);
     match(miniCgrammarParser::Semi);
    
   }
@@ -291,35 +293,53 @@ miniCgrammarParser::VariableDeclListContext::VariableDeclListContext(ParserRuleC
   : ParserRuleContext(parent, invokingState) {
 }
 
-miniCgrammarParser::SingleVarDeclContext* miniCgrammarParser::VariableDeclListContext::singleVarDecl() {
-  return getRuleContext<miniCgrammarParser::SingleVarDeclContext>(0);
-}
-
-tree::TerminalNode* miniCgrammarParser::VariableDeclListContext::Comma() {
-  return getToken(miniCgrammarParser::Comma, 0);
-}
-
-miniCgrammarParser::VariableDeclListContext* miniCgrammarParser::VariableDeclListContext::variableDeclList() {
-  return getRuleContext<miniCgrammarParser::VariableDeclListContext>(0);
-}
-
 
 size_t miniCgrammarParser::VariableDeclListContext::getRuleIndex() const {
   return miniCgrammarParser::RuleVariableDeclList;
 }
 
-void miniCgrammarParser::VariableDeclListContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<miniCgrammarListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterVariableDeclList(this);
+void miniCgrammarParser::VariableDeclListContext::copyFrom(VariableDeclListContext *ctx) {
+  ParserRuleContext::copyFrom(ctx);
 }
 
-void miniCgrammarParser::VariableDeclListContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<miniCgrammarListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitVariableDeclList(this);
+//----------------- SingleVariableContext ------------------------------------------------------------------
+
+miniCgrammarParser::SingleVarDeclContext* miniCgrammarParser::SingleVariableContext::singleVarDecl() {
+  return getRuleContext<miniCgrammarParser::SingleVarDeclContext>(0);
 }
 
+miniCgrammarParser::SingleVariableContext::SingleVariableContext(VariableDeclListContext *ctx) { copyFrom(ctx); }
+
+
+antlrcpp::Any miniCgrammarParser::SingleVariableContext::accept(tree::ParseTreeVisitor *visitor) {
+  if (auto parserVisitor = dynamic_cast<miniCgrammarVisitor*>(visitor))
+    return parserVisitor->visitSingleVariable(this);
+  else
+    return visitor->visitChildren(this);
+}
+//----------------- MultipleCSVariablesContext ------------------------------------------------------------------
+
+miniCgrammarParser::SingleVarDeclContext* miniCgrammarParser::MultipleCSVariablesContext::singleVarDecl() {
+  return getRuleContext<miniCgrammarParser::SingleVarDeclContext>(0);
+}
+
+tree::TerminalNode* miniCgrammarParser::MultipleCSVariablesContext::Comma() {
+  return getToken(miniCgrammarParser::Comma, 0);
+}
+
+miniCgrammarParser::VariableDeclListContext* miniCgrammarParser::MultipleCSVariablesContext::variableDeclList() {
+  return getRuleContext<miniCgrammarParser::VariableDeclListContext>(0);
+}
+
+miniCgrammarParser::MultipleCSVariablesContext::MultipleCSVariablesContext(VariableDeclListContext *ctx) { copyFrom(ctx); }
+
+
+antlrcpp::Any miniCgrammarParser::MultipleCSVariablesContext::accept(tree::ParseTreeVisitor *visitor) {
+  if (auto parserVisitor = dynamic_cast<miniCgrammarVisitor*>(visitor))
+    return parserVisitor->visitMultipleCSVariables(this);
+  else
+    return visitor->visitChildren(this);
+}
 miniCgrammarParser::VariableDeclListContext* miniCgrammarParser::variableDeclList() {
   VariableDeclListContext *_localctx = _tracker.createInstance<VariableDeclListContext>(_ctx, getState());
   enterRule(_localctx, 8, miniCgrammarParser::RuleVariableDeclList);
@@ -328,23 +348,25 @@ miniCgrammarParser::VariableDeclListContext* miniCgrammarParser::variableDeclLis
     exitRule();
   });
   try {
-    setState(62);
+    setState(61);
     _errHandler->sync(this);
     switch (getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 2, _ctx)) {
     case 1: {
+      _localctx = dynamic_cast<VariableDeclListContext *>(_tracker.createInstance<miniCgrammarParser::MultipleCSVariablesContext>(_localctx));
       enterOuterAlt(_localctx, 1);
-      setState(57);
+      setState(56);
       singleVarDecl();
-      setState(58);
+      setState(57);
       match(miniCgrammarParser::Comma);
-      setState(59);
+      setState(58);
       variableDeclList();
       break;
     }
 
     case 2: {
+      _localctx = dynamic_cast<VariableDeclListContext *>(_tracker.createInstance<miniCgrammarParser::SingleVariableContext>(_localctx));
       enterOuterAlt(_localctx, 2);
-      setState(61);
+      setState(60);
       singleVarDecl();
       break;
     }
@@ -367,51 +389,96 @@ miniCgrammarParser::SingleVarDeclContext::SingleVarDeclContext(ParserRuleContext
   : ParserRuleContext(parent, invokingState) {
 }
 
-tree::TerminalNode* miniCgrammarParser::SingleVarDeclContext::Id() {
-  return getToken(miniCgrammarParser::Id, 0);
-}
-
-std::vector<tree::TerminalNode *> miniCgrammarParser::SingleVarDeclContext::LeftBracket() {
-  return getTokens(miniCgrammarParser::LeftBracket);
-}
-
-tree::TerminalNode* miniCgrammarParser::SingleVarDeclContext::LeftBracket(size_t i) {
-  return getToken(miniCgrammarParser::LeftBracket, i);
-}
-
-std::vector<tree::TerminalNode *> miniCgrammarParser::SingleVarDeclContext::IntegerLiteral() {
-  return getTokens(miniCgrammarParser::IntegerLiteral);
-}
-
-tree::TerminalNode* miniCgrammarParser::SingleVarDeclContext::IntegerLiteral(size_t i) {
-  return getToken(miniCgrammarParser::IntegerLiteral, i);
-}
-
-std::vector<tree::TerminalNode *> miniCgrammarParser::SingleVarDeclContext::RightBracket() {
-  return getTokens(miniCgrammarParser::RightBracket);
-}
-
-tree::TerminalNode* miniCgrammarParser::SingleVarDeclContext::RightBracket(size_t i) {
-  return getToken(miniCgrammarParser::RightBracket, i);
-}
-
 
 size_t miniCgrammarParser::SingleVarDeclContext::getRuleIndex() const {
   return miniCgrammarParser::RuleSingleVarDecl;
 }
 
-void miniCgrammarParser::SingleVarDeclContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<miniCgrammarListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterSingleVarDecl(this);
+void miniCgrammarParser::SingleVarDeclContext::copyFrom(SingleVarDeclContext *ctx) {
+  ParserRuleContext::copyFrom(ctx);
 }
 
-void miniCgrammarParser::SingleVarDeclContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<miniCgrammarListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitSingleVarDecl(this);
+//----------------- OneDarrayContext ------------------------------------------------------------------
+
+tree::TerminalNode* miniCgrammarParser::OneDarrayContext::Id() {
+  return getToken(miniCgrammarParser::Id, 0);
 }
 
+tree::TerminalNode* miniCgrammarParser::OneDarrayContext::LeftBracket() {
+  return getToken(miniCgrammarParser::LeftBracket, 0);
+}
+
+tree::TerminalNode* miniCgrammarParser::OneDarrayContext::IntegerLiteral() {
+  return getToken(miniCgrammarParser::IntegerLiteral, 0);
+}
+
+tree::TerminalNode* miniCgrammarParser::OneDarrayContext::RightBracket() {
+  return getToken(miniCgrammarParser::RightBracket, 0);
+}
+
+miniCgrammarParser::OneDarrayContext::OneDarrayContext(SingleVarDeclContext *ctx) { copyFrom(ctx); }
+
+
+antlrcpp::Any miniCgrammarParser::OneDarrayContext::accept(tree::ParseTreeVisitor *visitor) {
+  if (auto parserVisitor = dynamic_cast<miniCgrammarVisitor*>(visitor))
+    return parserVisitor->visitOneDarray(this);
+  else
+    return visitor->visitChildren(this);
+}
+//----------------- SimpleVariableContext ------------------------------------------------------------------
+
+tree::TerminalNode* miniCgrammarParser::SimpleVariableContext::Id() {
+  return getToken(miniCgrammarParser::Id, 0);
+}
+
+miniCgrammarParser::SimpleVariableContext::SimpleVariableContext(SingleVarDeclContext *ctx) { copyFrom(ctx); }
+
+
+antlrcpp::Any miniCgrammarParser::SimpleVariableContext::accept(tree::ParseTreeVisitor *visitor) {
+  if (auto parserVisitor = dynamic_cast<miniCgrammarVisitor*>(visitor))
+    return parserVisitor->visitSimpleVariable(this);
+  else
+    return visitor->visitChildren(this);
+}
+//----------------- TwoDarrayContext ------------------------------------------------------------------
+
+tree::TerminalNode* miniCgrammarParser::TwoDarrayContext::Id() {
+  return getToken(miniCgrammarParser::Id, 0);
+}
+
+std::vector<tree::TerminalNode *> miniCgrammarParser::TwoDarrayContext::LeftBracket() {
+  return getTokens(miniCgrammarParser::LeftBracket);
+}
+
+tree::TerminalNode* miniCgrammarParser::TwoDarrayContext::LeftBracket(size_t i) {
+  return getToken(miniCgrammarParser::LeftBracket, i);
+}
+
+std::vector<tree::TerminalNode *> miniCgrammarParser::TwoDarrayContext::IntegerLiteral() {
+  return getTokens(miniCgrammarParser::IntegerLiteral);
+}
+
+tree::TerminalNode* miniCgrammarParser::TwoDarrayContext::IntegerLiteral(size_t i) {
+  return getToken(miniCgrammarParser::IntegerLiteral, i);
+}
+
+std::vector<tree::TerminalNode *> miniCgrammarParser::TwoDarrayContext::RightBracket() {
+  return getTokens(miniCgrammarParser::RightBracket);
+}
+
+tree::TerminalNode* miniCgrammarParser::TwoDarrayContext::RightBracket(size_t i) {
+  return getToken(miniCgrammarParser::RightBracket, i);
+}
+
+miniCgrammarParser::TwoDarrayContext::TwoDarrayContext(SingleVarDeclContext *ctx) { copyFrom(ctx); }
+
+
+antlrcpp::Any miniCgrammarParser::TwoDarrayContext::accept(tree::ParseTreeVisitor *visitor) {
+  if (auto parserVisitor = dynamic_cast<miniCgrammarVisitor*>(visitor))
+    return parserVisitor->visitTwoDarray(this);
+  else
+    return visitor->visitChildren(this);
+}
 miniCgrammarParser::SingleVarDeclContext* miniCgrammarParser::singleVarDecl() {
   SingleVarDeclContext *_localctx = _tracker.createInstance<SingleVarDeclContext>(_ctx, getState());
   enterRule(_localctx, 10, miniCgrammarParser::RuleSingleVarDecl);
@@ -420,44 +487,47 @@ miniCgrammarParser::SingleVarDeclContext* miniCgrammarParser::singleVarDecl() {
     exitRule();
   });
   try {
-    setState(76);
+    setState(75);
     _errHandler->sync(this);
     switch (getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 3, _ctx)) {
     case 1: {
+      _localctx = dynamic_cast<SingleVarDeclContext *>(_tracker.createInstance<miniCgrammarParser::TwoDarrayContext>(_localctx));
       enterOuterAlt(_localctx, 1);
-      setState(64);
+      setState(63);
       match(miniCgrammarParser::Id);
+      setState(64);
+      match(miniCgrammarParser::LeftBracket);
       setState(65);
-      match(miniCgrammarParser::LeftBracket);
+      match(miniCgrammarParser::IntegerLiteral);
       setState(66);
-      match(miniCgrammarParser::IntegerLiteral);
-      setState(67);
       match(miniCgrammarParser::RightBracket);
-      setState(68);
+      setState(67);
       match(miniCgrammarParser::LeftBracket);
-      setState(69);
+      setState(68);
       match(miniCgrammarParser::IntegerLiteral);
-      setState(70);
+      setState(69);
       match(miniCgrammarParser::RightBracket);
       break;
     }
 
     case 2: {
+      _localctx = dynamic_cast<SingleVarDeclContext *>(_tracker.createInstance<miniCgrammarParser::OneDarrayContext>(_localctx));
       enterOuterAlt(_localctx, 2);
-      setState(71);
+      setState(70);
       match(miniCgrammarParser::Id);
-      setState(72);
+      setState(71);
       match(miniCgrammarParser::LeftBracket);
-      setState(73);
+      setState(72);
       match(miniCgrammarParser::IntegerLiteral);
-      setState(74);
+      setState(73);
       match(miniCgrammarParser::RightBracket);
       break;
     }
 
     case 3: {
+      _localctx = dynamic_cast<SingleVarDeclContext *>(_tracker.createInstance<miniCgrammarParser::SimpleVariableContext>(_localctx));
       enterOuterAlt(_localctx, 3);
-      setState(75);
+      setState(74);
       match(miniCgrammarParser::Id);
       break;
     }
@@ -480,71 +550,166 @@ miniCgrammarParser::DataTypeContext::DataTypeContext(ParserRuleContext *parent, 
   : ParserRuleContext(parent, invokingState) {
 }
 
-tree::TerminalNode* miniCgrammarParser::DataTypeContext::Int() {
-  return getToken(miniCgrammarParser::Int, 0);
-}
-
-tree::TerminalNode* miniCgrammarParser::DataTypeContext::Char() {
-  return getToken(miniCgrammarParser::Char, 0);
-}
-
-tree::TerminalNode* miniCgrammarParser::DataTypeContext::Bool() {
-  return getToken(miniCgrammarParser::Bool, 0);
-}
-
-tree::TerminalNode* miniCgrammarParser::DataTypeContext::Long() {
-  return getToken(miniCgrammarParser::Long, 0);
-}
-
-tree::TerminalNode* miniCgrammarParser::DataTypeContext::Uint() {
-  return getToken(miniCgrammarParser::Uint, 0);
-}
-
-tree::TerminalNode* miniCgrammarParser::DataTypeContext::Ulong() {
-  return getToken(miniCgrammarParser::Ulong, 0);
-}
-
 
 size_t miniCgrammarParser::DataTypeContext::getRuleIndex() const {
   return miniCgrammarParser::RuleDataType;
 }
 
-void miniCgrammarParser::DataTypeContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<miniCgrammarListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterDataType(this);
+void miniCgrammarParser::DataTypeContext::copyFrom(DataTypeContext *ctx) {
+  ParserRuleContext::copyFrom(ctx);
 }
 
-void miniCgrammarParser::DataTypeContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<miniCgrammarListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitDataType(this);
+//----------------- BoolDataTypeContext ------------------------------------------------------------------
+
+tree::TerminalNode* miniCgrammarParser::BoolDataTypeContext::Bool() {
+  return getToken(miniCgrammarParser::Bool, 0);
 }
 
+miniCgrammarParser::BoolDataTypeContext::BoolDataTypeContext(DataTypeContext *ctx) { copyFrom(ctx); }
+
+
+antlrcpp::Any miniCgrammarParser::BoolDataTypeContext::accept(tree::ParseTreeVisitor *visitor) {
+  if (auto parserVisitor = dynamic_cast<miniCgrammarVisitor*>(visitor))
+    return parserVisitor->visitBoolDataType(this);
+  else
+    return visitor->visitChildren(this);
+}
+//----------------- UlongDataTypeContext ------------------------------------------------------------------
+
+tree::TerminalNode* miniCgrammarParser::UlongDataTypeContext::Ulong() {
+  return getToken(miniCgrammarParser::Ulong, 0);
+}
+
+miniCgrammarParser::UlongDataTypeContext::UlongDataTypeContext(DataTypeContext *ctx) { copyFrom(ctx); }
+
+
+antlrcpp::Any miniCgrammarParser::UlongDataTypeContext::accept(tree::ParseTreeVisitor *visitor) {
+  if (auto parserVisitor = dynamic_cast<miniCgrammarVisitor*>(visitor))
+    return parserVisitor->visitUlongDataType(this);
+  else
+    return visitor->visitChildren(this);
+}
+//----------------- IntDataTypeContext ------------------------------------------------------------------
+
+tree::TerminalNode* miniCgrammarParser::IntDataTypeContext::Int() {
+  return getToken(miniCgrammarParser::Int, 0);
+}
+
+miniCgrammarParser::IntDataTypeContext::IntDataTypeContext(DataTypeContext *ctx) { copyFrom(ctx); }
+
+
+antlrcpp::Any miniCgrammarParser::IntDataTypeContext::accept(tree::ParseTreeVisitor *visitor) {
+  if (auto parserVisitor = dynamic_cast<miniCgrammarVisitor*>(visitor))
+    return parserVisitor->visitIntDataType(this);
+  else
+    return visitor->visitChildren(this);
+}
+//----------------- UintDataTypeContext ------------------------------------------------------------------
+
+tree::TerminalNode* miniCgrammarParser::UintDataTypeContext::Uint() {
+  return getToken(miniCgrammarParser::Uint, 0);
+}
+
+miniCgrammarParser::UintDataTypeContext::UintDataTypeContext(DataTypeContext *ctx) { copyFrom(ctx); }
+
+
+antlrcpp::Any miniCgrammarParser::UintDataTypeContext::accept(tree::ParseTreeVisitor *visitor) {
+  if (auto parserVisitor = dynamic_cast<miniCgrammarVisitor*>(visitor))
+    return parserVisitor->visitUintDataType(this);
+  else
+    return visitor->visitChildren(this);
+}
+//----------------- CharDataTypeContext ------------------------------------------------------------------
+
+tree::TerminalNode* miniCgrammarParser::CharDataTypeContext::Char() {
+  return getToken(miniCgrammarParser::Char, 0);
+}
+
+miniCgrammarParser::CharDataTypeContext::CharDataTypeContext(DataTypeContext *ctx) { copyFrom(ctx); }
+
+
+antlrcpp::Any miniCgrammarParser::CharDataTypeContext::accept(tree::ParseTreeVisitor *visitor) {
+  if (auto parserVisitor = dynamic_cast<miniCgrammarVisitor*>(visitor))
+    return parserVisitor->visitCharDataType(this);
+  else
+    return visitor->visitChildren(this);
+}
+//----------------- LongDataTypeContext ------------------------------------------------------------------
+
+tree::TerminalNode* miniCgrammarParser::LongDataTypeContext::Long() {
+  return getToken(miniCgrammarParser::Long, 0);
+}
+
+miniCgrammarParser::LongDataTypeContext::LongDataTypeContext(DataTypeContext *ctx) { copyFrom(ctx); }
+
+
+antlrcpp::Any miniCgrammarParser::LongDataTypeContext::accept(tree::ParseTreeVisitor *visitor) {
+  if (auto parserVisitor = dynamic_cast<miniCgrammarVisitor*>(visitor))
+    return parserVisitor->visitLongDataType(this);
+  else
+    return visitor->visitChildren(this);
+}
 miniCgrammarParser::DataTypeContext* miniCgrammarParser::dataType() {
   DataTypeContext *_localctx = _tracker.createInstance<DataTypeContext>(_ctx, getState());
   enterRule(_localctx, 12, miniCgrammarParser::RuleDataType);
-  size_t _la = 0;
 
   auto onExit = finally([=] {
     exitRule();
   });
   try {
-    enterOuterAlt(_localctx, 1);
-    setState(78);
-    _la = _input->LA(1);
-    if (!((((_la & ~ 0x3fULL) == 0) &&
-      ((1ULL << _la) & ((1ULL << miniCgrammarParser::Bool)
-      | (1ULL << miniCgrammarParser::Char)
-      | (1ULL << miniCgrammarParser::Int)
-      | (1ULL << miniCgrammarParser::Long)
-      | (1ULL << miniCgrammarParser::Uint)
-      | (1ULL << miniCgrammarParser::Ulong))) != 0))) {
-    _errHandler->recoverInline(this);
-    }
-    else {
-      _errHandler->reportMatch(this);
-      consume();
+    setState(83);
+    _errHandler->sync(this);
+    switch (_input->LA(1)) {
+      case miniCgrammarParser::Int: {
+        _localctx = dynamic_cast<DataTypeContext *>(_tracker.createInstance<miniCgrammarParser::IntDataTypeContext>(_localctx));
+        enterOuterAlt(_localctx, 1);
+        setState(77);
+        match(miniCgrammarParser::Int);
+        break;
+      }
+
+      case miniCgrammarParser::Char: {
+        _localctx = dynamic_cast<DataTypeContext *>(_tracker.createInstance<miniCgrammarParser::CharDataTypeContext>(_localctx));
+        enterOuterAlt(_localctx, 2);
+        setState(78);
+        match(miniCgrammarParser::Char);
+        break;
+      }
+
+      case miniCgrammarParser::Bool: {
+        _localctx = dynamic_cast<DataTypeContext *>(_tracker.createInstance<miniCgrammarParser::BoolDataTypeContext>(_localctx));
+        enterOuterAlt(_localctx, 3);
+        setState(79);
+        match(miniCgrammarParser::Bool);
+        break;
+      }
+
+      case miniCgrammarParser::Long: {
+        _localctx = dynamic_cast<DataTypeContext *>(_tracker.createInstance<miniCgrammarParser::LongDataTypeContext>(_localctx));
+        enterOuterAlt(_localctx, 4);
+        setState(80);
+        match(miniCgrammarParser::Long);
+        break;
+      }
+
+      case miniCgrammarParser::Uint: {
+        _localctx = dynamic_cast<DataTypeContext *>(_tracker.createInstance<miniCgrammarParser::UintDataTypeContext>(_localctx));
+        enterOuterAlt(_localctx, 5);
+        setState(81);
+        match(miniCgrammarParser::Uint);
+        break;
+      }
+
+      case miniCgrammarParser::Ulong: {
+        _localctx = dynamic_cast<DataTypeContext *>(_tracker.createInstance<miniCgrammarParser::UlongDataTypeContext>(_localctx));
+        enterOuterAlt(_localctx, 6);
+        setState(82);
+        match(miniCgrammarParser::Ulong);
+        break;
+      }
+
+    default:
+      throw NoViableAltException(this);
     }
    
   }
@@ -612,16 +777,12 @@ size_t miniCgrammarParser::FunctionDeclContext::getRuleIndex() const {
   return miniCgrammarParser::RuleFunctionDecl;
 }
 
-void miniCgrammarParser::FunctionDeclContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<miniCgrammarListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterFunctionDecl(this);
-}
 
-void miniCgrammarParser::FunctionDeclContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<miniCgrammarListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitFunctionDecl(this);
+antlrcpp::Any miniCgrammarParser::FunctionDeclContext::accept(tree::ParseTreeVisitor *visitor) {
+  if (auto parserVisitor = dynamic_cast<miniCgrammarVisitor*>(visitor))
+    return parserVisitor->visitFunctionDecl(this);
+  else
+    return visitor->visitChildren(this);
 }
 
 miniCgrammarParser::FunctionDeclContext* miniCgrammarParser::functionDecl() {
@@ -634,13 +795,13 @@ miniCgrammarParser::FunctionDeclContext* miniCgrammarParser::functionDecl() {
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(80);
+    setState(85);
     dataType();
-    setState(81);
+    setState(86);
     match(miniCgrammarParser::Id);
-    setState(82);
+    setState(87);
     match(miniCgrammarParser::LeftParen);
-    setState(84);
+    setState(89);
     _errHandler->sync(this);
 
     _la = _input->LA(1);
@@ -651,31 +812,31 @@ miniCgrammarParser::FunctionDeclContext* miniCgrammarParser::functionDecl() {
       | (1ULL << miniCgrammarParser::Long)
       | (1ULL << miniCgrammarParser::Uint)
       | (1ULL << miniCgrammarParser::Ulong))) != 0)) {
-      setState(83);
+      setState(88);
       paramsList();
     }
-    setState(86);
+    setState(91);
     match(miniCgrammarParser::RightParen);
-    setState(87);
+    setState(92);
     match(miniCgrammarParser::LeftBrace);
-    setState(89);
+    setState(94);
     _errHandler->sync(this);
 
-    switch (getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 5, _ctx)) {
+    switch (getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 6, _ctx)) {
     case 1: {
-      setState(88);
+      setState(93);
       statementList();
       break;
     }
 
     }
-    setState(91);
+    setState(96);
     match(miniCgrammarParser::Return);
-    setState(92);
+    setState(97);
     expr(0);
-    setState(93);
+    setState(98);
     match(miniCgrammarParser::Semi);
-    setState(94);
+    setState(99);
     match(miniCgrammarParser::RightBrace);
    
   }
@@ -723,16 +884,12 @@ size_t miniCgrammarParser::ParamsListContext::getRuleIndex() const {
   return miniCgrammarParser::RuleParamsList;
 }
 
-void miniCgrammarParser::ParamsListContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<miniCgrammarListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterParamsList(this);
-}
 
-void miniCgrammarParser::ParamsListContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<miniCgrammarListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitParamsList(this);
+antlrcpp::Any miniCgrammarParser::ParamsListContext::accept(tree::ParseTreeVisitor *visitor) {
+  if (auto parserVisitor = dynamic_cast<miniCgrammarVisitor*>(visitor))
+    return parserVisitor->visitParamsList(this);
+  else
+    return visitor->visitChildren(this);
 }
 
 miniCgrammarParser::ParamsListContext* miniCgrammarParser::paramsList() {
@@ -745,21 +902,21 @@ miniCgrammarParser::ParamsListContext* miniCgrammarParser::paramsList() {
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(96);
+    setState(101);
     dataType();
-    setState(97);
+    setState(102);
     match(miniCgrammarParser::Id);
-    setState(105);
+    setState(110);
     _errHandler->sync(this);
     _la = _input->LA(1);
     while (_la == miniCgrammarParser::Comma) {
-      setState(99);
+      setState(104);
       match(miniCgrammarParser::Comma);
-      setState(100);
+      setState(105);
       dataType();
-      setState(101);
+      setState(106);
       match(miniCgrammarParser::Id);
-      setState(107);
+      setState(112);
       _errHandler->sync(this);
       _la = _input->LA(1);
     }
@@ -780,12 +937,12 @@ miniCgrammarParser::StatementListContext::StatementListContext(ParserRuleContext
   : ParserRuleContext(parent, invokingState) {
 }
 
-miniCgrammarParser::StatementContext* miniCgrammarParser::StatementListContext::statement() {
-  return getRuleContext<miniCgrammarParser::StatementContext>(0);
+std::vector<miniCgrammarParser::StatementContext *> miniCgrammarParser::StatementListContext::statement() {
+  return getRuleContexts<miniCgrammarParser::StatementContext>();
 }
 
-miniCgrammarParser::StatementListContext* miniCgrammarParser::StatementListContext::statementList() {
-  return getRuleContext<miniCgrammarParser::StatementListContext>(0);
+miniCgrammarParser::StatementContext* miniCgrammarParser::StatementListContext::statement(size_t i) {
+  return getRuleContext<miniCgrammarParser::StatementContext>(i);
 }
 
 
@@ -793,16 +950,12 @@ size_t miniCgrammarParser::StatementListContext::getRuleIndex() const {
   return miniCgrammarParser::RuleStatementList;
 }
 
-void miniCgrammarParser::StatementListContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<miniCgrammarListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterStatementList(this);
-}
 
-void miniCgrammarParser::StatementListContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<miniCgrammarListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitStatementList(this);
+antlrcpp::Any miniCgrammarParser::StatementListContext::accept(tree::ParseTreeVisitor *visitor) {
+  if (auto parserVisitor = dynamic_cast<miniCgrammarVisitor*>(visitor))
+    return parserVisitor->visitStatementList(this);
+  else
+    return visitor->visitChildren(this);
 }
 
 miniCgrammarParser::StatementListContext* miniCgrammarParser::statementList() {
@@ -813,26 +966,26 @@ miniCgrammarParser::StatementListContext* miniCgrammarParser::statementList() {
     exitRule();
   });
   try {
-    setState(112);
+    size_t alt;
+    enterOuterAlt(_localctx, 1);
+    setState(114); 
     _errHandler->sync(this);
-    switch (getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 7, _ctx)) {
-    case 1: {
-      enterOuterAlt(_localctx, 1);
-      setState(108);
-      statement();
-      setState(109);
-      statementList();
-      break;
-    }
+    alt = 1;
+    do {
+      switch (alt) {
+        case 1: {
+              setState(113);
+              statement();
+              break;
+            }
 
-    case 2: {
-      enterOuterAlt(_localctx, 2);
-      setState(111);
-      statement();
-      break;
-    }
-
-    }
+      default:
+        throw NoViableAltException(this);
+      }
+      setState(116); 
+      _errHandler->sync(this);
+      alt = getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 8, _ctx);
+    } while (alt != 2 && alt != atn::ATN::INVALID_ALT_NUMBER);
    
   }
   catch (RecognitionException &e) {
@@ -850,63 +1003,167 @@ miniCgrammarParser::StatementContext::StatementContext(ParserRuleContext *parent
   : ParserRuleContext(parent, invokingState) {
 }
 
-miniCgrammarParser::VariableDeclContext* miniCgrammarParser::StatementContext::variableDecl() {
-  return getRuleContext<miniCgrammarParser::VariableDeclContext>(0);
-}
-
-miniCgrammarParser::LocationContext* miniCgrammarParser::StatementContext::location() {
-  return getRuleContext<miniCgrammarParser::LocationContext>(0);
-}
-
-miniCgrammarParser::AssignOpContext* miniCgrammarParser::StatementContext::assignOp() {
-  return getRuleContext<miniCgrammarParser::AssignOpContext>(0);
-}
-
-miniCgrammarParser::ExprContext* miniCgrammarParser::StatementContext::expr() {
-  return getRuleContext<miniCgrammarParser::ExprContext>(0);
-}
-
-tree::TerminalNode* miniCgrammarParser::StatementContext::Semi() {
-  return getToken(miniCgrammarParser::Semi, 0);
-}
-
-miniCgrammarParser::ConditionalStmtContext* miniCgrammarParser::StatementContext::conditionalStmt() {
-  return getRuleContext<miniCgrammarParser::ConditionalStmtContext>(0);
-}
-
-miniCgrammarParser::IterativeStmtContext* miniCgrammarParser::StatementContext::iterativeStmt() {
-  return getRuleContext<miniCgrammarParser::IterativeStmtContext>(0);
-}
-
-tree::TerminalNode* miniCgrammarParser::StatementContext::Return() {
-  return getToken(miniCgrammarParser::Return, 0);
-}
-
-tree::TerminalNode* miniCgrammarParser::StatementContext::Break() {
-  return getToken(miniCgrammarParser::Break, 0);
-}
-
-tree::TerminalNode* miniCgrammarParser::StatementContext::Continue() {
-  return getToken(miniCgrammarParser::Continue, 0);
-}
-
 
 size_t miniCgrammarParser::StatementContext::getRuleIndex() const {
   return miniCgrammarParser::RuleStatement;
 }
 
-void miniCgrammarParser::StatementContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<miniCgrammarListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterStatement(this);
+void miniCgrammarParser::StatementContext::copyFrom(StatementContext *ctx) {
+  ParserRuleContext::copyFrom(ctx);
 }
 
-void miniCgrammarParser::StatementContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<miniCgrammarListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitStatement(this);
+//----------------- ExprStmtContext ------------------------------------------------------------------
+
+miniCgrammarParser::ExprContext* miniCgrammarParser::ExprStmtContext::expr() {
+  return getRuleContext<miniCgrammarParser::ExprContext>(0);
 }
 
+tree::TerminalNode* miniCgrammarParser::ExprStmtContext::Semi() {
+  return getToken(miniCgrammarParser::Semi, 0);
+}
+
+miniCgrammarParser::ExprStmtContext::ExprStmtContext(StatementContext *ctx) { copyFrom(ctx); }
+
+
+antlrcpp::Any miniCgrammarParser::ExprStmtContext::accept(tree::ParseTreeVisitor *visitor) {
+  if (auto parserVisitor = dynamic_cast<miniCgrammarVisitor*>(visitor))
+    return parserVisitor->visitExprStmt(this);
+  else
+    return visitor->visitChildren(this);
+}
+//----------------- BreakStmtContext ------------------------------------------------------------------
+
+tree::TerminalNode* miniCgrammarParser::BreakStmtContext::Break() {
+  return getToken(miniCgrammarParser::Break, 0);
+}
+
+tree::TerminalNode* miniCgrammarParser::BreakStmtContext::Semi() {
+  return getToken(miniCgrammarParser::Semi, 0);
+}
+
+miniCgrammarParser::BreakStmtContext::BreakStmtContext(StatementContext *ctx) { copyFrom(ctx); }
+
+
+antlrcpp::Any miniCgrammarParser::BreakStmtContext::accept(tree::ParseTreeVisitor *visitor) {
+  if (auto parserVisitor = dynamic_cast<miniCgrammarVisitor*>(visitor))
+    return parserVisitor->visitBreakStmt(this);
+  else
+    return visitor->visitChildren(this);
+}
+//----------------- VariableDeclStmtContext ------------------------------------------------------------------
+
+miniCgrammarParser::VariableDeclContext* miniCgrammarParser::VariableDeclStmtContext::variableDecl() {
+  return getRuleContext<miniCgrammarParser::VariableDeclContext>(0);
+}
+
+miniCgrammarParser::VariableDeclStmtContext::VariableDeclStmtContext(StatementContext *ctx) { copyFrom(ctx); }
+
+
+antlrcpp::Any miniCgrammarParser::VariableDeclStmtContext::accept(tree::ParseTreeVisitor *visitor) {
+  if (auto parserVisitor = dynamic_cast<miniCgrammarVisitor*>(visitor))
+    return parserVisitor->visitVariableDeclStmt(this);
+  else
+    return visitor->visitChildren(this);
+}
+//----------------- IterationStmtContext ------------------------------------------------------------------
+
+miniCgrammarParser::IterativeStmtContext* miniCgrammarParser::IterationStmtContext::iterativeStmt() {
+  return getRuleContext<miniCgrammarParser::IterativeStmtContext>(0);
+}
+
+miniCgrammarParser::IterationStmtContext::IterationStmtContext(StatementContext *ctx) { copyFrom(ctx); }
+
+
+antlrcpp::Any miniCgrammarParser::IterationStmtContext::accept(tree::ParseTreeVisitor *visitor) {
+  if (auto parserVisitor = dynamic_cast<miniCgrammarVisitor*>(visitor))
+    return parserVisitor->visitIterationStmt(this);
+  else
+    return visitor->visitChildren(this);
+}
+//----------------- ReturnStmtContext ------------------------------------------------------------------
+
+tree::TerminalNode* miniCgrammarParser::ReturnStmtContext::Return() {
+  return getToken(miniCgrammarParser::Return, 0);
+}
+
+miniCgrammarParser::ExprContext* miniCgrammarParser::ReturnStmtContext::expr() {
+  return getRuleContext<miniCgrammarParser::ExprContext>(0);
+}
+
+tree::TerminalNode* miniCgrammarParser::ReturnStmtContext::Semi() {
+  return getToken(miniCgrammarParser::Semi, 0);
+}
+
+miniCgrammarParser::ReturnStmtContext::ReturnStmtContext(StatementContext *ctx) { copyFrom(ctx); }
+
+
+antlrcpp::Any miniCgrammarParser::ReturnStmtContext::accept(tree::ParseTreeVisitor *visitor) {
+  if (auto parserVisitor = dynamic_cast<miniCgrammarVisitor*>(visitor))
+    return parserVisitor->visitReturnStmt(this);
+  else
+    return visitor->visitChildren(this);
+}
+//----------------- ContinueStmtContext ------------------------------------------------------------------
+
+tree::TerminalNode* miniCgrammarParser::ContinueStmtContext::Continue() {
+  return getToken(miniCgrammarParser::Continue, 0);
+}
+
+tree::TerminalNode* miniCgrammarParser::ContinueStmtContext::Semi() {
+  return getToken(miniCgrammarParser::Semi, 0);
+}
+
+miniCgrammarParser::ContinueStmtContext::ContinueStmtContext(StatementContext *ctx) { copyFrom(ctx); }
+
+
+antlrcpp::Any miniCgrammarParser::ContinueStmtContext::accept(tree::ParseTreeVisitor *visitor) {
+  if (auto parserVisitor = dynamic_cast<miniCgrammarVisitor*>(visitor))
+    return parserVisitor->visitContinueStmt(this);
+  else
+    return visitor->visitChildren(this);
+}
+//----------------- AssignmentStmtContext ------------------------------------------------------------------
+
+miniCgrammarParser::LocationContext* miniCgrammarParser::AssignmentStmtContext::location() {
+  return getRuleContext<miniCgrammarParser::LocationContext>(0);
+}
+
+miniCgrammarParser::AssignOpContext* miniCgrammarParser::AssignmentStmtContext::assignOp() {
+  return getRuleContext<miniCgrammarParser::AssignOpContext>(0);
+}
+
+miniCgrammarParser::ExprContext* miniCgrammarParser::AssignmentStmtContext::expr() {
+  return getRuleContext<miniCgrammarParser::ExprContext>(0);
+}
+
+tree::TerminalNode* miniCgrammarParser::AssignmentStmtContext::Semi() {
+  return getToken(miniCgrammarParser::Semi, 0);
+}
+
+miniCgrammarParser::AssignmentStmtContext::AssignmentStmtContext(StatementContext *ctx) { copyFrom(ctx); }
+
+
+antlrcpp::Any miniCgrammarParser::AssignmentStmtContext::accept(tree::ParseTreeVisitor *visitor) {
+  if (auto parserVisitor = dynamic_cast<miniCgrammarVisitor*>(visitor))
+    return parserVisitor->visitAssignmentStmt(this);
+  else
+    return visitor->visitChildren(this);
+}
+//----------------- ConditionStmtContext ------------------------------------------------------------------
+
+miniCgrammarParser::ConditionalStmtContext* miniCgrammarParser::ConditionStmtContext::conditionalStmt() {
+  return getRuleContext<miniCgrammarParser::ConditionalStmtContext>(0);
+}
+
+miniCgrammarParser::ConditionStmtContext::ConditionStmtContext(StatementContext *ctx) { copyFrom(ctx); }
+
+
+antlrcpp::Any miniCgrammarParser::ConditionStmtContext::accept(tree::ParseTreeVisitor *visitor) {
+  if (auto parserVisitor = dynamic_cast<miniCgrammarVisitor*>(visitor))
+    return parserVisitor->visitConditionStmt(this);
+  else
+    return visitor->visitChildren(this);
+}
 miniCgrammarParser::StatementContext* miniCgrammarParser::statement() {
   StatementContext *_localctx = _tracker.createInstance<StatementContext>(_ctx, getState());
   enterRule(_localctx, 20, miniCgrammarParser::RuleStatement);
@@ -915,77 +1172,85 @@ miniCgrammarParser::StatementContext* miniCgrammarParser::statement() {
     exitRule();
   });
   try {
-    setState(133);
+    setState(137);
     _errHandler->sync(this);
-    switch (getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 8, _ctx)) {
+    switch (getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 9, _ctx)) {
     case 1: {
+      _localctx = dynamic_cast<StatementContext *>(_tracker.createInstance<miniCgrammarParser::VariableDeclStmtContext>(_localctx));
       enterOuterAlt(_localctx, 1);
-      setState(114);
+      setState(118);
       variableDecl();
       break;
     }
 
     case 2: {
+      _localctx = dynamic_cast<StatementContext *>(_tracker.createInstance<miniCgrammarParser::AssignmentStmtContext>(_localctx));
       enterOuterAlt(_localctx, 2);
-      setState(115);
+      setState(119);
       location();
-      setState(116);
+      setState(120);
       assignOp();
-      setState(117);
+      setState(121);
       expr(0);
-      setState(118);
+      setState(122);
       match(miniCgrammarParser::Semi);
       break;
     }
 
     case 3: {
+      _localctx = dynamic_cast<StatementContext *>(_tracker.createInstance<miniCgrammarParser::ExprStmtContext>(_localctx));
       enterOuterAlt(_localctx, 3);
-      setState(120);
+      setState(124);
       expr(0);
-      setState(121);
+      setState(125);
       match(miniCgrammarParser::Semi);
       break;
     }
 
     case 4: {
+      _localctx = dynamic_cast<StatementContext *>(_tracker.createInstance<miniCgrammarParser::ConditionStmtContext>(_localctx));
       enterOuterAlt(_localctx, 4);
-      setState(123);
+      setState(127);
       conditionalStmt();
       break;
     }
 
     case 5: {
+      _localctx = dynamic_cast<StatementContext *>(_tracker.createInstance<miniCgrammarParser::IterationStmtContext>(_localctx));
       enterOuterAlt(_localctx, 5);
-      setState(124);
+      setState(128);
       iterativeStmt();
       break;
     }
 
     case 6: {
+      _localctx = dynamic_cast<StatementContext *>(_tracker.createInstance<miniCgrammarParser::ReturnStmtContext>(_localctx));
       enterOuterAlt(_localctx, 6);
-      setState(125);
+      setState(129);
       match(miniCgrammarParser::Return);
-      setState(126);
+      setState(130);
       expr(0);
-      setState(127);
+      setState(131);
       match(miniCgrammarParser::Semi);
       break;
     }
 
     case 7: {
+      _localctx = dynamic_cast<StatementContext *>(_tracker.createInstance<miniCgrammarParser::BreakStmtContext>(_localctx));
       enterOuterAlt(_localctx, 7);
-      setState(129);
+      setState(133);
       match(miniCgrammarParser::Break);
-      setState(130);
+      setState(134);
       match(miniCgrammarParser::Semi);
       break;
     }
 
     case 8: {
+      _localctx = dynamic_cast<StatementContext *>(_tracker.createInstance<miniCgrammarParser::ContinueStmtContext>(_localctx));
       enterOuterAlt(_localctx, 8);
-      setState(131);
+      setState(135);
       match(miniCgrammarParser::Continue);
-      setState(132);
+      setState(136);
       match(miniCgrammarParser::Semi);
       break;
     }
@@ -1008,51 +1273,96 @@ miniCgrammarParser::LocationContext::LocationContext(ParserRuleContext *parent, 
   : ParserRuleContext(parent, invokingState) {
 }
 
-tree::TerminalNode* miniCgrammarParser::LocationContext::Id() {
-  return getToken(miniCgrammarParser::Id, 0);
-}
-
-std::vector<tree::TerminalNode *> miniCgrammarParser::LocationContext::LeftBracket() {
-  return getTokens(miniCgrammarParser::LeftBracket);
-}
-
-tree::TerminalNode* miniCgrammarParser::LocationContext::LeftBracket(size_t i) {
-  return getToken(miniCgrammarParser::LeftBracket, i);
-}
-
-std::vector<miniCgrammarParser::ArrayExprContext *> miniCgrammarParser::LocationContext::arrayExpr() {
-  return getRuleContexts<miniCgrammarParser::ArrayExprContext>();
-}
-
-miniCgrammarParser::ArrayExprContext* miniCgrammarParser::LocationContext::arrayExpr(size_t i) {
-  return getRuleContext<miniCgrammarParser::ArrayExprContext>(i);
-}
-
-std::vector<tree::TerminalNode *> miniCgrammarParser::LocationContext::RightBracket() {
-  return getTokens(miniCgrammarParser::RightBracket);
-}
-
-tree::TerminalNode* miniCgrammarParser::LocationContext::RightBracket(size_t i) {
-  return getToken(miniCgrammarParser::RightBracket, i);
-}
-
 
 size_t miniCgrammarParser::LocationContext::getRuleIndex() const {
   return miniCgrammarParser::RuleLocation;
 }
 
-void miniCgrammarParser::LocationContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<miniCgrammarListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterLocation(this);
+void miniCgrammarParser::LocationContext::copyFrom(LocationContext *ctx) {
+  ParserRuleContext::copyFrom(ctx);
 }
 
-void miniCgrammarParser::LocationContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<miniCgrammarListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitLocation(this);
+//----------------- TwoDarrayLocationContext ------------------------------------------------------------------
+
+tree::TerminalNode* miniCgrammarParser::TwoDarrayLocationContext::Id() {
+  return getToken(miniCgrammarParser::Id, 0);
 }
 
+std::vector<tree::TerminalNode *> miniCgrammarParser::TwoDarrayLocationContext::LeftBracket() {
+  return getTokens(miniCgrammarParser::LeftBracket);
+}
+
+tree::TerminalNode* miniCgrammarParser::TwoDarrayLocationContext::LeftBracket(size_t i) {
+  return getToken(miniCgrammarParser::LeftBracket, i);
+}
+
+std::vector<miniCgrammarParser::ArrayExprContext *> miniCgrammarParser::TwoDarrayLocationContext::arrayExpr() {
+  return getRuleContexts<miniCgrammarParser::ArrayExprContext>();
+}
+
+miniCgrammarParser::ArrayExprContext* miniCgrammarParser::TwoDarrayLocationContext::arrayExpr(size_t i) {
+  return getRuleContext<miniCgrammarParser::ArrayExprContext>(i);
+}
+
+std::vector<tree::TerminalNode *> miniCgrammarParser::TwoDarrayLocationContext::RightBracket() {
+  return getTokens(miniCgrammarParser::RightBracket);
+}
+
+tree::TerminalNode* miniCgrammarParser::TwoDarrayLocationContext::RightBracket(size_t i) {
+  return getToken(miniCgrammarParser::RightBracket, i);
+}
+
+miniCgrammarParser::TwoDarrayLocationContext::TwoDarrayLocationContext(LocationContext *ctx) { copyFrom(ctx); }
+
+
+antlrcpp::Any miniCgrammarParser::TwoDarrayLocationContext::accept(tree::ParseTreeVisitor *visitor) {
+  if (auto parserVisitor = dynamic_cast<miniCgrammarVisitor*>(visitor))
+    return parserVisitor->visitTwoDarrayLocation(this);
+  else
+    return visitor->visitChildren(this);
+}
+//----------------- SimpleVarLocationContext ------------------------------------------------------------------
+
+tree::TerminalNode* miniCgrammarParser::SimpleVarLocationContext::Id() {
+  return getToken(miniCgrammarParser::Id, 0);
+}
+
+miniCgrammarParser::SimpleVarLocationContext::SimpleVarLocationContext(LocationContext *ctx) { copyFrom(ctx); }
+
+
+antlrcpp::Any miniCgrammarParser::SimpleVarLocationContext::accept(tree::ParseTreeVisitor *visitor) {
+  if (auto parserVisitor = dynamic_cast<miniCgrammarVisitor*>(visitor))
+    return parserVisitor->visitSimpleVarLocation(this);
+  else
+    return visitor->visitChildren(this);
+}
+//----------------- OneDarrayLocationContext ------------------------------------------------------------------
+
+tree::TerminalNode* miniCgrammarParser::OneDarrayLocationContext::Id() {
+  return getToken(miniCgrammarParser::Id, 0);
+}
+
+tree::TerminalNode* miniCgrammarParser::OneDarrayLocationContext::LeftBracket() {
+  return getToken(miniCgrammarParser::LeftBracket, 0);
+}
+
+miniCgrammarParser::ArrayExprContext* miniCgrammarParser::OneDarrayLocationContext::arrayExpr() {
+  return getRuleContext<miniCgrammarParser::ArrayExprContext>(0);
+}
+
+tree::TerminalNode* miniCgrammarParser::OneDarrayLocationContext::RightBracket() {
+  return getToken(miniCgrammarParser::RightBracket, 0);
+}
+
+miniCgrammarParser::OneDarrayLocationContext::OneDarrayLocationContext(LocationContext *ctx) { copyFrom(ctx); }
+
+
+antlrcpp::Any miniCgrammarParser::OneDarrayLocationContext::accept(tree::ParseTreeVisitor *visitor) {
+  if (auto parserVisitor = dynamic_cast<miniCgrammarVisitor*>(visitor))
+    return parserVisitor->visitOneDarrayLocation(this);
+  else
+    return visitor->visitChildren(this);
+}
 miniCgrammarParser::LocationContext* miniCgrammarParser::location() {
   LocationContext *_localctx = _tracker.createInstance<LocationContext>(_ctx, getState());
   enterRule(_localctx, 22, miniCgrammarParser::RuleLocation);
@@ -1061,44 +1371,47 @@ miniCgrammarParser::LocationContext* miniCgrammarParser::location() {
     exitRule();
   });
   try {
-    setState(149);
+    setState(153);
     _errHandler->sync(this);
-    switch (getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 9, _ctx)) {
+    switch (getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 10, _ctx)) {
     case 1: {
+      _localctx = dynamic_cast<LocationContext *>(_tracker.createInstance<miniCgrammarParser::SimpleVarLocationContext>(_localctx));
       enterOuterAlt(_localctx, 1);
-      setState(135);
+      setState(139);
       match(miniCgrammarParser::Id);
       break;
     }
 
     case 2: {
+      _localctx = dynamic_cast<LocationContext *>(_tracker.createInstance<miniCgrammarParser::OneDarrayLocationContext>(_localctx));
       enterOuterAlt(_localctx, 2);
-      setState(136);
+      setState(140);
       match(miniCgrammarParser::Id);
-      setState(137);
+      setState(141);
       match(miniCgrammarParser::LeftBracket);
-      setState(138);
+      setState(142);
       arrayExpr(0);
-      setState(139);
+      setState(143);
       match(miniCgrammarParser::RightBracket);
       break;
     }
 
     case 3: {
+      _localctx = dynamic_cast<LocationContext *>(_tracker.createInstance<miniCgrammarParser::TwoDarrayLocationContext>(_localctx));
       enterOuterAlt(_localctx, 3);
-      setState(141);
-      match(miniCgrammarParser::Id);
-      setState(142);
-      match(miniCgrammarParser::LeftBracket);
-      setState(143);
-      arrayExpr(0);
-      setState(144);
-      match(miniCgrammarParser::RightBracket);
       setState(145);
-      match(miniCgrammarParser::LeftBracket);
+      match(miniCgrammarParser::Id);
       setState(146);
-      arrayExpr(0);
+      match(miniCgrammarParser::LeftBracket);
       setState(147);
+      arrayExpr(0);
+      setState(148);
+      match(miniCgrammarParser::RightBracket);
+      setState(149);
+      match(miniCgrammarParser::LeftBracket);
+      setState(150);
+      arrayExpr(0);
+      setState(151);
       match(miniCgrammarParser::RightBracket);
       break;
     }
@@ -1121,56 +1434,97 @@ miniCgrammarParser::AssignOpContext::AssignOpContext(ParserRuleContext *parent, 
   : ParserRuleContext(parent, invokingState) {
 }
 
-tree::TerminalNode* miniCgrammarParser::AssignOpContext::Assign() {
-  return getToken(miniCgrammarParser::Assign, 0);
-}
-
-tree::TerminalNode* miniCgrammarParser::AssignOpContext::PlusAssign() {
-  return getToken(miniCgrammarParser::PlusAssign, 0);
-}
-
-tree::TerminalNode* miniCgrammarParser::AssignOpContext::MinusAssign() {
-  return getToken(miniCgrammarParser::MinusAssign, 0);
-}
-
 
 size_t miniCgrammarParser::AssignOpContext::getRuleIndex() const {
   return miniCgrammarParser::RuleAssignOp;
 }
 
-void miniCgrammarParser::AssignOpContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<miniCgrammarListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterAssignOp(this);
+void miniCgrammarParser::AssignOpContext::copyFrom(AssignOpContext *ctx) {
+  ParserRuleContext::copyFrom(ctx);
 }
 
-void miniCgrammarParser::AssignOpContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<miniCgrammarListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitAssignOp(this);
+//----------------- PlusAssignContext ------------------------------------------------------------------
+
+tree::TerminalNode* miniCgrammarParser::PlusAssignContext::PlusAssign() {
+  return getToken(miniCgrammarParser::PlusAssign, 0);
 }
 
+miniCgrammarParser::PlusAssignContext::PlusAssignContext(AssignOpContext *ctx) { copyFrom(ctx); }
+
+
+antlrcpp::Any miniCgrammarParser::PlusAssignContext::accept(tree::ParseTreeVisitor *visitor) {
+  if (auto parserVisitor = dynamic_cast<miniCgrammarVisitor*>(visitor))
+    return parserVisitor->visitPlusAssign(this);
+  else
+    return visitor->visitChildren(this);
+}
+//----------------- EqualAssignContext ------------------------------------------------------------------
+
+tree::TerminalNode* miniCgrammarParser::EqualAssignContext::Assign() {
+  return getToken(miniCgrammarParser::Assign, 0);
+}
+
+miniCgrammarParser::EqualAssignContext::EqualAssignContext(AssignOpContext *ctx) { copyFrom(ctx); }
+
+
+antlrcpp::Any miniCgrammarParser::EqualAssignContext::accept(tree::ParseTreeVisitor *visitor) {
+  if (auto parserVisitor = dynamic_cast<miniCgrammarVisitor*>(visitor))
+    return parserVisitor->visitEqualAssign(this);
+  else
+    return visitor->visitChildren(this);
+}
+//----------------- MinusAssignContext ------------------------------------------------------------------
+
+tree::TerminalNode* miniCgrammarParser::MinusAssignContext::MinusAssign() {
+  return getToken(miniCgrammarParser::MinusAssign, 0);
+}
+
+miniCgrammarParser::MinusAssignContext::MinusAssignContext(AssignOpContext *ctx) { copyFrom(ctx); }
+
+
+antlrcpp::Any miniCgrammarParser::MinusAssignContext::accept(tree::ParseTreeVisitor *visitor) {
+  if (auto parserVisitor = dynamic_cast<miniCgrammarVisitor*>(visitor))
+    return parserVisitor->visitMinusAssign(this);
+  else
+    return visitor->visitChildren(this);
+}
 miniCgrammarParser::AssignOpContext* miniCgrammarParser::assignOp() {
   AssignOpContext *_localctx = _tracker.createInstance<AssignOpContext>(_ctx, getState());
   enterRule(_localctx, 24, miniCgrammarParser::RuleAssignOp);
-  size_t _la = 0;
 
   auto onExit = finally([=] {
     exitRule();
   });
   try {
-    enterOuterAlt(_localctx, 1);
-    setState(151);
-    _la = _input->LA(1);
-    if (!((((_la & ~ 0x3fULL) == 0) &&
-      ((1ULL << _la) & ((1ULL << miniCgrammarParser::Assign)
-      | (1ULL << miniCgrammarParser::PlusAssign)
-      | (1ULL << miniCgrammarParser::MinusAssign))) != 0))) {
-    _errHandler->recoverInline(this);
-    }
-    else {
-      _errHandler->reportMatch(this);
-      consume();
+    setState(158);
+    _errHandler->sync(this);
+    switch (_input->LA(1)) {
+      case miniCgrammarParser::Assign: {
+        _localctx = dynamic_cast<AssignOpContext *>(_tracker.createInstance<miniCgrammarParser::EqualAssignContext>(_localctx));
+        enterOuterAlt(_localctx, 1);
+        setState(155);
+        match(miniCgrammarParser::Assign);
+        break;
+      }
+
+      case miniCgrammarParser::PlusAssign: {
+        _localctx = dynamic_cast<AssignOpContext *>(_tracker.createInstance<miniCgrammarParser::PlusAssignContext>(_localctx));
+        enterOuterAlt(_localctx, 2);
+        setState(156);
+        match(miniCgrammarParser::PlusAssign);
+        break;
+      }
+
+      case miniCgrammarParser::MinusAssign: {
+        _localctx = dynamic_cast<AssignOpContext *>(_tracker.createInstance<miniCgrammarParser::MinusAssignContext>(_localctx));
+        enterOuterAlt(_localctx, 3);
+        setState(157);
+        match(miniCgrammarParser::MinusAssign);
+        break;
+      }
+
+    default:
+      throw NoViableAltException(this);
     }
    
   }
@@ -1189,131 +1543,382 @@ miniCgrammarParser::ExprContext::ExprContext(ParserRuleContext *parent, size_t i
   : ParserRuleContext(parent, invokingState) {
 }
 
-tree::TerminalNode* miniCgrammarParser::ExprContext::BoolLiteral() {
-  return getToken(miniCgrammarParser::BoolLiteral, 0);
-}
-
-tree::TerminalNode* miniCgrammarParser::ExprContext::IntegerLiteral() {
-  return getToken(miniCgrammarParser::IntegerLiteral, 0);
-}
-
-tree::TerminalNode* miniCgrammarParser::ExprContext::StringLiteral() {
-  return getToken(miniCgrammarParser::StringLiteral, 0);
-}
-
-tree::TerminalNode* miniCgrammarParser::ExprContext::CharLiteral() {
-  return getToken(miniCgrammarParser::CharLiteral, 0);
-}
-
-tree::TerminalNode* miniCgrammarParser::ExprContext::LeftParen() {
-  return getToken(miniCgrammarParser::LeftParen, 0);
-}
-
-std::vector<miniCgrammarParser::ExprContext *> miniCgrammarParser::ExprContext::expr() {
-  return getRuleContexts<miniCgrammarParser::ExprContext>();
-}
-
-miniCgrammarParser::ExprContext* miniCgrammarParser::ExprContext::expr(size_t i) {
-  return getRuleContext<miniCgrammarParser::ExprContext>(i);
-}
-
-tree::TerminalNode* miniCgrammarParser::ExprContext::RightParen() {
-  return getToken(miniCgrammarParser::RightParen, 0);
-}
-
-miniCgrammarParser::LocationContext* miniCgrammarParser::ExprContext::location() {
-  return getRuleContext<miniCgrammarParser::LocationContext>(0);
-}
-
-miniCgrammarParser::FunctionCallContext* miniCgrammarParser::ExprContext::functionCall() {
-  return getRuleContext<miniCgrammarParser::FunctionCallContext>(0);
-}
-
-tree::TerminalNode* miniCgrammarParser::ExprContext::Minus() {
-  return getToken(miniCgrammarParser::Minus, 0);
-}
-
-tree::TerminalNode* miniCgrammarParser::ExprContext::Not() {
-  return getToken(miniCgrammarParser::Not, 0);
-}
-
-tree::TerminalNode* miniCgrammarParser::ExprContext::Caret() {
-  return getToken(miniCgrammarParser::Caret, 0);
-}
-
-tree::TerminalNode* miniCgrammarParser::ExprContext::Star() {
-  return getToken(miniCgrammarParser::Star, 0);
-}
-
-tree::TerminalNode* miniCgrammarParser::ExprContext::Div() {
-  return getToken(miniCgrammarParser::Div, 0);
-}
-
-tree::TerminalNode* miniCgrammarParser::ExprContext::Mod() {
-  return getToken(miniCgrammarParser::Mod, 0);
-}
-
-tree::TerminalNode* miniCgrammarParser::ExprContext::Plus() {
-  return getToken(miniCgrammarParser::Plus, 0);
-}
-
-tree::TerminalNode* miniCgrammarParser::ExprContext::Less() {
-  return getToken(miniCgrammarParser::Less, 0);
-}
-
-tree::TerminalNode* miniCgrammarParser::ExprContext::Greater() {
-  return getToken(miniCgrammarParser::Greater, 0);
-}
-
-tree::TerminalNode* miniCgrammarParser::ExprContext::LessEqual() {
-  return getToken(miniCgrammarParser::LessEqual, 0);
-}
-
-tree::TerminalNode* miniCgrammarParser::ExprContext::GreaterEqual() {
-  return getToken(miniCgrammarParser::GreaterEqual, 0);
-}
-
-tree::TerminalNode* miniCgrammarParser::ExprContext::Equal() {
-  return getToken(miniCgrammarParser::Equal, 0);
-}
-
-tree::TerminalNode* miniCgrammarParser::ExprContext::NotEqual() {
-  return getToken(miniCgrammarParser::NotEqual, 0);
-}
-
-tree::TerminalNode* miniCgrammarParser::ExprContext::And() {
-  return getToken(miniCgrammarParser::And, 0);
-}
-
-tree::TerminalNode* miniCgrammarParser::ExprContext::Or() {
-  return getToken(miniCgrammarParser::Or, 0);
-}
-
-tree::TerminalNode* miniCgrammarParser::ExprContext::Question() {
-  return getToken(miniCgrammarParser::Question, 0);
-}
-
-tree::TerminalNode* miniCgrammarParser::ExprContext::Colon() {
-  return getToken(miniCgrammarParser::Colon, 0);
-}
-
 
 size_t miniCgrammarParser::ExprContext::getRuleIndex() const {
   return miniCgrammarParser::RuleExpr;
 }
 
-void miniCgrammarParser::ExprContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<miniCgrammarListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterExpr(this);
+void miniCgrammarParser::ExprContext::copyFrom(ExprContext *ctx) {
+  ParserRuleContext::copyFrom(ctx);
 }
 
-void miniCgrammarParser::ExprContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<miniCgrammarListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitExpr(this);
+//----------------- ExponentExprContext ------------------------------------------------------------------
+
+std::vector<miniCgrammarParser::ExprContext *> miniCgrammarParser::ExponentExprContext::expr() {
+  return getRuleContexts<miniCgrammarParser::ExprContext>();
 }
 
+miniCgrammarParser::ExprContext* miniCgrammarParser::ExponentExprContext::expr(size_t i) {
+  return getRuleContext<miniCgrammarParser::ExprContext>(i);
+}
+
+tree::TerminalNode* miniCgrammarParser::ExponentExprContext::Caret() {
+  return getToken(miniCgrammarParser::Caret, 0);
+}
+
+miniCgrammarParser::ExponentExprContext::ExponentExprContext(ExprContext *ctx) { copyFrom(ctx); }
+
+
+antlrcpp::Any miniCgrammarParser::ExponentExprContext::accept(tree::ParseTreeVisitor *visitor) {
+  if (auto parserVisitor = dynamic_cast<miniCgrammarVisitor*>(visitor))
+    return parserVisitor->visitExponentExpr(this);
+  else
+    return visitor->visitChildren(this);
+}
+//----------------- AddSubExprContext ------------------------------------------------------------------
+
+std::vector<miniCgrammarParser::ExprContext *> miniCgrammarParser::AddSubExprContext::expr() {
+  return getRuleContexts<miniCgrammarParser::ExprContext>();
+}
+
+miniCgrammarParser::ExprContext* miniCgrammarParser::AddSubExprContext::expr(size_t i) {
+  return getRuleContext<miniCgrammarParser::ExprContext>(i);
+}
+
+tree::TerminalNode* miniCgrammarParser::AddSubExprContext::Plus() {
+  return getToken(miniCgrammarParser::Plus, 0);
+}
+
+tree::TerminalNode* miniCgrammarParser::AddSubExprContext::Minus() {
+  return getToken(miniCgrammarParser::Minus, 0);
+}
+
+miniCgrammarParser::AddSubExprContext::AddSubExprContext(ExprContext *ctx) { copyFrom(ctx); }
+
+
+antlrcpp::Any miniCgrammarParser::AddSubExprContext::accept(tree::ParseTreeVisitor *visitor) {
+  if (auto parserVisitor = dynamic_cast<miniCgrammarVisitor*>(visitor))
+    return parserVisitor->visitAddSubExpr(this);
+  else
+    return visitor->visitChildren(this);
+}
+//----------------- IntLitExprContext ------------------------------------------------------------------
+
+tree::TerminalNode* miniCgrammarParser::IntLitExprContext::IntegerLiteral() {
+  return getToken(miniCgrammarParser::IntegerLiteral, 0);
+}
+
+miniCgrammarParser::IntLitExprContext::IntLitExprContext(ExprContext *ctx) { copyFrom(ctx); }
+
+
+antlrcpp::Any miniCgrammarParser::IntLitExprContext::accept(tree::ParseTreeVisitor *visitor) {
+  if (auto parserVisitor = dynamic_cast<miniCgrammarVisitor*>(visitor))
+    return parserVisitor->visitIntLitExpr(this);
+  else
+    return visitor->visitChildren(this);
+}
+//----------------- StringLitExprContext ------------------------------------------------------------------
+
+tree::TerminalNode* miniCgrammarParser::StringLitExprContext::StringLiteral() {
+  return getToken(miniCgrammarParser::StringLiteral, 0);
+}
+
+miniCgrammarParser::StringLitExprContext::StringLitExprContext(ExprContext *ctx) { copyFrom(ctx); }
+
+
+antlrcpp::Any miniCgrammarParser::StringLitExprContext::accept(tree::ParseTreeVisitor *visitor) {
+  if (auto parserVisitor = dynamic_cast<miniCgrammarVisitor*>(visitor))
+    return parserVisitor->visitStringLitExpr(this);
+  else
+    return visitor->visitChildren(this);
+}
+//----------------- RelopExprContext ------------------------------------------------------------------
+
+std::vector<miniCgrammarParser::ExprContext *> miniCgrammarParser::RelopExprContext::expr() {
+  return getRuleContexts<miniCgrammarParser::ExprContext>();
+}
+
+miniCgrammarParser::ExprContext* miniCgrammarParser::RelopExprContext::expr(size_t i) {
+  return getRuleContext<miniCgrammarParser::ExprContext>(i);
+}
+
+tree::TerminalNode* miniCgrammarParser::RelopExprContext::Less() {
+  return getToken(miniCgrammarParser::Less, 0);
+}
+
+tree::TerminalNode* miniCgrammarParser::RelopExprContext::Greater() {
+  return getToken(miniCgrammarParser::Greater, 0);
+}
+
+tree::TerminalNode* miniCgrammarParser::RelopExprContext::LessEqual() {
+  return getToken(miniCgrammarParser::LessEqual, 0);
+}
+
+tree::TerminalNode* miniCgrammarParser::RelopExprContext::GreaterEqual() {
+  return getToken(miniCgrammarParser::GreaterEqual, 0);
+}
+
+miniCgrammarParser::RelopExprContext::RelopExprContext(ExprContext *ctx) { copyFrom(ctx); }
+
+
+antlrcpp::Any miniCgrammarParser::RelopExprContext::accept(tree::ParseTreeVisitor *visitor) {
+  if (auto parserVisitor = dynamic_cast<miniCgrammarVisitor*>(visitor))
+    return parserVisitor->visitRelopExpr(this);
+  else
+    return visitor->visitChildren(this);
+}
+//----------------- MulDivModExprContext ------------------------------------------------------------------
+
+std::vector<miniCgrammarParser::ExprContext *> miniCgrammarParser::MulDivModExprContext::expr() {
+  return getRuleContexts<miniCgrammarParser::ExprContext>();
+}
+
+miniCgrammarParser::ExprContext* miniCgrammarParser::MulDivModExprContext::expr(size_t i) {
+  return getRuleContext<miniCgrammarParser::ExprContext>(i);
+}
+
+tree::TerminalNode* miniCgrammarParser::MulDivModExprContext::Star() {
+  return getToken(miniCgrammarParser::Star, 0);
+}
+
+tree::TerminalNode* miniCgrammarParser::MulDivModExprContext::Div() {
+  return getToken(miniCgrammarParser::Div, 0);
+}
+
+tree::TerminalNode* miniCgrammarParser::MulDivModExprContext::Mod() {
+  return getToken(miniCgrammarParser::Mod, 0);
+}
+
+miniCgrammarParser::MulDivModExprContext::MulDivModExprContext(ExprContext *ctx) { copyFrom(ctx); }
+
+
+antlrcpp::Any miniCgrammarParser::MulDivModExprContext::accept(tree::ParseTreeVisitor *visitor) {
+  if (auto parserVisitor = dynamic_cast<miniCgrammarVisitor*>(visitor))
+    return parserVisitor->visitMulDivModExpr(this);
+  else
+    return visitor->visitChildren(this);
+}
+//----------------- LogicalANDExprContext ------------------------------------------------------------------
+
+std::vector<miniCgrammarParser::ExprContext *> miniCgrammarParser::LogicalANDExprContext::expr() {
+  return getRuleContexts<miniCgrammarParser::ExprContext>();
+}
+
+miniCgrammarParser::ExprContext* miniCgrammarParser::LogicalANDExprContext::expr(size_t i) {
+  return getRuleContext<miniCgrammarParser::ExprContext>(i);
+}
+
+tree::TerminalNode* miniCgrammarParser::LogicalANDExprContext::And() {
+  return getToken(miniCgrammarParser::And, 0);
+}
+
+miniCgrammarParser::LogicalANDExprContext::LogicalANDExprContext(ExprContext *ctx) { copyFrom(ctx); }
+
+
+antlrcpp::Any miniCgrammarParser::LogicalANDExprContext::accept(tree::ParseTreeVisitor *visitor) {
+  if (auto parserVisitor = dynamic_cast<miniCgrammarVisitor*>(visitor))
+    return parserVisitor->visitLogicalANDExpr(this);
+  else
+    return visitor->visitChildren(this);
+}
+//----------------- ParenthesesExprContext ------------------------------------------------------------------
+
+tree::TerminalNode* miniCgrammarParser::ParenthesesExprContext::LeftParen() {
+  return getToken(miniCgrammarParser::LeftParen, 0);
+}
+
+miniCgrammarParser::ExprContext* miniCgrammarParser::ParenthesesExprContext::expr() {
+  return getRuleContext<miniCgrammarParser::ExprContext>(0);
+}
+
+tree::TerminalNode* miniCgrammarParser::ParenthesesExprContext::RightParen() {
+  return getToken(miniCgrammarParser::RightParen, 0);
+}
+
+miniCgrammarParser::ParenthesesExprContext::ParenthesesExprContext(ExprContext *ctx) { copyFrom(ctx); }
+
+
+antlrcpp::Any miniCgrammarParser::ParenthesesExprContext::accept(tree::ParseTreeVisitor *visitor) {
+  if (auto parserVisitor = dynamic_cast<miniCgrammarVisitor*>(visitor))
+    return parserVisitor->visitParenthesesExpr(this);
+  else
+    return visitor->visitChildren(this);
+}
+//----------------- LogicalORExprContext ------------------------------------------------------------------
+
+std::vector<miniCgrammarParser::ExprContext *> miniCgrammarParser::LogicalORExprContext::expr() {
+  return getRuleContexts<miniCgrammarParser::ExprContext>();
+}
+
+miniCgrammarParser::ExprContext* miniCgrammarParser::LogicalORExprContext::expr(size_t i) {
+  return getRuleContext<miniCgrammarParser::ExprContext>(i);
+}
+
+tree::TerminalNode* miniCgrammarParser::LogicalORExprContext::Or() {
+  return getToken(miniCgrammarParser::Or, 0);
+}
+
+miniCgrammarParser::LogicalORExprContext::LogicalORExprContext(ExprContext *ctx) { copyFrom(ctx); }
+
+
+antlrcpp::Any miniCgrammarParser::LogicalORExprContext::accept(tree::ParseTreeVisitor *visitor) {
+  if (auto parserVisitor = dynamic_cast<miniCgrammarVisitor*>(visitor))
+    return parserVisitor->visitLogicalORExpr(this);
+  else
+    return visitor->visitChildren(this);
+}
+//----------------- NegateExprContext ------------------------------------------------------------------
+
+tree::TerminalNode* miniCgrammarParser::NegateExprContext::Minus() {
+  return getToken(miniCgrammarParser::Minus, 0);
+}
+
+miniCgrammarParser::ExprContext* miniCgrammarParser::NegateExprContext::expr() {
+  return getRuleContext<miniCgrammarParser::ExprContext>(0);
+}
+
+miniCgrammarParser::NegateExprContext::NegateExprContext(ExprContext *ctx) { copyFrom(ctx); }
+
+
+antlrcpp::Any miniCgrammarParser::NegateExprContext::accept(tree::ParseTreeVisitor *visitor) {
+  if (auto parserVisitor = dynamic_cast<miniCgrammarVisitor*>(visitor))
+    return parserVisitor->visitNegateExpr(this);
+  else
+    return visitor->visitChildren(this);
+}
+//----------------- CharLitExprContext ------------------------------------------------------------------
+
+tree::TerminalNode* miniCgrammarParser::CharLitExprContext::CharLiteral() {
+  return getToken(miniCgrammarParser::CharLiteral, 0);
+}
+
+miniCgrammarParser::CharLitExprContext::CharLitExprContext(ExprContext *ctx) { copyFrom(ctx); }
+
+
+antlrcpp::Any miniCgrammarParser::CharLitExprContext::accept(tree::ParseTreeVisitor *visitor) {
+  if (auto parserVisitor = dynamic_cast<miniCgrammarVisitor*>(visitor))
+    return parserVisitor->visitCharLitExpr(this);
+  else
+    return visitor->visitChildren(this);
+}
+//----------------- NotExprContext ------------------------------------------------------------------
+
+tree::TerminalNode* miniCgrammarParser::NotExprContext::Not() {
+  return getToken(miniCgrammarParser::Not, 0);
+}
+
+miniCgrammarParser::ExprContext* miniCgrammarParser::NotExprContext::expr() {
+  return getRuleContext<miniCgrammarParser::ExprContext>(0);
+}
+
+miniCgrammarParser::NotExprContext::NotExprContext(ExprContext *ctx) { copyFrom(ctx); }
+
+
+antlrcpp::Any miniCgrammarParser::NotExprContext::accept(tree::ParseTreeVisitor *visitor) {
+  if (auto parserVisitor = dynamic_cast<miniCgrammarVisitor*>(visitor))
+    return parserVisitor->visitNotExpr(this);
+  else
+    return visitor->visitChildren(this);
+}
+//----------------- TernaryExprContext ------------------------------------------------------------------
+
+std::vector<miniCgrammarParser::ExprContext *> miniCgrammarParser::TernaryExprContext::expr() {
+  return getRuleContexts<miniCgrammarParser::ExprContext>();
+}
+
+miniCgrammarParser::ExprContext* miniCgrammarParser::TernaryExprContext::expr(size_t i) {
+  return getRuleContext<miniCgrammarParser::ExprContext>(i);
+}
+
+tree::TerminalNode* miniCgrammarParser::TernaryExprContext::Question() {
+  return getToken(miniCgrammarParser::Question, 0);
+}
+
+tree::TerminalNode* miniCgrammarParser::TernaryExprContext::Colon() {
+  return getToken(miniCgrammarParser::Colon, 0);
+}
+
+miniCgrammarParser::TernaryExprContext::TernaryExprContext(ExprContext *ctx) { copyFrom(ctx); }
+
+
+antlrcpp::Any miniCgrammarParser::TernaryExprContext::accept(tree::ParseTreeVisitor *visitor) {
+  if (auto parserVisitor = dynamic_cast<miniCgrammarVisitor*>(visitor))
+    return parserVisitor->visitTernaryExpr(this);
+  else
+    return visitor->visitChildren(this);
+}
+//----------------- LocationExprContext ------------------------------------------------------------------
+
+miniCgrammarParser::LocationContext* miniCgrammarParser::LocationExprContext::location() {
+  return getRuleContext<miniCgrammarParser::LocationContext>(0);
+}
+
+miniCgrammarParser::LocationExprContext::LocationExprContext(ExprContext *ctx) { copyFrom(ctx); }
+
+
+antlrcpp::Any miniCgrammarParser::LocationExprContext::accept(tree::ParseTreeVisitor *visitor) {
+  if (auto parserVisitor = dynamic_cast<miniCgrammarVisitor*>(visitor))
+    return parserVisitor->visitLocationExpr(this);
+  else
+    return visitor->visitChildren(this);
+}
+//----------------- FunctionCallExprContext ------------------------------------------------------------------
+
+miniCgrammarParser::FunctionCallContext* miniCgrammarParser::FunctionCallExprContext::functionCall() {
+  return getRuleContext<miniCgrammarParser::FunctionCallContext>(0);
+}
+
+miniCgrammarParser::FunctionCallExprContext::FunctionCallExprContext(ExprContext *ctx) { copyFrom(ctx); }
+
+
+antlrcpp::Any miniCgrammarParser::FunctionCallExprContext::accept(tree::ParseTreeVisitor *visitor) {
+  if (auto parserVisitor = dynamic_cast<miniCgrammarVisitor*>(visitor))
+    return parserVisitor->visitFunctionCallExpr(this);
+  else
+    return visitor->visitChildren(this);
+}
+//----------------- BoolLitExprContext ------------------------------------------------------------------
+
+tree::TerminalNode* miniCgrammarParser::BoolLitExprContext::BoolLiteral() {
+  return getToken(miniCgrammarParser::BoolLiteral, 0);
+}
+
+miniCgrammarParser::BoolLitExprContext::BoolLitExprContext(ExprContext *ctx) { copyFrom(ctx); }
+
+
+antlrcpp::Any miniCgrammarParser::BoolLitExprContext::accept(tree::ParseTreeVisitor *visitor) {
+  if (auto parserVisitor = dynamic_cast<miniCgrammarVisitor*>(visitor))
+    return parserVisitor->visitBoolLitExpr(this);
+  else
+    return visitor->visitChildren(this);
+}
+//----------------- EqualityExprContext ------------------------------------------------------------------
+
+std::vector<miniCgrammarParser::ExprContext *> miniCgrammarParser::EqualityExprContext::expr() {
+  return getRuleContexts<miniCgrammarParser::ExprContext>();
+}
+
+miniCgrammarParser::ExprContext* miniCgrammarParser::EqualityExprContext::expr(size_t i) {
+  return getRuleContext<miniCgrammarParser::ExprContext>(i);
+}
+
+tree::TerminalNode* miniCgrammarParser::EqualityExprContext::Equal() {
+  return getToken(miniCgrammarParser::Equal, 0);
+}
+
+tree::TerminalNode* miniCgrammarParser::EqualityExprContext::NotEqual() {
+  return getToken(miniCgrammarParser::NotEqual, 0);
+}
+
+miniCgrammarParser::EqualityExprContext::EqualityExprContext(ExprContext *ctx) { copyFrom(ctx); }
+
+
+antlrcpp::Any miniCgrammarParser::EqualityExprContext::accept(tree::ParseTreeVisitor *visitor) {
+  if (auto parserVisitor = dynamic_cast<miniCgrammarVisitor*>(visitor))
+    return parserVisitor->visitEqualityExpr(this);
+  else
+    return visitor->visitChildren(this);
+}
 
 miniCgrammarParser::ExprContext* miniCgrammarParser::expr() {
    return expr(0);
@@ -1336,104 +1941,134 @@ miniCgrammarParser::ExprContext* miniCgrammarParser::expr(int precedence) {
   try {
     size_t alt;
     enterOuterAlt(_localctx, 1);
-    setState(168);
+    setState(175);
     _errHandler->sync(this);
-    switch (getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 10, _ctx)) {
+    switch (getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 12, _ctx)) {
     case 1: {
-      setState(154);
+      _localctx = _tracker.createInstance<BoolLitExprContext>(_localctx);
+      _ctx = _localctx;
+      previousContext = _localctx;
+
+      setState(161);
       match(miniCgrammarParser::BoolLiteral);
       break;
     }
 
     case 2: {
-      setState(155);
+      _localctx = _tracker.createInstance<IntLitExprContext>(_localctx);
+      _ctx = _localctx;
+      previousContext = _localctx;
+      setState(162);
       match(miniCgrammarParser::IntegerLiteral);
       break;
     }
 
     case 3: {
-      setState(156);
+      _localctx = _tracker.createInstance<StringLitExprContext>(_localctx);
+      _ctx = _localctx;
+      previousContext = _localctx;
+      setState(163);
       match(miniCgrammarParser::StringLiteral);
       break;
     }
 
     case 4: {
-      setState(157);
+      _localctx = _tracker.createInstance<CharLitExprContext>(_localctx);
+      _ctx = _localctx;
+      previousContext = _localctx;
+      setState(164);
       match(miniCgrammarParser::CharLiteral);
       break;
     }
 
     case 5: {
-      setState(158);
+      _localctx = _tracker.createInstance<ParenthesesExprContext>(_localctx);
+      _ctx = _localctx;
+      previousContext = _localctx;
+      setState(165);
       match(miniCgrammarParser::LeftParen);
-      setState(159);
+      setState(166);
       expr(0);
-      setState(160);
+      setState(167);
       match(miniCgrammarParser::RightParen);
       break;
     }
 
     case 6: {
-      setState(162);
+      _localctx = _tracker.createInstance<LocationExprContext>(_localctx);
+      _ctx = _localctx;
+      previousContext = _localctx;
+      setState(169);
       location();
       break;
     }
 
     case 7: {
-      setState(163);
+      _localctx = _tracker.createInstance<FunctionCallExprContext>(_localctx);
+      _ctx = _localctx;
+      previousContext = _localctx;
+      setState(170);
       functionCall();
       break;
     }
 
     case 8: {
-      setState(164);
+      _localctx = _tracker.createInstance<NegateExprContext>(_localctx);
+      _ctx = _localctx;
+      previousContext = _localctx;
+      setState(171);
       match(miniCgrammarParser::Minus);
-      setState(165);
+      setState(172);
       expr(10);
       break;
     }
 
     case 9: {
-      setState(166);
+      _localctx = _tracker.createInstance<NotExprContext>(_localctx);
+      _ctx = _localctx;
+      previousContext = _localctx;
+      setState(173);
       match(miniCgrammarParser::Not);
-      setState(167);
+      setState(174);
       expr(9);
       break;
     }
 
     }
     _ctx->stop = _input->LT(-1);
-    setState(199);
+    setState(206);
     _errHandler->sync(this);
-    alt = getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 12, _ctx);
+    alt = getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 14, _ctx);
     while (alt != 2 && alt != atn::ATN::INVALID_ALT_NUMBER) {
       if (alt == 1) {
         if (!_parseListeners.empty())
           triggerExitRuleEvent();
         previousContext = _localctx;
-        setState(197);
+        setState(204);
         _errHandler->sync(this);
-        switch (getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 11, _ctx)) {
+        switch (getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 13, _ctx)) {
         case 1: {
-          _localctx = _tracker.createInstance<ExprContext>(parentContext, parentState);
-          pushNewRecursionContext(_localctx, startState, RuleExpr);
-          setState(170);
+          auto newContext = _tracker.createInstance<ExponentExprContext>(_tracker.createInstance<ExprContext>(parentContext, parentState));
+          _localctx = newContext;
+          pushNewRecursionContext(newContext, startState, RuleExpr);
+          setState(177);
 
           if (!(precpred(_ctx, 8))) throw FailedPredicateException(this, "precpred(_ctx, 8)");
-          setState(171);
+          setState(178);
           match(miniCgrammarParser::Caret);
-          setState(172);
+          setState(179);
           expr(8);
           break;
         }
 
         case 2: {
-          _localctx = _tracker.createInstance<ExprContext>(parentContext, parentState);
-          pushNewRecursionContext(_localctx, startState, RuleExpr);
-          setState(173);
+          auto newContext = _tracker.createInstance<MulDivModExprContext>(_tracker.createInstance<ExprContext>(parentContext, parentState));
+          _localctx = newContext;
+          pushNewRecursionContext(newContext, startState, RuleExpr);
+          setState(180);
 
           if (!(precpred(_ctx, 7))) throw FailedPredicateException(this, "precpred(_ctx, 7)");
-          setState(174);
+          setState(181);
           _la = _input->LA(1);
           if (!((((_la & ~ 0x3fULL) == 0) &&
             ((1ULL << _la) & ((1ULL << miniCgrammarParser::Star)
@@ -1445,18 +2080,19 @@ miniCgrammarParser::ExprContext* miniCgrammarParser::expr(int precedence) {
             _errHandler->reportMatch(this);
             consume();
           }
-          setState(175);
+          setState(182);
           expr(8);
           break;
         }
 
         case 3: {
-          _localctx = _tracker.createInstance<ExprContext>(parentContext, parentState);
-          pushNewRecursionContext(_localctx, startState, RuleExpr);
-          setState(176);
+          auto newContext = _tracker.createInstance<AddSubExprContext>(_tracker.createInstance<ExprContext>(parentContext, parentState));
+          _localctx = newContext;
+          pushNewRecursionContext(newContext, startState, RuleExpr);
+          setState(183);
 
           if (!(precpred(_ctx, 6))) throw FailedPredicateException(this, "precpred(_ctx, 6)");
-          setState(177);
+          setState(184);
           _la = _input->LA(1);
           if (!(_la == miniCgrammarParser::Plus
 
@@ -1467,18 +2103,19 @@ miniCgrammarParser::ExprContext* miniCgrammarParser::expr(int precedence) {
             _errHandler->reportMatch(this);
             consume();
           }
-          setState(178);
+          setState(185);
           expr(7);
           break;
         }
 
         case 4: {
-          _localctx = _tracker.createInstance<ExprContext>(parentContext, parentState);
-          pushNewRecursionContext(_localctx, startState, RuleExpr);
-          setState(179);
+          auto newContext = _tracker.createInstance<RelopExprContext>(_tracker.createInstance<ExprContext>(parentContext, parentState));
+          _localctx = newContext;
+          pushNewRecursionContext(newContext, startState, RuleExpr);
+          setState(186);
 
           if (!(precpred(_ctx, 5))) throw FailedPredicateException(this, "precpred(_ctx, 5)");
-          setState(180);
+          setState(187);
           _la = _input->LA(1);
           if (!((((_la & ~ 0x3fULL) == 0) &&
             ((1ULL << _la) & ((1ULL << miniCgrammarParser::Less)
@@ -1491,18 +2128,19 @@ miniCgrammarParser::ExprContext* miniCgrammarParser::expr(int precedence) {
             _errHandler->reportMatch(this);
             consume();
           }
-          setState(181);
+          setState(188);
           expr(6);
           break;
         }
 
         case 5: {
-          _localctx = _tracker.createInstance<ExprContext>(parentContext, parentState);
-          pushNewRecursionContext(_localctx, startState, RuleExpr);
-          setState(182);
+          auto newContext = _tracker.createInstance<EqualityExprContext>(_tracker.createInstance<ExprContext>(parentContext, parentState));
+          _localctx = newContext;
+          pushNewRecursionContext(newContext, startState, RuleExpr);
+          setState(189);
 
           if (!(precpred(_ctx, 4))) throw FailedPredicateException(this, "precpred(_ctx, 4)");
-          setState(183);
+          setState(190);
           _la = _input->LA(1);
           if (!(_la == miniCgrammarParser::Equal
 
@@ -1513,59 +2151,62 @@ miniCgrammarParser::ExprContext* miniCgrammarParser::expr(int precedence) {
             _errHandler->reportMatch(this);
             consume();
           }
-          setState(184);
+          setState(191);
           expr(5);
           break;
         }
 
         case 6: {
-          _localctx = _tracker.createInstance<ExprContext>(parentContext, parentState);
-          pushNewRecursionContext(_localctx, startState, RuleExpr);
-          setState(185);
+          auto newContext = _tracker.createInstance<LogicalANDExprContext>(_tracker.createInstance<ExprContext>(parentContext, parentState));
+          _localctx = newContext;
+          pushNewRecursionContext(newContext, startState, RuleExpr);
+          setState(192);
 
           if (!(precpred(_ctx, 3))) throw FailedPredicateException(this, "precpred(_ctx, 3)");
-          setState(186);
+          setState(193);
           match(miniCgrammarParser::And);
-          setState(187);
+          setState(194);
           expr(4);
           break;
         }
 
         case 7: {
-          _localctx = _tracker.createInstance<ExprContext>(parentContext, parentState);
-          pushNewRecursionContext(_localctx, startState, RuleExpr);
-          setState(188);
+          auto newContext = _tracker.createInstance<LogicalORExprContext>(_tracker.createInstance<ExprContext>(parentContext, parentState));
+          _localctx = newContext;
+          pushNewRecursionContext(newContext, startState, RuleExpr);
+          setState(195);
 
           if (!(precpred(_ctx, 2))) throw FailedPredicateException(this, "precpred(_ctx, 2)");
-          setState(189);
+          setState(196);
           match(miniCgrammarParser::Or);
-          setState(190);
+          setState(197);
           expr(3);
           break;
         }
 
         case 8: {
-          _localctx = _tracker.createInstance<ExprContext>(parentContext, parentState);
-          pushNewRecursionContext(_localctx, startState, RuleExpr);
-          setState(191);
+          auto newContext = _tracker.createInstance<TernaryExprContext>(_tracker.createInstance<ExprContext>(parentContext, parentState));
+          _localctx = newContext;
+          pushNewRecursionContext(newContext, startState, RuleExpr);
+          setState(198);
 
           if (!(precpred(_ctx, 1))) throw FailedPredicateException(this, "precpred(_ctx, 1)");
-          setState(192);
+          setState(199);
           match(miniCgrammarParser::Question);
-          setState(193);
+          setState(200);
           expr(0);
-          setState(194);
+          setState(201);
           match(miniCgrammarParser::Colon);
-          setState(195);
+          setState(202);
           expr(2);
           break;
         }
 
         } 
       }
-      setState(201);
+      setState(208);
       _errHandler->sync(this);
-      alt = getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 12, _ctx);
+      alt = getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 14, _ctx);
     }
   }
   catch (RecognitionException &e) {
@@ -1582,111 +2223,291 @@ miniCgrammarParser::ArrayExprContext::ArrayExprContext(ParserRuleContext *parent
   : ParserRuleContext(parent, invokingState) {
 }
 
-tree::TerminalNode* miniCgrammarParser::ArrayExprContext::IntegerLiteral() {
-  return getToken(miniCgrammarParser::IntegerLiteral, 0);
-}
-
-tree::TerminalNode* miniCgrammarParser::ArrayExprContext::LeftParen() {
-  return getToken(miniCgrammarParser::LeftParen, 0);
-}
-
-std::vector<miniCgrammarParser::ArrayExprContext *> miniCgrammarParser::ArrayExprContext::arrayExpr() {
-  return getRuleContexts<miniCgrammarParser::ArrayExprContext>();
-}
-
-miniCgrammarParser::ArrayExprContext* miniCgrammarParser::ArrayExprContext::arrayExpr(size_t i) {
-  return getRuleContext<miniCgrammarParser::ArrayExprContext>(i);
-}
-
-tree::TerminalNode* miniCgrammarParser::ArrayExprContext::RightParen() {
-  return getToken(miniCgrammarParser::RightParen, 0);
-}
-
-miniCgrammarParser::LocationContext* miniCgrammarParser::ArrayExprContext::location() {
-  return getRuleContext<miniCgrammarParser::LocationContext>(0);
-}
-
-miniCgrammarParser::FunctionCallContext* miniCgrammarParser::ArrayExprContext::functionCall() {
-  return getRuleContext<miniCgrammarParser::FunctionCallContext>(0);
-}
-
-tree::TerminalNode* miniCgrammarParser::ArrayExprContext::Not() {
-  return getToken(miniCgrammarParser::Not, 0);
-}
-
-tree::TerminalNode* miniCgrammarParser::ArrayExprContext::Caret() {
-  return getToken(miniCgrammarParser::Caret, 0);
-}
-
-tree::TerminalNode* miniCgrammarParser::ArrayExprContext::Star() {
-  return getToken(miniCgrammarParser::Star, 0);
-}
-
-tree::TerminalNode* miniCgrammarParser::ArrayExprContext::Div() {
-  return getToken(miniCgrammarParser::Div, 0);
-}
-
-tree::TerminalNode* miniCgrammarParser::ArrayExprContext::Mod() {
-  return getToken(miniCgrammarParser::Mod, 0);
-}
-
-tree::TerminalNode* miniCgrammarParser::ArrayExprContext::Plus() {
-  return getToken(miniCgrammarParser::Plus, 0);
-}
-
-tree::TerminalNode* miniCgrammarParser::ArrayExprContext::Minus() {
-  return getToken(miniCgrammarParser::Minus, 0);
-}
-
-tree::TerminalNode* miniCgrammarParser::ArrayExprContext::Less() {
-  return getToken(miniCgrammarParser::Less, 0);
-}
-
-tree::TerminalNode* miniCgrammarParser::ArrayExprContext::Greater() {
-  return getToken(miniCgrammarParser::Greater, 0);
-}
-
-tree::TerminalNode* miniCgrammarParser::ArrayExprContext::LessEqual() {
-  return getToken(miniCgrammarParser::LessEqual, 0);
-}
-
-tree::TerminalNode* miniCgrammarParser::ArrayExprContext::GreaterEqual() {
-  return getToken(miniCgrammarParser::GreaterEqual, 0);
-}
-
-tree::TerminalNode* miniCgrammarParser::ArrayExprContext::Equal() {
-  return getToken(miniCgrammarParser::Equal, 0);
-}
-
-tree::TerminalNode* miniCgrammarParser::ArrayExprContext::NotEqual() {
-  return getToken(miniCgrammarParser::NotEqual, 0);
-}
-
-tree::TerminalNode* miniCgrammarParser::ArrayExprContext::And() {
-  return getToken(miniCgrammarParser::And, 0);
-}
-
-tree::TerminalNode* miniCgrammarParser::ArrayExprContext::Or() {
-  return getToken(miniCgrammarParser::Or, 0);
-}
-
 
 size_t miniCgrammarParser::ArrayExprContext::getRuleIndex() const {
   return miniCgrammarParser::RuleArrayExpr;
 }
 
-void miniCgrammarParser::ArrayExprContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<miniCgrammarListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterArrayExpr(this);
+void miniCgrammarParser::ArrayExprContext::copyFrom(ArrayExprContext *ctx) {
+  ParserRuleContext::copyFrom(ctx);
 }
 
-void miniCgrammarParser::ArrayExprContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<miniCgrammarListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitArrayExpr(this);
+//----------------- LogicalANDArrayExprContext ------------------------------------------------------------------
+
+std::vector<miniCgrammarParser::ArrayExprContext *> miniCgrammarParser::LogicalANDArrayExprContext::arrayExpr() {
+  return getRuleContexts<miniCgrammarParser::ArrayExprContext>();
 }
 
+miniCgrammarParser::ArrayExprContext* miniCgrammarParser::LogicalANDArrayExprContext::arrayExpr(size_t i) {
+  return getRuleContext<miniCgrammarParser::ArrayExprContext>(i);
+}
+
+tree::TerminalNode* miniCgrammarParser::LogicalANDArrayExprContext::And() {
+  return getToken(miniCgrammarParser::And, 0);
+}
+
+miniCgrammarParser::LogicalANDArrayExprContext::LogicalANDArrayExprContext(ArrayExprContext *ctx) { copyFrom(ctx); }
+
+
+antlrcpp::Any miniCgrammarParser::LogicalANDArrayExprContext::accept(tree::ParseTreeVisitor *visitor) {
+  if (auto parserVisitor = dynamic_cast<miniCgrammarVisitor*>(visitor))
+    return parserVisitor->visitLogicalANDArrayExpr(this);
+  else
+    return visitor->visitChildren(this);
+}
+//----------------- AddSubArrayExprContext ------------------------------------------------------------------
+
+std::vector<miniCgrammarParser::ArrayExprContext *> miniCgrammarParser::AddSubArrayExprContext::arrayExpr() {
+  return getRuleContexts<miniCgrammarParser::ArrayExprContext>();
+}
+
+miniCgrammarParser::ArrayExprContext* miniCgrammarParser::AddSubArrayExprContext::arrayExpr(size_t i) {
+  return getRuleContext<miniCgrammarParser::ArrayExprContext>(i);
+}
+
+tree::TerminalNode* miniCgrammarParser::AddSubArrayExprContext::Plus() {
+  return getToken(miniCgrammarParser::Plus, 0);
+}
+
+tree::TerminalNode* miniCgrammarParser::AddSubArrayExprContext::Minus() {
+  return getToken(miniCgrammarParser::Minus, 0);
+}
+
+miniCgrammarParser::AddSubArrayExprContext::AddSubArrayExprContext(ArrayExprContext *ctx) { copyFrom(ctx); }
+
+
+antlrcpp::Any miniCgrammarParser::AddSubArrayExprContext::accept(tree::ParseTreeVisitor *visitor) {
+  if (auto parserVisitor = dynamic_cast<miniCgrammarVisitor*>(visitor))
+    return parserVisitor->visitAddSubArrayExpr(this);
+  else
+    return visitor->visitChildren(this);
+}
+//----------------- LocationArrayExprContext ------------------------------------------------------------------
+
+miniCgrammarParser::LocationContext* miniCgrammarParser::LocationArrayExprContext::location() {
+  return getRuleContext<miniCgrammarParser::LocationContext>(0);
+}
+
+miniCgrammarParser::LocationArrayExprContext::LocationArrayExprContext(ArrayExprContext *ctx) { copyFrom(ctx); }
+
+
+antlrcpp::Any miniCgrammarParser::LocationArrayExprContext::accept(tree::ParseTreeVisitor *visitor) {
+  if (auto parserVisitor = dynamic_cast<miniCgrammarVisitor*>(visitor))
+    return parserVisitor->visitLocationArrayExpr(this);
+  else
+    return visitor->visitChildren(this);
+}
+//----------------- EqualityArrayExprContext ------------------------------------------------------------------
+
+std::vector<miniCgrammarParser::ArrayExprContext *> miniCgrammarParser::EqualityArrayExprContext::arrayExpr() {
+  return getRuleContexts<miniCgrammarParser::ArrayExprContext>();
+}
+
+miniCgrammarParser::ArrayExprContext* miniCgrammarParser::EqualityArrayExprContext::arrayExpr(size_t i) {
+  return getRuleContext<miniCgrammarParser::ArrayExprContext>(i);
+}
+
+tree::TerminalNode* miniCgrammarParser::EqualityArrayExprContext::Equal() {
+  return getToken(miniCgrammarParser::Equal, 0);
+}
+
+tree::TerminalNode* miniCgrammarParser::EqualityArrayExprContext::NotEqual() {
+  return getToken(miniCgrammarParser::NotEqual, 0);
+}
+
+miniCgrammarParser::EqualityArrayExprContext::EqualityArrayExprContext(ArrayExprContext *ctx) { copyFrom(ctx); }
+
+
+antlrcpp::Any miniCgrammarParser::EqualityArrayExprContext::accept(tree::ParseTreeVisitor *visitor) {
+  if (auto parserVisitor = dynamic_cast<miniCgrammarVisitor*>(visitor))
+    return parserVisitor->visitEqualityArrayExpr(this);
+  else
+    return visitor->visitChildren(this);
+}
+//----------------- ExponentArrayExprContext ------------------------------------------------------------------
+
+std::vector<miniCgrammarParser::ArrayExprContext *> miniCgrammarParser::ExponentArrayExprContext::arrayExpr() {
+  return getRuleContexts<miniCgrammarParser::ArrayExprContext>();
+}
+
+miniCgrammarParser::ArrayExprContext* miniCgrammarParser::ExponentArrayExprContext::arrayExpr(size_t i) {
+  return getRuleContext<miniCgrammarParser::ArrayExprContext>(i);
+}
+
+tree::TerminalNode* miniCgrammarParser::ExponentArrayExprContext::Caret() {
+  return getToken(miniCgrammarParser::Caret, 0);
+}
+
+miniCgrammarParser::ExponentArrayExprContext::ExponentArrayExprContext(ArrayExprContext *ctx) { copyFrom(ctx); }
+
+
+antlrcpp::Any miniCgrammarParser::ExponentArrayExprContext::accept(tree::ParseTreeVisitor *visitor) {
+  if (auto parserVisitor = dynamic_cast<miniCgrammarVisitor*>(visitor))
+    return parserVisitor->visitExponentArrayExpr(this);
+  else
+    return visitor->visitChildren(this);
+}
+//----------------- LogicalORArrayExprContext ------------------------------------------------------------------
+
+std::vector<miniCgrammarParser::ArrayExprContext *> miniCgrammarParser::LogicalORArrayExprContext::arrayExpr() {
+  return getRuleContexts<miniCgrammarParser::ArrayExprContext>();
+}
+
+miniCgrammarParser::ArrayExprContext* miniCgrammarParser::LogicalORArrayExprContext::arrayExpr(size_t i) {
+  return getRuleContext<miniCgrammarParser::ArrayExprContext>(i);
+}
+
+tree::TerminalNode* miniCgrammarParser::LogicalORArrayExprContext::Or() {
+  return getToken(miniCgrammarParser::Or, 0);
+}
+
+miniCgrammarParser::LogicalORArrayExprContext::LogicalORArrayExprContext(ArrayExprContext *ctx) { copyFrom(ctx); }
+
+
+antlrcpp::Any miniCgrammarParser::LogicalORArrayExprContext::accept(tree::ParseTreeVisitor *visitor) {
+  if (auto parserVisitor = dynamic_cast<miniCgrammarVisitor*>(visitor))
+    return parserVisitor->visitLogicalORArrayExpr(this);
+  else
+    return visitor->visitChildren(this);
+}
+//----------------- NotArrayExprContext ------------------------------------------------------------------
+
+tree::TerminalNode* miniCgrammarParser::NotArrayExprContext::Not() {
+  return getToken(miniCgrammarParser::Not, 0);
+}
+
+miniCgrammarParser::ArrayExprContext* miniCgrammarParser::NotArrayExprContext::arrayExpr() {
+  return getRuleContext<miniCgrammarParser::ArrayExprContext>(0);
+}
+
+miniCgrammarParser::NotArrayExprContext::NotArrayExprContext(ArrayExprContext *ctx) { copyFrom(ctx); }
+
+
+antlrcpp::Any miniCgrammarParser::NotArrayExprContext::accept(tree::ParseTreeVisitor *visitor) {
+  if (auto parserVisitor = dynamic_cast<miniCgrammarVisitor*>(visitor))
+    return parserVisitor->visitNotArrayExpr(this);
+  else
+    return visitor->visitChildren(this);
+}
+//----------------- MulDivModArrayExprContext ------------------------------------------------------------------
+
+std::vector<miniCgrammarParser::ArrayExprContext *> miniCgrammarParser::MulDivModArrayExprContext::arrayExpr() {
+  return getRuleContexts<miniCgrammarParser::ArrayExprContext>();
+}
+
+miniCgrammarParser::ArrayExprContext* miniCgrammarParser::MulDivModArrayExprContext::arrayExpr(size_t i) {
+  return getRuleContext<miniCgrammarParser::ArrayExprContext>(i);
+}
+
+tree::TerminalNode* miniCgrammarParser::MulDivModArrayExprContext::Star() {
+  return getToken(miniCgrammarParser::Star, 0);
+}
+
+tree::TerminalNode* miniCgrammarParser::MulDivModArrayExprContext::Div() {
+  return getToken(miniCgrammarParser::Div, 0);
+}
+
+tree::TerminalNode* miniCgrammarParser::MulDivModArrayExprContext::Mod() {
+  return getToken(miniCgrammarParser::Mod, 0);
+}
+
+miniCgrammarParser::MulDivModArrayExprContext::MulDivModArrayExprContext(ArrayExprContext *ctx) { copyFrom(ctx); }
+
+
+antlrcpp::Any miniCgrammarParser::MulDivModArrayExprContext::accept(tree::ParseTreeVisitor *visitor) {
+  if (auto parserVisitor = dynamic_cast<miniCgrammarVisitor*>(visitor))
+    return parserVisitor->visitMulDivModArrayExpr(this);
+  else
+    return visitor->visitChildren(this);
+}
+//----------------- ParenthesesArrayExprContext ------------------------------------------------------------------
+
+tree::TerminalNode* miniCgrammarParser::ParenthesesArrayExprContext::LeftParen() {
+  return getToken(miniCgrammarParser::LeftParen, 0);
+}
+
+miniCgrammarParser::ArrayExprContext* miniCgrammarParser::ParenthesesArrayExprContext::arrayExpr() {
+  return getRuleContext<miniCgrammarParser::ArrayExprContext>(0);
+}
+
+tree::TerminalNode* miniCgrammarParser::ParenthesesArrayExprContext::RightParen() {
+  return getToken(miniCgrammarParser::RightParen, 0);
+}
+
+miniCgrammarParser::ParenthesesArrayExprContext::ParenthesesArrayExprContext(ArrayExprContext *ctx) { copyFrom(ctx); }
+
+
+antlrcpp::Any miniCgrammarParser::ParenthesesArrayExprContext::accept(tree::ParseTreeVisitor *visitor) {
+  if (auto parserVisitor = dynamic_cast<miniCgrammarVisitor*>(visitor))
+    return parserVisitor->visitParenthesesArrayExpr(this);
+  else
+    return visitor->visitChildren(this);
+}
+//----------------- FunctionCallArrayExprContext ------------------------------------------------------------------
+
+miniCgrammarParser::FunctionCallContext* miniCgrammarParser::FunctionCallArrayExprContext::functionCall() {
+  return getRuleContext<miniCgrammarParser::FunctionCallContext>(0);
+}
+
+miniCgrammarParser::FunctionCallArrayExprContext::FunctionCallArrayExprContext(ArrayExprContext *ctx) { copyFrom(ctx); }
+
+
+antlrcpp::Any miniCgrammarParser::FunctionCallArrayExprContext::accept(tree::ParseTreeVisitor *visitor) {
+  if (auto parserVisitor = dynamic_cast<miniCgrammarVisitor*>(visitor))
+    return parserVisitor->visitFunctionCallArrayExpr(this);
+  else
+    return visitor->visitChildren(this);
+}
+//----------------- RelopArrayExprContext ------------------------------------------------------------------
+
+std::vector<miniCgrammarParser::ArrayExprContext *> miniCgrammarParser::RelopArrayExprContext::arrayExpr() {
+  return getRuleContexts<miniCgrammarParser::ArrayExprContext>();
+}
+
+miniCgrammarParser::ArrayExprContext* miniCgrammarParser::RelopArrayExprContext::arrayExpr(size_t i) {
+  return getRuleContext<miniCgrammarParser::ArrayExprContext>(i);
+}
+
+tree::TerminalNode* miniCgrammarParser::RelopArrayExprContext::Less() {
+  return getToken(miniCgrammarParser::Less, 0);
+}
+
+tree::TerminalNode* miniCgrammarParser::RelopArrayExprContext::Greater() {
+  return getToken(miniCgrammarParser::Greater, 0);
+}
+
+tree::TerminalNode* miniCgrammarParser::RelopArrayExprContext::LessEqual() {
+  return getToken(miniCgrammarParser::LessEqual, 0);
+}
+
+tree::TerminalNode* miniCgrammarParser::RelopArrayExprContext::GreaterEqual() {
+  return getToken(miniCgrammarParser::GreaterEqual, 0);
+}
+
+miniCgrammarParser::RelopArrayExprContext::RelopArrayExprContext(ArrayExprContext *ctx) { copyFrom(ctx); }
+
+
+antlrcpp::Any miniCgrammarParser::RelopArrayExprContext::accept(tree::ParseTreeVisitor *visitor) {
+  if (auto parserVisitor = dynamic_cast<miniCgrammarVisitor*>(visitor))
+    return parserVisitor->visitRelopArrayExpr(this);
+  else
+    return visitor->visitChildren(this);
+}
+//----------------- IntLitArrayExprContext ------------------------------------------------------------------
+
+tree::TerminalNode* miniCgrammarParser::IntLitArrayExprContext::IntegerLiteral() {
+  return getToken(miniCgrammarParser::IntegerLiteral, 0);
+}
+
+miniCgrammarParser::IntLitArrayExprContext::IntLitArrayExprContext(ArrayExprContext *ctx) { copyFrom(ctx); }
+
+
+antlrcpp::Any miniCgrammarParser::IntLitArrayExprContext::accept(tree::ParseTreeVisitor *visitor) {
+  if (auto parserVisitor = dynamic_cast<miniCgrammarVisitor*>(visitor))
+    return parserVisitor->visitIntLitArrayExpr(this);
+  else
+    return visitor->visitChildren(this);
+}
 
 miniCgrammarParser::ArrayExprContext* miniCgrammarParser::arrayExpr() {
    return arrayExpr(0);
@@ -1709,78 +2530,96 @@ miniCgrammarParser::ArrayExprContext* miniCgrammarParser::arrayExpr(int preceden
   try {
     size_t alt;
     enterOuterAlt(_localctx, 1);
-    setState(212);
+    setState(219);
     _errHandler->sync(this);
-    switch (getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 13, _ctx)) {
+    switch (getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 15, _ctx)) {
     case 1: {
-      setState(203);
+      _localctx = _tracker.createInstance<IntLitArrayExprContext>(_localctx);
+      _ctx = _localctx;
+      previousContext = _localctx;
+
+      setState(210);
       match(miniCgrammarParser::IntegerLiteral);
       break;
     }
 
     case 2: {
-      setState(204);
+      _localctx = _tracker.createInstance<ParenthesesArrayExprContext>(_localctx);
+      _ctx = _localctx;
+      previousContext = _localctx;
+      setState(211);
       match(miniCgrammarParser::LeftParen);
-      setState(205);
+      setState(212);
       arrayExpr(0);
-      setState(206);
+      setState(213);
       match(miniCgrammarParser::RightParen);
       break;
     }
 
     case 3: {
-      setState(208);
+      _localctx = _tracker.createInstance<LocationArrayExprContext>(_localctx);
+      _ctx = _localctx;
+      previousContext = _localctx;
+      setState(215);
       location();
       break;
     }
 
     case 4: {
-      setState(209);
+      _localctx = _tracker.createInstance<FunctionCallArrayExprContext>(_localctx);
+      _ctx = _localctx;
+      previousContext = _localctx;
+      setState(216);
       functionCall();
       break;
     }
 
     case 5: {
-      setState(210);
+      _localctx = _tracker.createInstance<NotArrayExprContext>(_localctx);
+      _ctx = _localctx;
+      previousContext = _localctx;
+      setState(217);
       match(miniCgrammarParser::Not);
-      setState(211);
+      setState(218);
       arrayExpr(8);
       break;
     }
 
     }
     _ctx->stop = _input->LT(-1);
-    setState(237);
+    setState(244);
     _errHandler->sync(this);
-    alt = getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 15, _ctx);
+    alt = getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 17, _ctx);
     while (alt != 2 && alt != atn::ATN::INVALID_ALT_NUMBER) {
       if (alt == 1) {
         if (!_parseListeners.empty())
           triggerExitRuleEvent();
         previousContext = _localctx;
-        setState(235);
+        setState(242);
         _errHandler->sync(this);
-        switch (getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 14, _ctx)) {
+        switch (getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 16, _ctx)) {
         case 1: {
-          _localctx = _tracker.createInstance<ArrayExprContext>(parentContext, parentState);
-          pushNewRecursionContext(_localctx, startState, RuleArrayExpr);
-          setState(214);
+          auto newContext = _tracker.createInstance<ExponentArrayExprContext>(_tracker.createInstance<ArrayExprContext>(parentContext, parentState));
+          _localctx = newContext;
+          pushNewRecursionContext(newContext, startState, RuleArrayExpr);
+          setState(221);
 
           if (!(precpred(_ctx, 7))) throw FailedPredicateException(this, "precpred(_ctx, 7)");
-          setState(215);
+          setState(222);
           match(miniCgrammarParser::Caret);
-          setState(216);
+          setState(223);
           arrayExpr(7);
           break;
         }
 
         case 2: {
-          _localctx = _tracker.createInstance<ArrayExprContext>(parentContext, parentState);
-          pushNewRecursionContext(_localctx, startState, RuleArrayExpr);
-          setState(217);
+          auto newContext = _tracker.createInstance<MulDivModArrayExprContext>(_tracker.createInstance<ArrayExprContext>(parentContext, parentState));
+          _localctx = newContext;
+          pushNewRecursionContext(newContext, startState, RuleArrayExpr);
+          setState(224);
 
           if (!(precpred(_ctx, 6))) throw FailedPredicateException(this, "precpred(_ctx, 6)");
-          setState(218);
+          setState(225);
           _la = _input->LA(1);
           if (!((((_la & ~ 0x3fULL) == 0) &&
             ((1ULL << _la) & ((1ULL << miniCgrammarParser::Star)
@@ -1792,18 +2631,19 @@ miniCgrammarParser::ArrayExprContext* miniCgrammarParser::arrayExpr(int preceden
             _errHandler->reportMatch(this);
             consume();
           }
-          setState(219);
+          setState(226);
           arrayExpr(7);
           break;
         }
 
         case 3: {
-          _localctx = _tracker.createInstance<ArrayExprContext>(parentContext, parentState);
-          pushNewRecursionContext(_localctx, startState, RuleArrayExpr);
-          setState(220);
+          auto newContext = _tracker.createInstance<AddSubArrayExprContext>(_tracker.createInstance<ArrayExprContext>(parentContext, parentState));
+          _localctx = newContext;
+          pushNewRecursionContext(newContext, startState, RuleArrayExpr);
+          setState(227);
 
           if (!(precpred(_ctx, 5))) throw FailedPredicateException(this, "precpred(_ctx, 5)");
-          setState(221);
+          setState(228);
           _la = _input->LA(1);
           if (!(_la == miniCgrammarParser::Plus
 
@@ -1814,18 +2654,19 @@ miniCgrammarParser::ArrayExprContext* miniCgrammarParser::arrayExpr(int preceden
             _errHandler->reportMatch(this);
             consume();
           }
-          setState(222);
+          setState(229);
           arrayExpr(6);
           break;
         }
 
         case 4: {
-          _localctx = _tracker.createInstance<ArrayExprContext>(parentContext, parentState);
-          pushNewRecursionContext(_localctx, startState, RuleArrayExpr);
-          setState(223);
+          auto newContext = _tracker.createInstance<RelopArrayExprContext>(_tracker.createInstance<ArrayExprContext>(parentContext, parentState));
+          _localctx = newContext;
+          pushNewRecursionContext(newContext, startState, RuleArrayExpr);
+          setState(230);
 
           if (!(precpred(_ctx, 4))) throw FailedPredicateException(this, "precpred(_ctx, 4)");
-          setState(224);
+          setState(231);
           _la = _input->LA(1);
           if (!((((_la & ~ 0x3fULL) == 0) &&
             ((1ULL << _la) & ((1ULL << miniCgrammarParser::Less)
@@ -1838,18 +2679,19 @@ miniCgrammarParser::ArrayExprContext* miniCgrammarParser::arrayExpr(int preceden
             _errHandler->reportMatch(this);
             consume();
           }
-          setState(225);
+          setState(232);
           arrayExpr(5);
           break;
         }
 
         case 5: {
-          _localctx = _tracker.createInstance<ArrayExprContext>(parentContext, parentState);
-          pushNewRecursionContext(_localctx, startState, RuleArrayExpr);
-          setState(226);
+          auto newContext = _tracker.createInstance<EqualityArrayExprContext>(_tracker.createInstance<ArrayExprContext>(parentContext, parentState));
+          _localctx = newContext;
+          pushNewRecursionContext(newContext, startState, RuleArrayExpr);
+          setState(233);
 
           if (!(precpred(_ctx, 3))) throw FailedPredicateException(this, "precpred(_ctx, 3)");
-          setState(227);
+          setState(234);
           _la = _input->LA(1);
           if (!(_la == miniCgrammarParser::Equal
 
@@ -1860,42 +2702,44 @@ miniCgrammarParser::ArrayExprContext* miniCgrammarParser::arrayExpr(int preceden
             _errHandler->reportMatch(this);
             consume();
           }
-          setState(228);
+          setState(235);
           arrayExpr(4);
           break;
         }
 
         case 6: {
-          _localctx = _tracker.createInstance<ArrayExprContext>(parentContext, parentState);
-          pushNewRecursionContext(_localctx, startState, RuleArrayExpr);
-          setState(229);
+          auto newContext = _tracker.createInstance<LogicalANDArrayExprContext>(_tracker.createInstance<ArrayExprContext>(parentContext, parentState));
+          _localctx = newContext;
+          pushNewRecursionContext(newContext, startState, RuleArrayExpr);
+          setState(236);
 
           if (!(precpred(_ctx, 2))) throw FailedPredicateException(this, "precpred(_ctx, 2)");
-          setState(230);
+          setState(237);
           match(miniCgrammarParser::And);
-          setState(231);
+          setState(238);
           arrayExpr(3);
           break;
         }
 
         case 7: {
-          _localctx = _tracker.createInstance<ArrayExprContext>(parentContext, parentState);
-          pushNewRecursionContext(_localctx, startState, RuleArrayExpr);
-          setState(232);
+          auto newContext = _tracker.createInstance<LogicalORArrayExprContext>(_tracker.createInstance<ArrayExprContext>(parentContext, parentState));
+          _localctx = newContext;
+          pushNewRecursionContext(newContext, startState, RuleArrayExpr);
+          setState(239);
 
           if (!(precpred(_ctx, 1))) throw FailedPredicateException(this, "precpred(_ctx, 1)");
-          setState(233);
+          setState(240);
           match(miniCgrammarParser::Or);
-          setState(234);
+          setState(241);
           arrayExpr(2);
           break;
         }
 
         } 
       }
-      setState(239);
+      setState(246);
       _errHandler->sync(this);
-      alt = getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 15, _ctx);
+      alt = getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 17, _ctx);
     }
   }
   catch (RecognitionException &e) {
@@ -1912,51 +2756,73 @@ miniCgrammarParser::FunctionCallContext::FunctionCallContext(ParserRuleContext *
   : ParserRuleContext(parent, invokingState) {
 }
 
-tree::TerminalNode* miniCgrammarParser::FunctionCallContext::Id() {
-  return getToken(miniCgrammarParser::Id, 0);
-}
-
-tree::TerminalNode* miniCgrammarParser::FunctionCallContext::LeftParen() {
-  return getToken(miniCgrammarParser::LeftParen, 0);
-}
-
-tree::TerminalNode* miniCgrammarParser::FunctionCallContext::RightParen() {
-  return getToken(miniCgrammarParser::RightParen, 0);
-}
-
-miniCgrammarParser::ArgsListContext* miniCgrammarParser::FunctionCallContext::argsList() {
-  return getRuleContext<miniCgrammarParser::ArgsListContext>(0);
-}
-
-tree::TerminalNode* miniCgrammarParser::FunctionCallContext::Callout() {
-  return getToken(miniCgrammarParser::Callout, 0);
-}
-
-tree::TerminalNode* miniCgrammarParser::FunctionCallContext::StringLiteral() {
-  return getToken(miniCgrammarParser::StringLiteral, 0);
-}
-
-miniCgrammarParser::CalloutArgsContext* miniCgrammarParser::FunctionCallContext::calloutArgs() {
-  return getRuleContext<miniCgrammarParser::CalloutArgsContext>(0);
-}
-
 
 size_t miniCgrammarParser::FunctionCallContext::getRuleIndex() const {
   return miniCgrammarParser::RuleFunctionCall;
 }
 
-void miniCgrammarParser::FunctionCallContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<miniCgrammarListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterFunctionCall(this);
+void miniCgrammarParser::FunctionCallContext::copyFrom(FunctionCallContext *ctx) {
+  ParserRuleContext::copyFrom(ctx);
 }
 
-void miniCgrammarParser::FunctionCallContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<miniCgrammarListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitFunctionCall(this);
+//----------------- LibFnCallContext ------------------------------------------------------------------
+
+tree::TerminalNode* miniCgrammarParser::LibFnCallContext::Callout() {
+  return getToken(miniCgrammarParser::Callout, 0);
 }
 
+tree::TerminalNode* miniCgrammarParser::LibFnCallContext::LeftParen() {
+  return getToken(miniCgrammarParser::LeftParen, 0);
+}
+
+tree::TerminalNode* miniCgrammarParser::LibFnCallContext::StringLiteral() {
+  return getToken(miniCgrammarParser::StringLiteral, 0);
+}
+
+tree::TerminalNode* miniCgrammarParser::LibFnCallContext::RightParen() {
+  return getToken(miniCgrammarParser::RightParen, 0);
+}
+
+miniCgrammarParser::CalloutArgsContext* miniCgrammarParser::LibFnCallContext::calloutArgs() {
+  return getRuleContext<miniCgrammarParser::CalloutArgsContext>(0);
+}
+
+miniCgrammarParser::LibFnCallContext::LibFnCallContext(FunctionCallContext *ctx) { copyFrom(ctx); }
+
+
+antlrcpp::Any miniCgrammarParser::LibFnCallContext::accept(tree::ParseTreeVisitor *visitor) {
+  if (auto parserVisitor = dynamic_cast<miniCgrammarVisitor*>(visitor))
+    return parserVisitor->visitLibFnCall(this);
+  else
+    return visitor->visitChildren(this);
+}
+//----------------- UserDefFnCallContext ------------------------------------------------------------------
+
+tree::TerminalNode* miniCgrammarParser::UserDefFnCallContext::Id() {
+  return getToken(miniCgrammarParser::Id, 0);
+}
+
+tree::TerminalNode* miniCgrammarParser::UserDefFnCallContext::LeftParen() {
+  return getToken(miniCgrammarParser::LeftParen, 0);
+}
+
+tree::TerminalNode* miniCgrammarParser::UserDefFnCallContext::RightParen() {
+  return getToken(miniCgrammarParser::RightParen, 0);
+}
+
+miniCgrammarParser::ArgsListContext* miniCgrammarParser::UserDefFnCallContext::argsList() {
+  return getRuleContext<miniCgrammarParser::ArgsListContext>(0);
+}
+
+miniCgrammarParser::UserDefFnCallContext::UserDefFnCallContext(FunctionCallContext *ctx) { copyFrom(ctx); }
+
+
+antlrcpp::Any miniCgrammarParser::UserDefFnCallContext::accept(tree::ParseTreeVisitor *visitor) {
+  if (auto parserVisitor = dynamic_cast<miniCgrammarVisitor*>(visitor))
+    return parserVisitor->visitUserDefFnCall(this);
+  else
+    return visitor->visitChildren(this);
+}
 miniCgrammarParser::FunctionCallContext* miniCgrammarParser::functionCall() {
   FunctionCallContext *_localctx = _tracker.createInstance<FunctionCallContext>(_ctx, getState());
   enterRule(_localctx, 30, miniCgrammarParser::RuleFunctionCall);
@@ -1966,16 +2832,17 @@ miniCgrammarParser::FunctionCallContext* miniCgrammarParser::functionCall() {
     exitRule();
   });
   try {
-    setState(253);
+    setState(260);
     _errHandler->sync(this);
     switch (_input->LA(1)) {
       case miniCgrammarParser::Id: {
+        _localctx = dynamic_cast<FunctionCallContext *>(_tracker.createInstance<miniCgrammarParser::UserDefFnCallContext>(_localctx));
         enterOuterAlt(_localctx, 1);
-        setState(240);
+        setState(247);
         match(miniCgrammarParser::Id);
-        setState(241);
+        setState(248);
         match(miniCgrammarParser::LeftParen);
-        setState(243);
+        setState(250);
         _errHandler->sync(this);
 
         _la = _input->LA(1);
@@ -1989,31 +2856,32 @@ miniCgrammarParser::FunctionCallContext* miniCgrammarParser::functionCall() {
           | (1ULL << miniCgrammarParser::BoolLiteral)
           | (1ULL << miniCgrammarParser::IntegerLiteral)
           | (1ULL << miniCgrammarParser::Id))) != 0)) {
-          setState(242);
+          setState(249);
           argsList();
         }
-        setState(245);
+        setState(252);
         match(miniCgrammarParser::RightParen);
         break;
       }
 
       case miniCgrammarParser::Callout: {
+        _localctx = dynamic_cast<FunctionCallContext *>(_tracker.createInstance<miniCgrammarParser::LibFnCallContext>(_localctx));
         enterOuterAlt(_localctx, 2);
-        setState(246);
+        setState(253);
         match(miniCgrammarParser::Callout);
-        setState(247);
+        setState(254);
         match(miniCgrammarParser::LeftParen);
-        setState(248);
+        setState(255);
         match(miniCgrammarParser::StringLiteral);
-        setState(250);
+        setState(257);
         _errHandler->sync(this);
 
         _la = _input->LA(1);
         if (_la == miniCgrammarParser::Comma) {
-          setState(249);
+          setState(256);
           calloutArgs();
         }
-        setState(252);
+        setState(259);
         match(miniCgrammarParser::RightParen);
         break;
       }
@@ -2059,16 +2927,12 @@ size_t miniCgrammarParser::ArgsListContext::getRuleIndex() const {
   return miniCgrammarParser::RuleArgsList;
 }
 
-void miniCgrammarParser::ArgsListContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<miniCgrammarListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterArgsList(this);
-}
 
-void miniCgrammarParser::ArgsListContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<miniCgrammarListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitArgsList(this);
+antlrcpp::Any miniCgrammarParser::ArgsListContext::accept(tree::ParseTreeVisitor *visitor) {
+  if (auto parserVisitor = dynamic_cast<miniCgrammarVisitor*>(visitor))
+    return parserVisitor->visitArgsList(this);
+  else
+    return visitor->visitChildren(this);
 }
 
 miniCgrammarParser::ArgsListContext* miniCgrammarParser::argsList() {
@@ -2081,18 +2945,18 @@ miniCgrammarParser::ArgsListContext* miniCgrammarParser::argsList() {
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(255);
+    setState(262);
     expr(0);
 
-    setState(260);
+    setState(267);
     _errHandler->sync(this);
     _la = _input->LA(1);
     while (_la == miniCgrammarParser::Comma) {
-      setState(256);
+      setState(263);
       match(miniCgrammarParser::Comma);
-      setState(257);
+      setState(264);
       expr(0);
-      setState(262);
+      setState(269);
       _errHandler->sync(this);
       _la = _input->LA(1);
     }
@@ -2134,16 +2998,12 @@ size_t miniCgrammarParser::CalloutArgsContext::getRuleIndex() const {
   return miniCgrammarParser::RuleCalloutArgs;
 }
 
-void miniCgrammarParser::CalloutArgsContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<miniCgrammarListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterCalloutArgs(this);
-}
 
-void miniCgrammarParser::CalloutArgsContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<miniCgrammarListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitCalloutArgs(this);
+antlrcpp::Any miniCgrammarParser::CalloutArgsContext::accept(tree::ParseTreeVisitor *visitor) {
+  if (auto parserVisitor = dynamic_cast<miniCgrammarVisitor*>(visitor))
+    return parserVisitor->visitCalloutArgs(this);
+  else
+    return visitor->visitChildren(this);
 }
 
 miniCgrammarParser::CalloutArgsContext* miniCgrammarParser::calloutArgs() {
@@ -2156,15 +3016,15 @@ miniCgrammarParser::CalloutArgsContext* miniCgrammarParser::calloutArgs() {
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(265); 
+    setState(272); 
     _errHandler->sync(this);
     _la = _input->LA(1);
     do {
-      setState(263);
+      setState(270);
       match(miniCgrammarParser::Comma);
-      setState(264);
+      setState(271);
       expr(0);
-      setState(267); 
+      setState(274); 
       _errHandler->sync(this);
       _la = _input->LA(1);
     } while (_la == miniCgrammarParser::Comma);
@@ -2185,67 +3045,109 @@ miniCgrammarParser::ConditionalStmtContext::ConditionalStmtContext(ParserRuleCon
   : ParserRuleContext(parent, invokingState) {
 }
 
-tree::TerminalNode* miniCgrammarParser::ConditionalStmtContext::If() {
-  return getToken(miniCgrammarParser::If, 0);
-}
-
-tree::TerminalNode* miniCgrammarParser::ConditionalStmtContext::LeftParen() {
-  return getToken(miniCgrammarParser::LeftParen, 0);
-}
-
-miniCgrammarParser::ExprContext* miniCgrammarParser::ConditionalStmtContext::expr() {
-  return getRuleContext<miniCgrammarParser::ExprContext>(0);
-}
-
-tree::TerminalNode* miniCgrammarParser::ConditionalStmtContext::RightParen() {
-  return getToken(miniCgrammarParser::RightParen, 0);
-}
-
-std::vector<tree::TerminalNode *> miniCgrammarParser::ConditionalStmtContext::LeftBrace() {
-  return getTokens(miniCgrammarParser::LeftBrace);
-}
-
-tree::TerminalNode* miniCgrammarParser::ConditionalStmtContext::LeftBrace(size_t i) {
-  return getToken(miniCgrammarParser::LeftBrace, i);
-}
-
-std::vector<tree::TerminalNode *> miniCgrammarParser::ConditionalStmtContext::RightBrace() {
-  return getTokens(miniCgrammarParser::RightBrace);
-}
-
-tree::TerminalNode* miniCgrammarParser::ConditionalStmtContext::RightBrace(size_t i) {
-  return getToken(miniCgrammarParser::RightBrace, i);
-}
-
-std::vector<miniCgrammarParser::StatementListContext *> miniCgrammarParser::ConditionalStmtContext::statementList() {
-  return getRuleContexts<miniCgrammarParser::StatementListContext>();
-}
-
-miniCgrammarParser::StatementListContext* miniCgrammarParser::ConditionalStmtContext::statementList(size_t i) {
-  return getRuleContext<miniCgrammarParser::StatementListContext>(i);
-}
-
-tree::TerminalNode* miniCgrammarParser::ConditionalStmtContext::Else() {
-  return getToken(miniCgrammarParser::Else, 0);
-}
-
 
 size_t miniCgrammarParser::ConditionalStmtContext::getRuleIndex() const {
   return miniCgrammarParser::RuleConditionalStmt;
 }
 
-void miniCgrammarParser::ConditionalStmtContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<miniCgrammarListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterConditionalStmt(this);
+void miniCgrammarParser::ConditionalStmtContext::copyFrom(ConditionalStmtContext *ctx) {
+  ParserRuleContext::copyFrom(ctx);
 }
 
-void miniCgrammarParser::ConditionalStmtContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<miniCgrammarListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitConditionalStmt(this);
+//----------------- IfStmtContext ------------------------------------------------------------------
+
+tree::TerminalNode* miniCgrammarParser::IfStmtContext::If() {
+  return getToken(miniCgrammarParser::If, 0);
 }
 
+tree::TerminalNode* miniCgrammarParser::IfStmtContext::LeftParen() {
+  return getToken(miniCgrammarParser::LeftParen, 0);
+}
+
+miniCgrammarParser::ExprContext* miniCgrammarParser::IfStmtContext::expr() {
+  return getRuleContext<miniCgrammarParser::ExprContext>(0);
+}
+
+tree::TerminalNode* miniCgrammarParser::IfStmtContext::RightParen() {
+  return getToken(miniCgrammarParser::RightParen, 0);
+}
+
+tree::TerminalNode* miniCgrammarParser::IfStmtContext::LeftBrace() {
+  return getToken(miniCgrammarParser::LeftBrace, 0);
+}
+
+tree::TerminalNode* miniCgrammarParser::IfStmtContext::RightBrace() {
+  return getToken(miniCgrammarParser::RightBrace, 0);
+}
+
+miniCgrammarParser::StatementListContext* miniCgrammarParser::IfStmtContext::statementList() {
+  return getRuleContext<miniCgrammarParser::StatementListContext>(0);
+}
+
+miniCgrammarParser::IfStmtContext::IfStmtContext(ConditionalStmtContext *ctx) { copyFrom(ctx); }
+
+
+antlrcpp::Any miniCgrammarParser::IfStmtContext::accept(tree::ParseTreeVisitor *visitor) {
+  if (auto parserVisitor = dynamic_cast<miniCgrammarVisitor*>(visitor))
+    return parserVisitor->visitIfStmt(this);
+  else
+    return visitor->visitChildren(this);
+}
+//----------------- IfElseStmtContext ------------------------------------------------------------------
+
+tree::TerminalNode* miniCgrammarParser::IfElseStmtContext::If() {
+  return getToken(miniCgrammarParser::If, 0);
+}
+
+tree::TerminalNode* miniCgrammarParser::IfElseStmtContext::LeftParen() {
+  return getToken(miniCgrammarParser::LeftParen, 0);
+}
+
+miniCgrammarParser::ExprContext* miniCgrammarParser::IfElseStmtContext::expr() {
+  return getRuleContext<miniCgrammarParser::ExprContext>(0);
+}
+
+tree::TerminalNode* miniCgrammarParser::IfElseStmtContext::RightParen() {
+  return getToken(miniCgrammarParser::RightParen, 0);
+}
+
+std::vector<tree::TerminalNode *> miniCgrammarParser::IfElseStmtContext::LeftBrace() {
+  return getTokens(miniCgrammarParser::LeftBrace);
+}
+
+tree::TerminalNode* miniCgrammarParser::IfElseStmtContext::LeftBrace(size_t i) {
+  return getToken(miniCgrammarParser::LeftBrace, i);
+}
+
+std::vector<tree::TerminalNode *> miniCgrammarParser::IfElseStmtContext::RightBrace() {
+  return getTokens(miniCgrammarParser::RightBrace);
+}
+
+tree::TerminalNode* miniCgrammarParser::IfElseStmtContext::RightBrace(size_t i) {
+  return getToken(miniCgrammarParser::RightBrace, i);
+}
+
+tree::TerminalNode* miniCgrammarParser::IfElseStmtContext::Else() {
+  return getToken(miniCgrammarParser::Else, 0);
+}
+
+std::vector<miniCgrammarParser::StatementListContext *> miniCgrammarParser::IfElseStmtContext::statementList() {
+  return getRuleContexts<miniCgrammarParser::StatementListContext>();
+}
+
+miniCgrammarParser::StatementListContext* miniCgrammarParser::IfElseStmtContext::statementList(size_t i) {
+  return getRuleContext<miniCgrammarParser::StatementListContext>(i);
+}
+
+miniCgrammarParser::IfElseStmtContext::IfElseStmtContext(ConditionalStmtContext *ctx) { copyFrom(ctx); }
+
+
+antlrcpp::Any miniCgrammarParser::IfElseStmtContext::accept(tree::ParseTreeVisitor *visitor) {
+  if (auto parserVisitor = dynamic_cast<miniCgrammarVisitor*>(visitor))
+    return parserVisitor->visitIfElseStmt(this);
+  else
+    return visitor->visitChildren(this);
+}
 miniCgrammarParser::ConditionalStmtContext* miniCgrammarParser::conditionalStmt() {
   ConditionalStmtContext *_localctx = _tracker.createInstance<ConditionalStmtContext>(_ctx, getState());
   enterRule(_localctx, 36, miniCgrammarParser::RuleConditionalStmt);
@@ -2255,22 +3157,23 @@ miniCgrammarParser::ConditionalStmtContext* miniCgrammarParser::conditionalStmt(
     exitRule();
   });
   try {
-    setState(295);
+    setState(302);
     _errHandler->sync(this);
-    switch (getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 24, _ctx)) {
+    switch (getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 26, _ctx)) {
     case 1: {
+      _localctx = dynamic_cast<ConditionalStmtContext *>(_tracker.createInstance<miniCgrammarParser::IfStmtContext>(_localctx));
       enterOuterAlt(_localctx, 1);
-      setState(269);
+      setState(276);
       match(miniCgrammarParser::If);
-      setState(270);
+      setState(277);
       match(miniCgrammarParser::LeftParen);
-      setState(271);
+      setState(278);
       expr(0);
-      setState(272);
+      setState(279);
       match(miniCgrammarParser::RightParen);
-      setState(273);
+      setState(280);
       match(miniCgrammarParser::LeftBrace);
-      setState(275);
+      setState(282);
       _errHandler->sync(this);
 
       _la = _input->LA(1);
@@ -2296,62 +3199,28 @@ miniCgrammarParser::ConditionalStmtContext* miniCgrammarParser::conditionalStmt(
         | (1ULL << miniCgrammarParser::BoolLiteral)
         | (1ULL << miniCgrammarParser::IntegerLiteral)
         | (1ULL << miniCgrammarParser::Id))) != 0)) {
-        setState(274);
+        setState(281);
         statementList();
       }
-      setState(277);
+      setState(284);
       match(miniCgrammarParser::RightBrace);
       break;
     }
 
     case 2: {
+      _localctx = dynamic_cast<ConditionalStmtContext *>(_tracker.createInstance<miniCgrammarParser::IfElseStmtContext>(_localctx));
       enterOuterAlt(_localctx, 2);
-      setState(279);
+      setState(286);
       match(miniCgrammarParser::If);
-      setState(280);
-      match(miniCgrammarParser::LeftParen);
-      setState(281);
-      expr(0);
-      setState(282);
-      match(miniCgrammarParser::RightParen);
-      setState(283);
-      match(miniCgrammarParser::LeftBrace);
-      setState(285);
-      _errHandler->sync(this);
-
-      _la = _input->LA(1);
-      if ((((_la & ~ 0x3fULL) == 0) &&
-        ((1ULL << _la) & ((1ULL << miniCgrammarParser::Bool)
-        | (1ULL << miniCgrammarParser::Break)
-        | (1ULL << miniCgrammarParser::Callout)
-        | (1ULL << miniCgrammarParser::Char)
-        | (1ULL << miniCgrammarParser::Continue)
-        | (1ULL << miniCgrammarParser::For)
-        | (1ULL << miniCgrammarParser::If)
-        | (1ULL << miniCgrammarParser::Int)
-        | (1ULL << miniCgrammarParser::Long)
-        | (1ULL << miniCgrammarParser::Return)
-        | (1ULL << miniCgrammarParser::Uint)
-        | (1ULL << miniCgrammarParser::Ulong)
-        | (1ULL << miniCgrammarParser::While)
-        | (1ULL << miniCgrammarParser::LeftParen)
-        | (1ULL << miniCgrammarParser::Minus)
-        | (1ULL << miniCgrammarParser::Not)
-        | (1ULL << miniCgrammarParser::CharLiteral)
-        | (1ULL << miniCgrammarParser::StringLiteral)
-        | (1ULL << miniCgrammarParser::BoolLiteral)
-        | (1ULL << miniCgrammarParser::IntegerLiteral)
-        | (1ULL << miniCgrammarParser::Id))) != 0)) {
-        setState(284);
-        statementList();
-      }
       setState(287);
-      match(miniCgrammarParser::RightBrace);
+      match(miniCgrammarParser::LeftParen);
       setState(288);
-      match(miniCgrammarParser::Else);
+      expr(0);
       setState(289);
+      match(miniCgrammarParser::RightParen);
+      setState(290);
       match(miniCgrammarParser::LeftBrace);
-      setState(291);
+      setState(292);
       _errHandler->sync(this);
 
       _la = _input->LA(1);
@@ -2377,10 +3246,45 @@ miniCgrammarParser::ConditionalStmtContext* miniCgrammarParser::conditionalStmt(
         | (1ULL << miniCgrammarParser::BoolLiteral)
         | (1ULL << miniCgrammarParser::IntegerLiteral)
         | (1ULL << miniCgrammarParser::Id))) != 0)) {
-        setState(290);
+        setState(291);
         statementList();
       }
-      setState(293);
+      setState(294);
+      match(miniCgrammarParser::RightBrace);
+      setState(295);
+      match(miniCgrammarParser::Else);
+      setState(296);
+      match(miniCgrammarParser::LeftBrace);
+      setState(298);
+      _errHandler->sync(this);
+
+      _la = _input->LA(1);
+      if ((((_la & ~ 0x3fULL) == 0) &&
+        ((1ULL << _la) & ((1ULL << miniCgrammarParser::Bool)
+        | (1ULL << miniCgrammarParser::Break)
+        | (1ULL << miniCgrammarParser::Callout)
+        | (1ULL << miniCgrammarParser::Char)
+        | (1ULL << miniCgrammarParser::Continue)
+        | (1ULL << miniCgrammarParser::For)
+        | (1ULL << miniCgrammarParser::If)
+        | (1ULL << miniCgrammarParser::Int)
+        | (1ULL << miniCgrammarParser::Long)
+        | (1ULL << miniCgrammarParser::Return)
+        | (1ULL << miniCgrammarParser::Uint)
+        | (1ULL << miniCgrammarParser::Ulong)
+        | (1ULL << miniCgrammarParser::While)
+        | (1ULL << miniCgrammarParser::LeftParen)
+        | (1ULL << miniCgrammarParser::Minus)
+        | (1ULL << miniCgrammarParser::Not)
+        | (1ULL << miniCgrammarParser::CharLiteral)
+        | (1ULL << miniCgrammarParser::StringLiteral)
+        | (1ULL << miniCgrammarParser::BoolLiteral)
+        | (1ULL << miniCgrammarParser::IntegerLiteral)
+        | (1ULL << miniCgrammarParser::Id))) != 0)) {
+        setState(297);
+        statementList();
+      }
+      setState(300);
       match(miniCgrammarParser::RightBrace);
       break;
     }
@@ -2403,83 +3307,121 @@ miniCgrammarParser::IterativeStmtContext::IterativeStmtContext(ParserRuleContext
   : ParserRuleContext(parent, invokingState) {
 }
 
-tree::TerminalNode* miniCgrammarParser::IterativeStmtContext::While() {
-  return getToken(miniCgrammarParser::While, 0);
-}
-
-tree::TerminalNode* miniCgrammarParser::IterativeStmtContext::LeftParen() {
-  return getToken(miniCgrammarParser::LeftParen, 0);
-}
-
-std::vector<miniCgrammarParser::ExprContext *> miniCgrammarParser::IterativeStmtContext::expr() {
-  return getRuleContexts<miniCgrammarParser::ExprContext>();
-}
-
-miniCgrammarParser::ExprContext* miniCgrammarParser::IterativeStmtContext::expr(size_t i) {
-  return getRuleContext<miniCgrammarParser::ExprContext>(i);
-}
-
-tree::TerminalNode* miniCgrammarParser::IterativeStmtContext::RightParen() {
-  return getToken(miniCgrammarParser::RightParen, 0);
-}
-
-tree::TerminalNode* miniCgrammarParser::IterativeStmtContext::LeftBrace() {
-  return getToken(miniCgrammarParser::LeftBrace, 0);
-}
-
-tree::TerminalNode* miniCgrammarParser::IterativeStmtContext::RightBrace() {
-  return getToken(miniCgrammarParser::RightBrace, 0);
-}
-
-miniCgrammarParser::StatementListContext* miniCgrammarParser::IterativeStmtContext::statementList() {
-  return getRuleContext<miniCgrammarParser::StatementListContext>(0);
-}
-
-tree::TerminalNode* miniCgrammarParser::IterativeStmtContext::For() {
-  return getToken(miniCgrammarParser::For, 0);
-}
-
-std::vector<miniCgrammarParser::LocationContext *> miniCgrammarParser::IterativeStmtContext::location() {
-  return getRuleContexts<miniCgrammarParser::LocationContext>();
-}
-
-miniCgrammarParser::LocationContext* miniCgrammarParser::IterativeStmtContext::location(size_t i) {
-  return getRuleContext<miniCgrammarParser::LocationContext>(i);
-}
-
-tree::TerminalNode* miniCgrammarParser::IterativeStmtContext::Assign() {
-  return getToken(miniCgrammarParser::Assign, 0);
-}
-
-std::vector<tree::TerminalNode *> miniCgrammarParser::IterativeStmtContext::Semi() {
-  return getTokens(miniCgrammarParser::Semi);
-}
-
-tree::TerminalNode* miniCgrammarParser::IterativeStmtContext::Semi(size_t i) {
-  return getToken(miniCgrammarParser::Semi, i);
-}
-
-miniCgrammarParser::AssignOpContext* miniCgrammarParser::IterativeStmtContext::assignOp() {
-  return getRuleContext<miniCgrammarParser::AssignOpContext>(0);
-}
-
 
 size_t miniCgrammarParser::IterativeStmtContext::getRuleIndex() const {
   return miniCgrammarParser::RuleIterativeStmt;
 }
 
-void miniCgrammarParser::IterativeStmtContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<miniCgrammarListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterIterativeStmt(this);
+void miniCgrammarParser::IterativeStmtContext::copyFrom(IterativeStmtContext *ctx) {
+  ParserRuleContext::copyFrom(ctx);
 }
 
-void miniCgrammarParser::IterativeStmtContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<miniCgrammarListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitIterativeStmt(this);
+//----------------- ForStmtContext ------------------------------------------------------------------
+
+tree::TerminalNode* miniCgrammarParser::ForStmtContext::For() {
+  return getToken(miniCgrammarParser::For, 0);
 }
 
+tree::TerminalNode* miniCgrammarParser::ForStmtContext::LeftParen() {
+  return getToken(miniCgrammarParser::LeftParen, 0);
+}
+
+std::vector<miniCgrammarParser::LocationContext *> miniCgrammarParser::ForStmtContext::location() {
+  return getRuleContexts<miniCgrammarParser::LocationContext>();
+}
+
+miniCgrammarParser::LocationContext* miniCgrammarParser::ForStmtContext::location(size_t i) {
+  return getRuleContext<miniCgrammarParser::LocationContext>(i);
+}
+
+tree::TerminalNode* miniCgrammarParser::ForStmtContext::Assign() {
+  return getToken(miniCgrammarParser::Assign, 0);
+}
+
+std::vector<miniCgrammarParser::ExprContext *> miniCgrammarParser::ForStmtContext::expr() {
+  return getRuleContexts<miniCgrammarParser::ExprContext>();
+}
+
+miniCgrammarParser::ExprContext* miniCgrammarParser::ForStmtContext::expr(size_t i) {
+  return getRuleContext<miniCgrammarParser::ExprContext>(i);
+}
+
+std::vector<tree::TerminalNode *> miniCgrammarParser::ForStmtContext::Semi() {
+  return getTokens(miniCgrammarParser::Semi);
+}
+
+tree::TerminalNode* miniCgrammarParser::ForStmtContext::Semi(size_t i) {
+  return getToken(miniCgrammarParser::Semi, i);
+}
+
+miniCgrammarParser::AssignOpContext* miniCgrammarParser::ForStmtContext::assignOp() {
+  return getRuleContext<miniCgrammarParser::AssignOpContext>(0);
+}
+
+tree::TerminalNode* miniCgrammarParser::ForStmtContext::RightParen() {
+  return getToken(miniCgrammarParser::RightParen, 0);
+}
+
+tree::TerminalNode* miniCgrammarParser::ForStmtContext::LeftBrace() {
+  return getToken(miniCgrammarParser::LeftBrace, 0);
+}
+
+tree::TerminalNode* miniCgrammarParser::ForStmtContext::RightBrace() {
+  return getToken(miniCgrammarParser::RightBrace, 0);
+}
+
+miniCgrammarParser::StatementListContext* miniCgrammarParser::ForStmtContext::statementList() {
+  return getRuleContext<miniCgrammarParser::StatementListContext>(0);
+}
+
+miniCgrammarParser::ForStmtContext::ForStmtContext(IterativeStmtContext *ctx) { copyFrom(ctx); }
+
+
+antlrcpp::Any miniCgrammarParser::ForStmtContext::accept(tree::ParseTreeVisitor *visitor) {
+  if (auto parserVisitor = dynamic_cast<miniCgrammarVisitor*>(visitor))
+    return parserVisitor->visitForStmt(this);
+  else
+    return visitor->visitChildren(this);
+}
+//----------------- WhileStmtContext ------------------------------------------------------------------
+
+tree::TerminalNode* miniCgrammarParser::WhileStmtContext::While() {
+  return getToken(miniCgrammarParser::While, 0);
+}
+
+tree::TerminalNode* miniCgrammarParser::WhileStmtContext::LeftParen() {
+  return getToken(miniCgrammarParser::LeftParen, 0);
+}
+
+miniCgrammarParser::ExprContext* miniCgrammarParser::WhileStmtContext::expr() {
+  return getRuleContext<miniCgrammarParser::ExprContext>(0);
+}
+
+tree::TerminalNode* miniCgrammarParser::WhileStmtContext::RightParen() {
+  return getToken(miniCgrammarParser::RightParen, 0);
+}
+
+tree::TerminalNode* miniCgrammarParser::WhileStmtContext::LeftBrace() {
+  return getToken(miniCgrammarParser::LeftBrace, 0);
+}
+
+tree::TerminalNode* miniCgrammarParser::WhileStmtContext::RightBrace() {
+  return getToken(miniCgrammarParser::RightBrace, 0);
+}
+
+miniCgrammarParser::StatementListContext* miniCgrammarParser::WhileStmtContext::statementList() {
+  return getRuleContext<miniCgrammarParser::StatementListContext>(0);
+}
+
+miniCgrammarParser::WhileStmtContext::WhileStmtContext(IterativeStmtContext *ctx) { copyFrom(ctx); }
+
+
+antlrcpp::Any miniCgrammarParser::WhileStmtContext::accept(tree::ParseTreeVisitor *visitor) {
+  if (auto parserVisitor = dynamic_cast<miniCgrammarVisitor*>(visitor))
+    return parserVisitor->visitWhileStmt(this);
+  else
+    return visitor->visitChildren(this);
+}
 miniCgrammarParser::IterativeStmtContext* miniCgrammarParser::iterativeStmt() {
   IterativeStmtContext *_localctx = _tracker.createInstance<IterativeStmtContext>(_ctx, getState());
   enterRule(_localctx, 38, miniCgrammarParser::RuleIterativeStmt);
@@ -2489,22 +3431,23 @@ miniCgrammarParser::IterativeStmtContext* miniCgrammarParser::iterativeStmt() {
     exitRule();
   });
   try {
-    setState(325);
+    setState(332);
     _errHandler->sync(this);
     switch (_input->LA(1)) {
       case miniCgrammarParser::While: {
+        _localctx = dynamic_cast<IterativeStmtContext *>(_tracker.createInstance<miniCgrammarParser::WhileStmtContext>(_localctx));
         enterOuterAlt(_localctx, 1);
-        setState(297);
+        setState(304);
         match(miniCgrammarParser::While);
-        setState(298);
+        setState(305);
         match(miniCgrammarParser::LeftParen);
-        setState(299);
+        setState(306);
         expr(0);
-        setState(300);
+        setState(307);
         match(miniCgrammarParser::RightParen);
-        setState(301);
+        setState(308);
         match(miniCgrammarParser::LeftBrace);
-        setState(303);
+        setState(310);
         _errHandler->sync(this);
 
         _la = _input->LA(1);
@@ -2530,43 +3473,44 @@ miniCgrammarParser::IterativeStmtContext* miniCgrammarParser::iterativeStmt() {
           | (1ULL << miniCgrammarParser::BoolLiteral)
           | (1ULL << miniCgrammarParser::IntegerLiteral)
           | (1ULL << miniCgrammarParser::Id))) != 0)) {
-          setState(302);
+          setState(309);
           statementList();
         }
-        setState(305);
+        setState(312);
         match(miniCgrammarParser::RightBrace);
         break;
       }
 
       case miniCgrammarParser::For: {
+        _localctx = dynamic_cast<IterativeStmtContext *>(_tracker.createInstance<miniCgrammarParser::ForStmtContext>(_localctx));
         enterOuterAlt(_localctx, 2);
-        setState(307);
-        match(miniCgrammarParser::For);
-        setState(308);
-        match(miniCgrammarParser::LeftParen);
-        setState(309);
-        location();
-        setState(310);
-        match(miniCgrammarParser::Assign);
-        setState(311);
-        expr(0);
-        setState(312);
-        match(miniCgrammarParser::Semi);
-        setState(313);
-        expr(0);
         setState(314);
-        match(miniCgrammarParser::Semi);
+        match(miniCgrammarParser::For);
         setState(315);
-        location();
+        match(miniCgrammarParser::LeftParen);
         setState(316);
-        assignOp();
+        location();
         setState(317);
-        expr(0);
+        match(miniCgrammarParser::Assign);
         setState(318);
-        match(miniCgrammarParser::RightParen);
+        expr(0);
         setState(319);
-        match(miniCgrammarParser::LeftBrace);
+        match(miniCgrammarParser::Semi);
+        setState(320);
+        expr(0);
         setState(321);
+        match(miniCgrammarParser::Semi);
+        setState(322);
+        location();
+        setState(323);
+        assignOp();
+        setState(324);
+        expr(0);
+        setState(325);
+        match(miniCgrammarParser::RightParen);
+        setState(326);
+        match(miniCgrammarParser::LeftBrace);
+        setState(328);
         _errHandler->sync(this);
 
         _la = _input->LA(1);
@@ -2592,10 +3536,10 @@ miniCgrammarParser::IterativeStmtContext* miniCgrammarParser::iterativeStmt() {
           | (1ULL << miniCgrammarParser::BoolLiteral)
           | (1ULL << miniCgrammarParser::IntegerLiteral)
           | (1ULL << miniCgrammarParser::Id))) != 0)) {
-          setState(320);
+          setState(327);
           statementList();
         }
-        setState(323);
+        setState(330);
         match(miniCgrammarParser::RightBrace);
         break;
       }
@@ -2713,236 +3657,243 @@ miniCgrammarParser::Initializer::Initializer() {
 
   _serializedATN = {
     0x3, 0x608b, 0xa72a, 0x8133, 0xb9ed, 0x417c, 0x3be7, 0x7786, 0x5964, 
-    0x3, 0x3a, 0x14a, 0x4, 0x2, 0x9, 0x2, 0x4, 0x3, 0x9, 0x3, 0x4, 0x4, 
+    0x3, 0x3a, 0x151, 0x4, 0x2, 0x9, 0x2, 0x4, 0x3, 0x9, 0x3, 0x4, 0x4, 
     0x9, 0x4, 0x4, 0x5, 0x9, 0x5, 0x4, 0x6, 0x9, 0x6, 0x4, 0x7, 0x9, 0x7, 
     0x4, 0x8, 0x9, 0x8, 0x4, 0x9, 0x9, 0x9, 0x4, 0xa, 0x9, 0xa, 0x4, 0xb, 
     0x9, 0xb, 0x4, 0xc, 0x9, 0xc, 0x4, 0xd, 0x9, 0xd, 0x4, 0xe, 0x9, 0xe, 
     0x4, 0xf, 0x9, 0xf, 0x4, 0x10, 0x9, 0x10, 0x4, 0x11, 0x9, 0x11, 0x4, 
     0x12, 0x9, 0x12, 0x4, 0x13, 0x9, 0x13, 0x4, 0x14, 0x9, 0x14, 0x4, 0x15, 
-    0x9, 0x15, 0x3, 0x2, 0x3, 0x2, 0x3, 0x2, 0x3, 0x3, 0x3, 0x3, 0x3, 0x3, 
-    0x3, 0x3, 0x5, 0x3, 0x32, 0xa, 0x3, 0x3, 0x4, 0x3, 0x4, 0x5, 0x4, 0x36, 
-    0xa, 0x4, 0x3, 0x5, 0x3, 0x5, 0x3, 0x5, 0x3, 0x5, 0x3, 0x6, 0x3, 0x6, 
-    0x3, 0x6, 0x3, 0x6, 0x3, 0x6, 0x5, 0x6, 0x41, 0xa, 0x6, 0x3, 0x7, 0x3, 
-    0x7, 0x3, 0x7, 0x3, 0x7, 0x3, 0x7, 0x3, 0x7, 0x3, 0x7, 0x3, 0x7, 0x3, 
-    0x7, 0x3, 0x7, 0x3, 0x7, 0x3, 0x7, 0x5, 0x7, 0x4f, 0xa, 0x7, 0x3, 0x8, 
-    0x3, 0x8, 0x3, 0x9, 0x3, 0x9, 0x3, 0x9, 0x3, 0x9, 0x5, 0x9, 0x57, 0xa, 
-    0x9, 0x3, 0x9, 0x3, 0x9, 0x3, 0x9, 0x5, 0x9, 0x5c, 0xa, 0x9, 0x3, 0x9, 
-    0x3, 0x9, 0x3, 0x9, 0x3, 0x9, 0x3, 0x9, 0x3, 0xa, 0x3, 0xa, 0x3, 0xa, 
-    0x3, 0xa, 0x3, 0xa, 0x3, 0xa, 0x3, 0xa, 0x7, 0xa, 0x6a, 0xa, 0xa, 0xc, 
-    0xa, 0xe, 0xa, 0x6d, 0xb, 0xa, 0x3, 0xb, 0x3, 0xb, 0x3, 0xb, 0x3, 0xb, 
-    0x5, 0xb, 0x73, 0xa, 0xb, 0x3, 0xc, 0x3, 0xc, 0x3, 0xc, 0x3, 0xc, 0x3, 
-    0xc, 0x3, 0xc, 0x3, 0xc, 0x3, 0xc, 0x3, 0xc, 0x3, 0xc, 0x3, 0xc, 0x3, 
-    0xc, 0x3, 0xc, 0x3, 0xc, 0x3, 0xc, 0x3, 0xc, 0x3, 0xc, 0x3, 0xc, 0x3, 
-    0xc, 0x5, 0xc, 0x88, 0xa, 0xc, 0x3, 0xd, 0x3, 0xd, 0x3, 0xd, 0x3, 0xd, 
-    0x3, 0xd, 0x3, 0xd, 0x3, 0xd, 0x3, 0xd, 0x3, 0xd, 0x3, 0xd, 0x3, 0xd, 
-    0x3, 0xd, 0x3, 0xd, 0x3, 0xd, 0x5, 0xd, 0x98, 0xa, 0xd, 0x3, 0xe, 0x3, 
-    0xe, 0x3, 0xf, 0x3, 0xf, 0x3, 0xf, 0x3, 0xf, 0x3, 0xf, 0x3, 0xf, 0x3, 
+    0x9, 0x15, 0x3, 0x2, 0x3, 0x2, 0x3, 0x2, 0x3, 0x3, 0x6, 0x3, 0x2f, 0xa, 
+    0x3, 0xd, 0x3, 0xe, 0x3, 0x30, 0x3, 0x4, 0x3, 0x4, 0x5, 0x4, 0x35, 0xa, 
+    0x4, 0x3, 0x5, 0x3, 0x5, 0x3, 0x5, 0x3, 0x5, 0x3, 0x6, 0x3, 0x6, 0x3, 
+    0x6, 0x3, 0x6, 0x3, 0x6, 0x5, 0x6, 0x40, 0xa, 0x6, 0x3, 0x7, 0x3, 0x7, 
+    0x3, 0x7, 0x3, 0x7, 0x3, 0x7, 0x3, 0x7, 0x3, 0x7, 0x3, 0x7, 0x3, 0x7, 
+    0x3, 0x7, 0x3, 0x7, 0x3, 0x7, 0x5, 0x7, 0x4e, 0xa, 0x7, 0x3, 0x8, 0x3, 
+    0x8, 0x3, 0x8, 0x3, 0x8, 0x3, 0x8, 0x3, 0x8, 0x5, 0x8, 0x56, 0xa, 0x8, 
+    0x3, 0x9, 0x3, 0x9, 0x3, 0x9, 0x3, 0x9, 0x5, 0x9, 0x5c, 0xa, 0x9, 0x3, 
+    0x9, 0x3, 0x9, 0x3, 0x9, 0x5, 0x9, 0x61, 0xa, 0x9, 0x3, 0x9, 0x3, 0x9, 
+    0x3, 0x9, 0x3, 0x9, 0x3, 0x9, 0x3, 0xa, 0x3, 0xa, 0x3, 0xa, 0x3, 0xa, 
+    0x3, 0xa, 0x3, 0xa, 0x3, 0xa, 0x7, 0xa, 0x6f, 0xa, 0xa, 0xc, 0xa, 0xe, 
+    0xa, 0x72, 0xb, 0xa, 0x3, 0xb, 0x6, 0xb, 0x75, 0xa, 0xb, 0xd, 0xb, 0xe, 
+    0xb, 0x76, 0x3, 0xc, 0x3, 0xc, 0x3, 0xc, 0x3, 0xc, 0x3, 0xc, 0x3, 0xc, 
+    0x3, 0xc, 0x3, 0xc, 0x3, 0xc, 0x3, 0xc, 0x3, 0xc, 0x3, 0xc, 0x3, 0xc, 
+    0x3, 0xc, 0x3, 0xc, 0x3, 0xc, 0x3, 0xc, 0x3, 0xc, 0x3, 0xc, 0x5, 0xc, 
+    0x8c, 0xa, 0xc, 0x3, 0xd, 0x3, 0xd, 0x3, 0xd, 0x3, 0xd, 0x3, 0xd, 0x3, 
+    0xd, 0x3, 0xd, 0x3, 0xd, 0x3, 0xd, 0x3, 0xd, 0x3, 0xd, 0x3, 0xd, 0x3, 
+    0xd, 0x3, 0xd, 0x5, 0xd, 0x9c, 0xa, 0xd, 0x3, 0xe, 0x3, 0xe, 0x3, 0xe, 
+    0x5, 0xe, 0xa1, 0xa, 0xe, 0x3, 0xf, 0x3, 0xf, 0x3, 0xf, 0x3, 0xf, 0x3, 
     0xf, 0x3, 0xf, 0x3, 0xf, 0x3, 0xf, 0x3, 0xf, 0x3, 0xf, 0x3, 0xf, 0x3, 
-    0xf, 0x3, 0xf, 0x5, 0xf, 0xab, 0xa, 0xf, 0x3, 0xf, 0x3, 0xf, 0x3, 0xf, 
+    0xf, 0x3, 0xf, 0x3, 0xf, 0x3, 0xf, 0x5, 0xf, 0xb2, 0xa, 0xf, 0x3, 0xf, 
     0x3, 0xf, 0x3, 0xf, 0x3, 0xf, 0x3, 0xf, 0x3, 0xf, 0x3, 0xf, 0x3, 0xf, 
     0x3, 0xf, 0x3, 0xf, 0x3, 0xf, 0x3, 0xf, 0x3, 0xf, 0x3, 0xf, 0x3, 0xf, 
     0x3, 0xf, 0x3, 0xf, 0x3, 0xf, 0x3, 0xf, 0x3, 0xf, 0x3, 0xf, 0x3, 0xf, 
-    0x3, 0xf, 0x3, 0xf, 0x3, 0xf, 0x7, 0xf, 0xc8, 0xa, 0xf, 0xc, 0xf, 0xe, 
-    0xf, 0xcb, 0xb, 0xf, 0x3, 0x10, 0x3, 0x10, 0x3, 0x10, 0x3, 0x10, 0x3, 
-    0x10, 0x3, 0x10, 0x3, 0x10, 0x3, 0x10, 0x3, 0x10, 0x3, 0x10, 0x5, 0x10, 
-    0xd7, 0xa, 0x10, 0x3, 0x10, 0x3, 0x10, 0x3, 0x10, 0x3, 0x10, 0x3, 0x10, 
+    0x3, 0xf, 0x3, 0xf, 0x3, 0xf, 0x3, 0xf, 0x3, 0xf, 0x7, 0xf, 0xcf, 0xa, 
+    0xf, 0xc, 0xf, 0xe, 0xf, 0xd2, 0xb, 0xf, 0x3, 0x10, 0x3, 0x10, 0x3, 
+    0x10, 0x3, 0x10, 0x3, 0x10, 0x3, 0x10, 0x3, 0x10, 0x3, 0x10, 0x3, 0x10, 
+    0x3, 0x10, 0x5, 0x10, 0xde, 0xa, 0x10, 0x3, 0x10, 0x3, 0x10, 0x3, 0x10, 
     0x3, 0x10, 0x3, 0x10, 0x3, 0x10, 0x3, 0x10, 0x3, 0x10, 0x3, 0x10, 0x3, 
     0x10, 0x3, 0x10, 0x3, 0x10, 0x3, 0x10, 0x3, 0x10, 0x3, 0x10, 0x3, 0x10, 
-    0x3, 0x10, 0x3, 0x10, 0x3, 0x10, 0x7, 0x10, 0xee, 0xa, 0x10, 0xc, 0x10, 
-    0xe, 0x10, 0xf1, 0xb, 0x10, 0x3, 0x11, 0x3, 0x11, 0x3, 0x11, 0x5, 0x11, 
-    0xf6, 0xa, 0x11, 0x3, 0x11, 0x3, 0x11, 0x3, 0x11, 0x3, 0x11, 0x3, 0x11, 
-    0x5, 0x11, 0xfd, 0xa, 0x11, 0x3, 0x11, 0x5, 0x11, 0x100, 0xa, 0x11, 
-    0x3, 0x12, 0x3, 0x12, 0x3, 0x12, 0x7, 0x12, 0x105, 0xa, 0x12, 0xc, 0x12, 
-    0xe, 0x12, 0x108, 0xb, 0x12, 0x3, 0x13, 0x3, 0x13, 0x6, 0x13, 0x10c, 
-    0xa, 0x13, 0xd, 0x13, 0xe, 0x13, 0x10d, 0x3, 0x14, 0x3, 0x14, 0x3, 0x14, 
-    0x3, 0x14, 0x3, 0x14, 0x3, 0x14, 0x5, 0x14, 0x116, 0xa, 0x14, 0x3, 0x14, 
-    0x3, 0x14, 0x3, 0x14, 0x3, 0x14, 0x3, 0x14, 0x3, 0x14, 0x3, 0x14, 0x3, 
-    0x14, 0x5, 0x14, 0x120, 0xa, 0x14, 0x3, 0x14, 0x3, 0x14, 0x3, 0x14, 
-    0x3, 0x14, 0x5, 0x14, 0x126, 0xa, 0x14, 0x3, 0x14, 0x3, 0x14, 0x5, 0x14, 
-    0x12a, 0xa, 0x14, 0x3, 0x15, 0x3, 0x15, 0x3, 0x15, 0x3, 0x15, 0x3, 0x15, 
-    0x3, 0x15, 0x5, 0x15, 0x132, 0xa, 0x15, 0x3, 0x15, 0x3, 0x15, 0x3, 0x15, 
+    0x3, 0x10, 0x3, 0x10, 0x3, 0x10, 0x3, 0x10, 0x3, 0x10, 0x7, 0x10, 0xf5, 
+    0xa, 0x10, 0xc, 0x10, 0xe, 0x10, 0xf8, 0xb, 0x10, 0x3, 0x11, 0x3, 0x11, 
+    0x3, 0x11, 0x5, 0x11, 0xfd, 0xa, 0x11, 0x3, 0x11, 0x3, 0x11, 0x3, 0x11, 
+    0x3, 0x11, 0x3, 0x11, 0x5, 0x11, 0x104, 0xa, 0x11, 0x3, 0x11, 0x5, 0x11, 
+    0x107, 0xa, 0x11, 0x3, 0x12, 0x3, 0x12, 0x3, 0x12, 0x7, 0x12, 0x10c, 
+    0xa, 0x12, 0xc, 0x12, 0xe, 0x12, 0x10f, 0xb, 0x12, 0x3, 0x13, 0x3, 0x13, 
+    0x6, 0x13, 0x113, 0xa, 0x13, 0xd, 0x13, 0xe, 0x13, 0x114, 0x3, 0x14, 
+    0x3, 0x14, 0x3, 0x14, 0x3, 0x14, 0x3, 0x14, 0x3, 0x14, 0x5, 0x14, 0x11d, 
+    0xa, 0x14, 0x3, 0x14, 0x3, 0x14, 0x3, 0x14, 0x3, 0x14, 0x3, 0x14, 0x3, 
+    0x14, 0x3, 0x14, 0x3, 0x14, 0x5, 0x14, 0x127, 0xa, 0x14, 0x3, 0x14, 
+    0x3, 0x14, 0x3, 0x14, 0x3, 0x14, 0x5, 0x14, 0x12d, 0xa, 0x14, 0x3, 0x14, 
+    0x3, 0x14, 0x5, 0x14, 0x131, 0xa, 0x14, 0x3, 0x15, 0x3, 0x15, 0x3, 0x15, 
+    0x3, 0x15, 0x3, 0x15, 0x3, 0x15, 0x5, 0x15, 0x139, 0xa, 0x15, 0x3, 0x15, 
     0x3, 0x15, 0x3, 0x15, 0x3, 0x15, 0x3, 0x15, 0x3, 0x15, 0x3, 0x15, 0x3, 
     0x15, 0x3, 0x15, 0x3, 0x15, 0x3, 0x15, 0x3, 0x15, 0x3, 0x15, 0x3, 0x15, 
-    0x5, 0x15, 0x144, 0xa, 0x15, 0x3, 0x15, 0x3, 0x15, 0x5, 0x15, 0x148, 
-    0xa, 0x15, 0x3, 0x15, 0x2, 0x4, 0x1c, 0x1e, 0x16, 0x2, 0x4, 0x6, 0x8, 
-    0xa, 0xc, 0xe, 0x10, 0x12, 0x14, 0x16, 0x18, 0x1a, 0x1c, 0x1e, 0x20, 
-    0x22, 0x24, 0x26, 0x28, 0x2, 0x8, 0x6, 0x2, 0x3, 0x3, 0x6, 0x6, 0xd, 
-    0xe, 0x11, 0x12, 0x3, 0x2, 0x2d, 0x2f, 0x3, 0x2, 0x20, 0x22, 0x3, 0x2, 
-    0x1e, 0x1f, 0x3, 0x2, 0x1a, 0x1d, 0x3, 0x2, 0x30, 0x31, 0x2, 0x16e, 
-    0x2, 0x2a, 0x3, 0x2, 0x2, 0x2, 0x4, 0x31, 0x3, 0x2, 0x2, 0x2, 0x6, 0x35, 
-    0x3, 0x2, 0x2, 0x2, 0x8, 0x37, 0x3, 0x2, 0x2, 0x2, 0xa, 0x40, 0x3, 0x2, 
-    0x2, 0x2, 0xc, 0x4e, 0x3, 0x2, 0x2, 0x2, 0xe, 0x50, 0x3, 0x2, 0x2, 0x2, 
-    0x10, 0x52, 0x3, 0x2, 0x2, 0x2, 0x12, 0x62, 0x3, 0x2, 0x2, 0x2, 0x14, 
-    0x72, 0x3, 0x2, 0x2, 0x2, 0x16, 0x87, 0x3, 0x2, 0x2, 0x2, 0x18, 0x97, 
-    0x3, 0x2, 0x2, 0x2, 0x1a, 0x99, 0x3, 0x2, 0x2, 0x2, 0x1c, 0xaa, 0x3, 
-    0x2, 0x2, 0x2, 0x1e, 0xd6, 0x3, 0x2, 0x2, 0x2, 0x20, 0xff, 0x3, 0x2, 
-    0x2, 0x2, 0x22, 0x101, 0x3, 0x2, 0x2, 0x2, 0x24, 0x10b, 0x3, 0x2, 0x2, 
-    0x2, 0x26, 0x129, 0x3, 0x2, 0x2, 0x2, 0x28, 0x147, 0x3, 0x2, 0x2, 0x2, 
-    0x2a, 0x2b, 0x5, 0x4, 0x3, 0x2, 0x2b, 0x2c, 0x7, 0x2, 0x2, 0x3, 0x2c, 
-    0x3, 0x3, 0x2, 0x2, 0x2, 0x2d, 0x2e, 0x5, 0x6, 0x4, 0x2, 0x2e, 0x2f, 
-    0x5, 0x4, 0x3, 0x2, 0x2f, 0x32, 0x3, 0x2, 0x2, 0x2, 0x30, 0x32, 0x5, 
-    0x6, 0x4, 0x2, 0x31, 0x2d, 0x3, 0x2, 0x2, 0x2, 0x31, 0x30, 0x3, 0x2, 
-    0x2, 0x2, 0x32, 0x5, 0x3, 0x2, 0x2, 0x2, 0x33, 0x36, 0x5, 0x8, 0x5, 
-    0x2, 0x34, 0x36, 0x5, 0x10, 0x9, 0x2, 0x35, 0x33, 0x3, 0x2, 0x2, 0x2, 
-    0x35, 0x34, 0x3, 0x2, 0x2, 0x2, 0x36, 0x7, 0x3, 0x2, 0x2, 0x2, 0x37, 
-    0x38, 0x5, 0xe, 0x8, 0x2, 0x38, 0x39, 0x5, 0xa, 0x6, 0x2, 0x39, 0x3a, 
-    0x7, 0x29, 0x2, 0x2, 0x3a, 0x9, 0x3, 0x2, 0x2, 0x2, 0x3b, 0x3c, 0x5, 
-    0xc, 0x7, 0x2, 0x3c, 0x3d, 0x7, 0x2a, 0x2, 0x2, 0x3d, 0x3e, 0x5, 0xa, 
-    0x6, 0x2, 0x3e, 0x41, 0x3, 0x2, 0x2, 0x2, 0x3f, 0x41, 0x5, 0xc, 0x7, 
-    0x2, 0x40, 0x3b, 0x3, 0x2, 0x2, 0x2, 0x40, 0x3f, 0x3, 0x2, 0x2, 0x2, 
-    0x41, 0xb, 0x3, 0x2, 0x2, 0x2, 0x42, 0x43, 0x7, 0x36, 0x2, 0x2, 0x43, 
-    0x44, 0x7, 0x16, 0x2, 0x2, 0x44, 0x45, 0x7, 0x35, 0x2, 0x2, 0x45, 0x46, 
-    0x7, 0x17, 0x2, 0x2, 0x46, 0x47, 0x7, 0x16, 0x2, 0x2, 0x47, 0x48, 0x7, 
-    0x35, 0x2, 0x2, 0x48, 0x4f, 0x7, 0x17, 0x2, 0x2, 0x49, 0x4a, 0x7, 0x36, 
-    0x2, 0x2, 0x4a, 0x4b, 0x7, 0x16, 0x2, 0x2, 0x4b, 0x4c, 0x7, 0x35, 0x2, 
-    0x2, 0x4c, 0x4f, 0x7, 0x17, 0x2, 0x2, 0x4d, 0x4f, 0x7, 0x36, 0x2, 0x2, 
-    0x4e, 0x42, 0x3, 0x2, 0x2, 0x2, 0x4e, 0x49, 0x3, 0x2, 0x2, 0x2, 0x4e, 
-    0x4d, 0x3, 0x2, 0x2, 0x2, 0x4f, 0xd, 0x3, 0x2, 0x2, 0x2, 0x50, 0x51, 
-    0x9, 0x2, 0x2, 0x2, 0x51, 0xf, 0x3, 0x2, 0x2, 0x2, 0x52, 0x53, 0x5, 
-    0xe, 0x8, 0x2, 0x53, 0x54, 0x7, 0x36, 0x2, 0x2, 0x54, 0x56, 0x7, 0x14, 
-    0x2, 0x2, 0x55, 0x57, 0x5, 0x12, 0xa, 0x2, 0x56, 0x55, 0x3, 0x2, 0x2, 
-    0x2, 0x56, 0x57, 0x3, 0x2, 0x2, 0x2, 0x57, 0x58, 0x3, 0x2, 0x2, 0x2, 
-    0x58, 0x59, 0x7, 0x15, 0x2, 0x2, 0x59, 0x5b, 0x7, 0x18, 0x2, 0x2, 0x5a, 
-    0x5c, 0x5, 0x14, 0xb, 0x2, 0x5b, 0x5a, 0x3, 0x2, 0x2, 0x2, 0x5b, 0x5c, 
-    0x3, 0x2, 0x2, 0x2, 0x5c, 0x5d, 0x3, 0x2, 0x2, 0x2, 0x5d, 0x5e, 0x7, 
-    0xf, 0x2, 0x2, 0x5e, 0x5f, 0x5, 0x1c, 0xf, 0x2, 0x5f, 0x60, 0x7, 0x29, 
-    0x2, 0x2, 0x60, 0x61, 0x7, 0x19, 0x2, 0x2, 0x61, 0x11, 0x3, 0x2, 0x2, 
-    0x2, 0x62, 0x63, 0x5, 0xe, 0x8, 0x2, 0x63, 0x64, 0x7, 0x36, 0x2, 0x2, 
-    0x64, 0x6b, 0x3, 0x2, 0x2, 0x2, 0x65, 0x66, 0x7, 0x2a, 0x2, 0x2, 0x66, 
-    0x67, 0x5, 0xe, 0x8, 0x2, 0x67, 0x68, 0x7, 0x36, 0x2, 0x2, 0x68, 0x6a, 
-    0x3, 0x2, 0x2, 0x2, 0x69, 0x65, 0x3, 0x2, 0x2, 0x2, 0x6a, 0x6d, 0x3, 
-    0x2, 0x2, 0x2, 0x6b, 0x69, 0x3, 0x2, 0x2, 0x2, 0x6b, 0x6c, 0x3, 0x2, 
-    0x2, 0x2, 0x6c, 0x13, 0x3, 0x2, 0x2, 0x2, 0x6d, 0x6b, 0x3, 0x2, 0x2, 
-    0x2, 0x6e, 0x6f, 0x5, 0x16, 0xc, 0x2, 0x6f, 0x70, 0x5, 0x14, 0xb, 0x2, 
-    0x70, 0x73, 0x3, 0x2, 0x2, 0x2, 0x71, 0x73, 0x5, 0x16, 0xc, 0x2, 0x72, 
-    0x6e, 0x3, 0x2, 0x2, 0x2, 0x72, 0x71, 0x3, 0x2, 0x2, 0x2, 0x73, 0x15, 
-    0x3, 0x2, 0x2, 0x2, 0x74, 0x88, 0x5, 0x8, 0x5, 0x2, 0x75, 0x76, 0x5, 
-    0x18, 0xd, 0x2, 0x76, 0x77, 0x5, 0x1a, 0xe, 0x2, 0x77, 0x78, 0x5, 0x1c, 
-    0xf, 0x2, 0x78, 0x79, 0x7, 0x29, 0x2, 0x2, 0x79, 0x88, 0x3, 0x2, 0x2, 
-    0x2, 0x7a, 0x7b, 0x5, 0x1c, 0xf, 0x2, 0x7b, 0x7c, 0x7, 0x29, 0x2, 0x2, 
-    0x7c, 0x88, 0x3, 0x2, 0x2, 0x2, 0x7d, 0x88, 0x5, 0x26, 0x14, 0x2, 0x7e, 
-    0x88, 0x5, 0x28, 0x15, 0x2, 0x7f, 0x80, 0x7, 0xf, 0x2, 0x2, 0x80, 0x81, 
-    0x5, 0x1c, 0xf, 0x2, 0x81, 0x82, 0x7, 0x29, 0x2, 0x2, 0x82, 0x88, 0x3, 
-    0x2, 0x2, 0x2, 0x83, 0x84, 0x7, 0x4, 0x2, 0x2, 0x84, 0x88, 0x7, 0x29, 
-    0x2, 0x2, 0x85, 0x86, 0x7, 0x7, 0x2, 0x2, 0x86, 0x88, 0x7, 0x29, 0x2, 
-    0x2, 0x87, 0x74, 0x3, 0x2, 0x2, 0x2, 0x87, 0x75, 0x3, 0x2, 0x2, 0x2, 
-    0x87, 0x7a, 0x3, 0x2, 0x2, 0x2, 0x87, 0x7d, 0x3, 0x2, 0x2, 0x2, 0x87, 
-    0x7e, 0x3, 0x2, 0x2, 0x2, 0x87, 0x7f, 0x3, 0x2, 0x2, 0x2, 0x87, 0x83, 
-    0x3, 0x2, 0x2, 0x2, 0x87, 0x85, 0x3, 0x2, 0x2, 0x2, 0x88, 0x17, 0x3, 
-    0x2, 0x2, 0x2, 0x89, 0x98, 0x7, 0x36, 0x2, 0x2, 0x8a, 0x8b, 0x7, 0x36, 
-    0x2, 0x2, 0x8b, 0x8c, 0x7, 0x16, 0x2, 0x2, 0x8c, 0x8d, 0x5, 0x1e, 0x10, 
-    0x2, 0x8d, 0x8e, 0x7, 0x17, 0x2, 0x2, 0x8e, 0x98, 0x3, 0x2, 0x2, 0x2, 
-    0x8f, 0x90, 0x7, 0x36, 0x2, 0x2, 0x90, 0x91, 0x7, 0x16, 0x2, 0x2, 0x91, 
-    0x92, 0x5, 0x1e, 0x10, 0x2, 0x92, 0x93, 0x7, 0x17, 0x2, 0x2, 0x93, 0x94, 
-    0x7, 0x16, 0x2, 0x2, 0x94, 0x95, 0x5, 0x1e, 0x10, 0x2, 0x95, 0x96, 0x7, 
-    0x17, 0x2, 0x2, 0x96, 0x98, 0x3, 0x2, 0x2, 0x2, 0x97, 0x89, 0x3, 0x2, 
-    0x2, 0x2, 0x97, 0x8a, 0x3, 0x2, 0x2, 0x2, 0x97, 0x8f, 0x3, 0x2, 0x2, 
-    0x2, 0x98, 0x19, 0x3, 0x2, 0x2, 0x2, 0x99, 0x9a, 0x9, 0x3, 0x2, 0x2, 
-    0x9a, 0x1b, 0x3, 0x2, 0x2, 0x2, 0x9b, 0x9c, 0x8, 0xf, 0x1, 0x2, 0x9c, 
-    0xab, 0x7, 0x34, 0x2, 0x2, 0x9d, 0xab, 0x7, 0x35, 0x2, 0x2, 0x9e, 0xab, 
-    0x7, 0x33, 0x2, 0x2, 0x9f, 0xab, 0x7, 0x32, 0x2, 0x2, 0xa0, 0xa1, 0x7, 
-    0x14, 0x2, 0x2, 0xa1, 0xa2, 0x5, 0x1c, 0xf, 0x2, 0xa2, 0xa3, 0x7, 0x15, 
-    0x2, 0x2, 0xa3, 0xab, 0x3, 0x2, 0x2, 0x2, 0xa4, 0xab, 0x5, 0x18, 0xd, 
-    0x2, 0xa5, 0xab, 0x5, 0x20, 0x11, 0x2, 0xa6, 0xa7, 0x7, 0x1f, 0x2, 0x2, 
-    0xa7, 0xab, 0x5, 0x1c, 0xf, 0xc, 0xa8, 0xa9, 0x7, 0x26, 0x2, 0x2, 0xa9, 
-    0xab, 0x5, 0x1c, 0xf, 0xb, 0xaa, 0x9b, 0x3, 0x2, 0x2, 0x2, 0xaa, 0x9d, 
-    0x3, 0x2, 0x2, 0x2, 0xaa, 0x9e, 0x3, 0x2, 0x2, 0x2, 0xaa, 0x9f, 0x3, 
-    0x2, 0x2, 0x2, 0xaa, 0xa0, 0x3, 0x2, 0x2, 0x2, 0xaa, 0xa4, 0x3, 0x2, 
-    0x2, 0x2, 0xaa, 0xa5, 0x3, 0x2, 0x2, 0x2, 0xaa, 0xa6, 0x3, 0x2, 0x2, 
-    0x2, 0xaa, 0xa8, 0x3, 0x2, 0x2, 0x2, 0xab, 0xc9, 0x3, 0x2, 0x2, 0x2, 
-    0xac, 0xad, 0xc, 0xa, 0x2, 0x2, 0xad, 0xae, 0x7, 0x23, 0x2, 0x2, 0xae, 
-    0xc8, 0x5, 0x1c, 0xf, 0xa, 0xaf, 0xb0, 0xc, 0x9, 0x2, 0x2, 0xb0, 0xb1, 
-    0x9, 0x4, 0x2, 0x2, 0xb1, 0xc8, 0x5, 0x1c, 0xf, 0xa, 0xb2, 0xb3, 0xc, 
-    0x8, 0x2, 0x2, 0xb3, 0xb4, 0x9, 0x5, 0x2, 0x2, 0xb4, 0xc8, 0x5, 0x1c, 
-    0xf, 0x9, 0xb5, 0xb6, 0xc, 0x7, 0x2, 0x2, 0xb6, 0xb7, 0x9, 0x6, 0x2, 
-    0x2, 0xb7, 0xc8, 0x5, 0x1c, 0xf, 0x8, 0xb8, 0xb9, 0xc, 0x6, 0x2, 0x2, 
-    0xb9, 0xba, 0x9, 0x7, 0x2, 0x2, 0xba, 0xc8, 0x5, 0x1c, 0xf, 0x7, 0xbb, 
-    0xbc, 0xc, 0x5, 0x2, 0x2, 0xbc, 0xbd, 0x7, 0x24, 0x2, 0x2, 0xbd, 0xc8, 
-    0x5, 0x1c, 0xf, 0x6, 0xbe, 0xbf, 0xc, 0x4, 0x2, 0x2, 0xbf, 0xc0, 0x7, 
-    0x25, 0x2, 0x2, 0xc0, 0xc8, 0x5, 0x1c, 0xf, 0x5, 0xc1, 0xc2, 0xc, 0x3, 
-    0x2, 0x2, 0xc2, 0xc3, 0x7, 0x27, 0x2, 0x2, 0xc3, 0xc4, 0x5, 0x1c, 0xf, 
-    0x2, 0xc4, 0xc5, 0x7, 0x28, 0x2, 0x2, 0xc5, 0xc6, 0x5, 0x1c, 0xf, 0x4, 
-    0xc6, 0xc8, 0x3, 0x2, 0x2, 0x2, 0xc7, 0xac, 0x3, 0x2, 0x2, 0x2, 0xc7, 
-    0xaf, 0x3, 0x2, 0x2, 0x2, 0xc7, 0xb2, 0x3, 0x2, 0x2, 0x2, 0xc7, 0xb5, 
-    0x3, 0x2, 0x2, 0x2, 0xc7, 0xb8, 0x3, 0x2, 0x2, 0x2, 0xc7, 0xbb, 0x3, 
-    0x2, 0x2, 0x2, 0xc7, 0xbe, 0x3, 0x2, 0x2, 0x2, 0xc7, 0xc1, 0x3, 0x2, 
-    0x2, 0x2, 0xc8, 0xcb, 0x3, 0x2, 0x2, 0x2, 0xc9, 0xc7, 0x3, 0x2, 0x2, 
-    0x2, 0xc9, 0xca, 0x3, 0x2, 0x2, 0x2, 0xca, 0x1d, 0x3, 0x2, 0x2, 0x2, 
-    0xcb, 0xc9, 0x3, 0x2, 0x2, 0x2, 0xcc, 0xcd, 0x8, 0x10, 0x1, 0x2, 0xcd, 
-    0xd7, 0x7, 0x35, 0x2, 0x2, 0xce, 0xcf, 0x7, 0x14, 0x2, 0x2, 0xcf, 0xd0, 
-    0x5, 0x1e, 0x10, 0x2, 0xd0, 0xd1, 0x7, 0x15, 0x2, 0x2, 0xd1, 0xd7, 0x3, 
-    0x2, 0x2, 0x2, 0xd2, 0xd7, 0x5, 0x18, 0xd, 0x2, 0xd3, 0xd7, 0x5, 0x20, 
-    0x11, 0x2, 0xd4, 0xd5, 0x7, 0x26, 0x2, 0x2, 0xd5, 0xd7, 0x5, 0x1e, 0x10, 
-    0xa, 0xd6, 0xcc, 0x3, 0x2, 0x2, 0x2, 0xd6, 0xce, 0x3, 0x2, 0x2, 0x2, 
-    0xd6, 0xd2, 0x3, 0x2, 0x2, 0x2, 0xd6, 0xd3, 0x3, 0x2, 0x2, 0x2, 0xd6, 
-    0xd4, 0x3, 0x2, 0x2, 0x2, 0xd7, 0xef, 0x3, 0x2, 0x2, 0x2, 0xd8, 0xd9, 
-    0xc, 0x9, 0x2, 0x2, 0xd9, 0xda, 0x7, 0x23, 0x2, 0x2, 0xda, 0xee, 0x5, 
-    0x1e, 0x10, 0x9, 0xdb, 0xdc, 0xc, 0x8, 0x2, 0x2, 0xdc, 0xdd, 0x9, 0x4, 
-    0x2, 0x2, 0xdd, 0xee, 0x5, 0x1e, 0x10, 0x9, 0xde, 0xdf, 0xc, 0x7, 0x2, 
-    0x2, 0xdf, 0xe0, 0x9, 0x5, 0x2, 0x2, 0xe0, 0xee, 0x5, 0x1e, 0x10, 0x8, 
-    0xe1, 0xe2, 0xc, 0x6, 0x2, 0x2, 0xe2, 0xe3, 0x9, 0x6, 0x2, 0x2, 0xe3, 
-    0xee, 0x5, 0x1e, 0x10, 0x7, 0xe4, 0xe5, 0xc, 0x5, 0x2, 0x2, 0xe5, 0xe6, 
-    0x9, 0x7, 0x2, 0x2, 0xe6, 0xee, 0x5, 0x1e, 0x10, 0x6, 0xe7, 0xe8, 0xc, 
-    0x4, 0x2, 0x2, 0xe8, 0xe9, 0x7, 0x24, 0x2, 0x2, 0xe9, 0xee, 0x5, 0x1e, 
-    0x10, 0x5, 0xea, 0xeb, 0xc, 0x3, 0x2, 0x2, 0xeb, 0xec, 0x7, 0x25, 0x2, 
-    0x2, 0xec, 0xee, 0x5, 0x1e, 0x10, 0x4, 0xed, 0xd8, 0x3, 0x2, 0x2, 0x2, 
-    0xed, 0xdb, 0x3, 0x2, 0x2, 0x2, 0xed, 0xde, 0x3, 0x2, 0x2, 0x2, 0xed, 
-    0xe1, 0x3, 0x2, 0x2, 0x2, 0xed, 0xe4, 0x3, 0x2, 0x2, 0x2, 0xed, 0xe7, 
-    0x3, 0x2, 0x2, 0x2, 0xed, 0xea, 0x3, 0x2, 0x2, 0x2, 0xee, 0xf1, 0x3, 
-    0x2, 0x2, 0x2, 0xef, 0xed, 0x3, 0x2, 0x2, 0x2, 0xef, 0xf0, 0x3, 0x2, 
-    0x2, 0x2, 0xf0, 0x1f, 0x3, 0x2, 0x2, 0x2, 0xf1, 0xef, 0x3, 0x2, 0x2, 
-    0x2, 0xf2, 0xf3, 0x7, 0x36, 0x2, 0x2, 0xf3, 0xf5, 0x7, 0x14, 0x2, 0x2, 
-    0xf4, 0xf6, 0x5, 0x22, 0x12, 0x2, 0xf5, 0xf4, 0x3, 0x2, 0x2, 0x2, 0xf5, 
-    0xf6, 0x3, 0x2, 0x2, 0x2, 0xf6, 0xf7, 0x3, 0x2, 0x2, 0x2, 0xf7, 0x100, 
-    0x7, 0x15, 0x2, 0x2, 0xf8, 0xf9, 0x7, 0x5, 0x2, 0x2, 0xf9, 0xfa, 0x7, 
-    0x14, 0x2, 0x2, 0xfa, 0xfc, 0x7, 0x33, 0x2, 0x2, 0xfb, 0xfd, 0x5, 0x24, 
-    0x13, 0x2, 0xfc, 0xfb, 0x3, 0x2, 0x2, 0x2, 0xfc, 0xfd, 0x3, 0x2, 0x2, 
-    0x2, 0xfd, 0xfe, 0x3, 0x2, 0x2, 0x2, 0xfe, 0x100, 0x7, 0x15, 0x2, 0x2, 
-    0xff, 0xf2, 0x3, 0x2, 0x2, 0x2, 0xff, 0xf8, 0x3, 0x2, 0x2, 0x2, 0x100, 
-    0x21, 0x3, 0x2, 0x2, 0x2, 0x101, 0x106, 0x5, 0x1c, 0xf, 0x2, 0x102, 
-    0x103, 0x7, 0x2a, 0x2, 0x2, 0x103, 0x105, 0x5, 0x1c, 0xf, 0x2, 0x104, 
-    0x102, 0x3, 0x2, 0x2, 0x2, 0x105, 0x108, 0x3, 0x2, 0x2, 0x2, 0x106, 
-    0x104, 0x3, 0x2, 0x2, 0x2, 0x106, 0x107, 0x3, 0x2, 0x2, 0x2, 0x107, 
-    0x23, 0x3, 0x2, 0x2, 0x2, 0x108, 0x106, 0x3, 0x2, 0x2, 0x2, 0x109, 0x10a, 
-    0x7, 0x2a, 0x2, 0x2, 0x10a, 0x10c, 0x5, 0x1c, 0xf, 0x2, 0x10b, 0x109, 
-    0x3, 0x2, 0x2, 0x2, 0x10c, 0x10d, 0x3, 0x2, 0x2, 0x2, 0x10d, 0x10b, 
-    0x3, 0x2, 0x2, 0x2, 0x10d, 0x10e, 0x3, 0x2, 0x2, 0x2, 0x10e, 0x25, 0x3, 
-    0x2, 0x2, 0x2, 0x10f, 0x110, 0x7, 0xc, 0x2, 0x2, 0x110, 0x111, 0x7, 
-    0x14, 0x2, 0x2, 0x111, 0x112, 0x5, 0x1c, 0xf, 0x2, 0x112, 0x113, 0x7, 
-    0x15, 0x2, 0x2, 0x113, 0x115, 0x7, 0x18, 0x2, 0x2, 0x114, 0x116, 0x5, 
-    0x14, 0xb, 0x2, 0x115, 0x114, 0x3, 0x2, 0x2, 0x2, 0x115, 0x116, 0x3, 
-    0x2, 0x2, 0x2, 0x116, 0x117, 0x3, 0x2, 0x2, 0x2, 0x117, 0x118, 0x7, 
-    0x19, 0x2, 0x2, 0x118, 0x12a, 0x3, 0x2, 0x2, 0x2, 0x119, 0x11a, 0x7, 
-    0xc, 0x2, 0x2, 0x11a, 0x11b, 0x7, 0x14, 0x2, 0x2, 0x11b, 0x11c, 0x5, 
-    0x1c, 0xf, 0x2, 0x11c, 0x11d, 0x7, 0x15, 0x2, 0x2, 0x11d, 0x11f, 0x7, 
-    0x18, 0x2, 0x2, 0x11e, 0x120, 0x5, 0x14, 0xb, 0x2, 0x11f, 0x11e, 0x3, 
-    0x2, 0x2, 0x2, 0x11f, 0x120, 0x3, 0x2, 0x2, 0x2, 0x120, 0x121, 0x3, 
-    0x2, 0x2, 0x2, 0x121, 0x122, 0x7, 0x19, 0x2, 0x2, 0x122, 0x123, 0x7, 
-    0x8, 0x2, 0x2, 0x123, 0x125, 0x7, 0x18, 0x2, 0x2, 0x124, 0x126, 0x5, 
-    0x14, 0xb, 0x2, 0x125, 0x124, 0x3, 0x2, 0x2, 0x2, 0x125, 0x126, 0x3, 
-    0x2, 0x2, 0x2, 0x126, 0x127, 0x3, 0x2, 0x2, 0x2, 0x127, 0x128, 0x7, 
-    0x19, 0x2, 0x2, 0x128, 0x12a, 0x3, 0x2, 0x2, 0x2, 0x129, 0x10f, 0x3, 
-    0x2, 0x2, 0x2, 0x129, 0x119, 0x3, 0x2, 0x2, 0x2, 0x12a, 0x27, 0x3, 0x2, 
-    0x2, 0x2, 0x12b, 0x12c, 0x7, 0x13, 0x2, 0x2, 0x12c, 0x12d, 0x7, 0x14, 
-    0x2, 0x2, 0x12d, 0x12e, 0x5, 0x1c, 0xf, 0x2, 0x12e, 0x12f, 0x7, 0x15, 
-    0x2, 0x2, 0x12f, 0x131, 0x7, 0x18, 0x2, 0x2, 0x130, 0x132, 0x5, 0x14, 
-    0xb, 0x2, 0x131, 0x130, 0x3, 0x2, 0x2, 0x2, 0x131, 0x132, 0x3, 0x2, 
-    0x2, 0x2, 0x132, 0x133, 0x3, 0x2, 0x2, 0x2, 0x133, 0x134, 0x7, 0x19, 
-    0x2, 0x2, 0x134, 0x148, 0x3, 0x2, 0x2, 0x2, 0x135, 0x136, 0x7, 0xb, 
-    0x2, 0x2, 0x136, 0x137, 0x7, 0x14, 0x2, 0x2, 0x137, 0x138, 0x5, 0x18, 
-    0xd, 0x2, 0x138, 0x139, 0x7, 0x2d, 0x2, 0x2, 0x139, 0x13a, 0x5, 0x1c, 
-    0xf, 0x2, 0x13a, 0x13b, 0x7, 0x29, 0x2, 0x2, 0x13b, 0x13c, 0x5, 0x1c, 
-    0xf, 0x2, 0x13c, 0x13d, 0x7, 0x29, 0x2, 0x2, 0x13d, 0x13e, 0x5, 0x18, 
-    0xd, 0x2, 0x13e, 0x13f, 0x5, 0x1a, 0xe, 0x2, 0x13f, 0x140, 0x5, 0x1c, 
-    0xf, 0x2, 0x140, 0x141, 0x7, 0x15, 0x2, 0x2, 0x141, 0x143, 0x7, 0x18, 
-    0x2, 0x2, 0x142, 0x144, 0x5, 0x14, 0xb, 0x2, 0x143, 0x142, 0x3, 0x2, 
-    0x2, 0x2, 0x143, 0x144, 0x3, 0x2, 0x2, 0x2, 0x144, 0x145, 0x3, 0x2, 
-    0x2, 0x2, 0x145, 0x146, 0x7, 0x19, 0x2, 0x2, 0x146, 0x148, 0x3, 0x2, 
-    0x2, 0x2, 0x147, 0x12b, 0x3, 0x2, 0x2, 0x2, 0x147, 0x135, 0x3, 0x2, 
-    0x2, 0x2, 0x148, 0x29, 0x3, 0x2, 0x2, 0x2, 0x1e, 0x31, 0x35, 0x40, 0x4e, 
-    0x56, 0x5b, 0x6b, 0x72, 0x87, 0x97, 0xaa, 0xc7, 0xc9, 0xd6, 0xed, 0xef, 
-    0xf5, 0xfc, 0xff, 0x106, 0x10d, 0x115, 0x11f, 0x125, 0x129, 0x131, 0x143, 
-    0x147, 
+    0x3, 0x15, 0x3, 0x15, 0x5, 0x15, 0x14b, 0xa, 0x15, 0x3, 0x15, 0x3, 0x15, 
+    0x5, 0x15, 0x14f, 0xa, 0x15, 0x3, 0x15, 0x2, 0x4, 0x1c, 0x1e, 0x16, 
+    0x2, 0x4, 0x6, 0x8, 0xa, 0xc, 0xe, 0x10, 0x12, 0x14, 0x16, 0x18, 0x1a, 
+    0x1c, 0x1e, 0x20, 0x22, 0x24, 0x26, 0x28, 0x2, 0x6, 0x3, 0x2, 0x20, 
+    0x22, 0x3, 0x2, 0x1e, 0x1f, 0x3, 0x2, 0x1a, 0x1d, 0x3, 0x2, 0x30, 0x31, 
+    0x2, 0x17c, 0x2, 0x2a, 0x3, 0x2, 0x2, 0x2, 0x4, 0x2e, 0x3, 0x2, 0x2, 
+    0x2, 0x6, 0x34, 0x3, 0x2, 0x2, 0x2, 0x8, 0x36, 0x3, 0x2, 0x2, 0x2, 0xa, 
+    0x3f, 0x3, 0x2, 0x2, 0x2, 0xc, 0x4d, 0x3, 0x2, 0x2, 0x2, 0xe, 0x55, 
+    0x3, 0x2, 0x2, 0x2, 0x10, 0x57, 0x3, 0x2, 0x2, 0x2, 0x12, 0x67, 0x3, 
+    0x2, 0x2, 0x2, 0x14, 0x74, 0x3, 0x2, 0x2, 0x2, 0x16, 0x8b, 0x3, 0x2, 
+    0x2, 0x2, 0x18, 0x9b, 0x3, 0x2, 0x2, 0x2, 0x1a, 0xa0, 0x3, 0x2, 0x2, 
+    0x2, 0x1c, 0xb1, 0x3, 0x2, 0x2, 0x2, 0x1e, 0xdd, 0x3, 0x2, 0x2, 0x2, 
+    0x20, 0x106, 0x3, 0x2, 0x2, 0x2, 0x22, 0x108, 0x3, 0x2, 0x2, 0x2, 0x24, 
+    0x112, 0x3, 0x2, 0x2, 0x2, 0x26, 0x130, 0x3, 0x2, 0x2, 0x2, 0x28, 0x14e, 
+    0x3, 0x2, 0x2, 0x2, 0x2a, 0x2b, 0x5, 0x4, 0x3, 0x2, 0x2b, 0x2c, 0x7, 
+    0x2, 0x2, 0x3, 0x2c, 0x3, 0x3, 0x2, 0x2, 0x2, 0x2d, 0x2f, 0x5, 0x6, 
+    0x4, 0x2, 0x2e, 0x2d, 0x3, 0x2, 0x2, 0x2, 0x2f, 0x30, 0x3, 0x2, 0x2, 
+    0x2, 0x30, 0x2e, 0x3, 0x2, 0x2, 0x2, 0x30, 0x31, 0x3, 0x2, 0x2, 0x2, 
+    0x31, 0x5, 0x3, 0x2, 0x2, 0x2, 0x32, 0x35, 0x5, 0x8, 0x5, 0x2, 0x33, 
+    0x35, 0x5, 0x10, 0x9, 0x2, 0x34, 0x32, 0x3, 0x2, 0x2, 0x2, 0x34, 0x33, 
+    0x3, 0x2, 0x2, 0x2, 0x35, 0x7, 0x3, 0x2, 0x2, 0x2, 0x36, 0x37, 0x5, 
+    0xe, 0x8, 0x2, 0x37, 0x38, 0x5, 0xa, 0x6, 0x2, 0x38, 0x39, 0x7, 0x29, 
+    0x2, 0x2, 0x39, 0x9, 0x3, 0x2, 0x2, 0x2, 0x3a, 0x3b, 0x5, 0xc, 0x7, 
+    0x2, 0x3b, 0x3c, 0x7, 0x2a, 0x2, 0x2, 0x3c, 0x3d, 0x5, 0xa, 0x6, 0x2, 
+    0x3d, 0x40, 0x3, 0x2, 0x2, 0x2, 0x3e, 0x40, 0x5, 0xc, 0x7, 0x2, 0x3f, 
+    0x3a, 0x3, 0x2, 0x2, 0x2, 0x3f, 0x3e, 0x3, 0x2, 0x2, 0x2, 0x40, 0xb, 
+    0x3, 0x2, 0x2, 0x2, 0x41, 0x42, 0x7, 0x36, 0x2, 0x2, 0x42, 0x43, 0x7, 
+    0x16, 0x2, 0x2, 0x43, 0x44, 0x7, 0x35, 0x2, 0x2, 0x44, 0x45, 0x7, 0x17, 
+    0x2, 0x2, 0x45, 0x46, 0x7, 0x16, 0x2, 0x2, 0x46, 0x47, 0x7, 0x35, 0x2, 
+    0x2, 0x47, 0x4e, 0x7, 0x17, 0x2, 0x2, 0x48, 0x49, 0x7, 0x36, 0x2, 0x2, 
+    0x49, 0x4a, 0x7, 0x16, 0x2, 0x2, 0x4a, 0x4b, 0x7, 0x35, 0x2, 0x2, 0x4b, 
+    0x4e, 0x7, 0x17, 0x2, 0x2, 0x4c, 0x4e, 0x7, 0x36, 0x2, 0x2, 0x4d, 0x41, 
+    0x3, 0x2, 0x2, 0x2, 0x4d, 0x48, 0x3, 0x2, 0x2, 0x2, 0x4d, 0x4c, 0x3, 
+    0x2, 0x2, 0x2, 0x4e, 0xd, 0x3, 0x2, 0x2, 0x2, 0x4f, 0x56, 0x7, 0xd, 
+    0x2, 0x2, 0x50, 0x56, 0x7, 0x6, 0x2, 0x2, 0x51, 0x56, 0x7, 0x3, 0x2, 
+    0x2, 0x52, 0x56, 0x7, 0xe, 0x2, 0x2, 0x53, 0x56, 0x7, 0x11, 0x2, 0x2, 
+    0x54, 0x56, 0x7, 0x12, 0x2, 0x2, 0x55, 0x4f, 0x3, 0x2, 0x2, 0x2, 0x55, 
+    0x50, 0x3, 0x2, 0x2, 0x2, 0x55, 0x51, 0x3, 0x2, 0x2, 0x2, 0x55, 0x52, 
+    0x3, 0x2, 0x2, 0x2, 0x55, 0x53, 0x3, 0x2, 0x2, 0x2, 0x55, 0x54, 0x3, 
+    0x2, 0x2, 0x2, 0x56, 0xf, 0x3, 0x2, 0x2, 0x2, 0x57, 0x58, 0x5, 0xe, 
+    0x8, 0x2, 0x58, 0x59, 0x7, 0x36, 0x2, 0x2, 0x59, 0x5b, 0x7, 0x14, 0x2, 
+    0x2, 0x5a, 0x5c, 0x5, 0x12, 0xa, 0x2, 0x5b, 0x5a, 0x3, 0x2, 0x2, 0x2, 
+    0x5b, 0x5c, 0x3, 0x2, 0x2, 0x2, 0x5c, 0x5d, 0x3, 0x2, 0x2, 0x2, 0x5d, 
+    0x5e, 0x7, 0x15, 0x2, 0x2, 0x5e, 0x60, 0x7, 0x18, 0x2, 0x2, 0x5f, 0x61, 
+    0x5, 0x14, 0xb, 0x2, 0x60, 0x5f, 0x3, 0x2, 0x2, 0x2, 0x60, 0x61, 0x3, 
+    0x2, 0x2, 0x2, 0x61, 0x62, 0x3, 0x2, 0x2, 0x2, 0x62, 0x63, 0x7, 0xf, 
+    0x2, 0x2, 0x63, 0x64, 0x5, 0x1c, 0xf, 0x2, 0x64, 0x65, 0x7, 0x29, 0x2, 
+    0x2, 0x65, 0x66, 0x7, 0x19, 0x2, 0x2, 0x66, 0x11, 0x3, 0x2, 0x2, 0x2, 
+    0x67, 0x68, 0x5, 0xe, 0x8, 0x2, 0x68, 0x69, 0x7, 0x36, 0x2, 0x2, 0x69, 
+    0x70, 0x3, 0x2, 0x2, 0x2, 0x6a, 0x6b, 0x7, 0x2a, 0x2, 0x2, 0x6b, 0x6c, 
+    0x5, 0xe, 0x8, 0x2, 0x6c, 0x6d, 0x7, 0x36, 0x2, 0x2, 0x6d, 0x6f, 0x3, 
+    0x2, 0x2, 0x2, 0x6e, 0x6a, 0x3, 0x2, 0x2, 0x2, 0x6f, 0x72, 0x3, 0x2, 
+    0x2, 0x2, 0x70, 0x6e, 0x3, 0x2, 0x2, 0x2, 0x70, 0x71, 0x3, 0x2, 0x2, 
+    0x2, 0x71, 0x13, 0x3, 0x2, 0x2, 0x2, 0x72, 0x70, 0x3, 0x2, 0x2, 0x2, 
+    0x73, 0x75, 0x5, 0x16, 0xc, 0x2, 0x74, 0x73, 0x3, 0x2, 0x2, 0x2, 0x75, 
+    0x76, 0x3, 0x2, 0x2, 0x2, 0x76, 0x74, 0x3, 0x2, 0x2, 0x2, 0x76, 0x77, 
+    0x3, 0x2, 0x2, 0x2, 0x77, 0x15, 0x3, 0x2, 0x2, 0x2, 0x78, 0x8c, 0x5, 
+    0x8, 0x5, 0x2, 0x79, 0x7a, 0x5, 0x18, 0xd, 0x2, 0x7a, 0x7b, 0x5, 0x1a, 
+    0xe, 0x2, 0x7b, 0x7c, 0x5, 0x1c, 0xf, 0x2, 0x7c, 0x7d, 0x7, 0x29, 0x2, 
+    0x2, 0x7d, 0x8c, 0x3, 0x2, 0x2, 0x2, 0x7e, 0x7f, 0x5, 0x1c, 0xf, 0x2, 
+    0x7f, 0x80, 0x7, 0x29, 0x2, 0x2, 0x80, 0x8c, 0x3, 0x2, 0x2, 0x2, 0x81, 
+    0x8c, 0x5, 0x26, 0x14, 0x2, 0x82, 0x8c, 0x5, 0x28, 0x15, 0x2, 0x83, 
+    0x84, 0x7, 0xf, 0x2, 0x2, 0x84, 0x85, 0x5, 0x1c, 0xf, 0x2, 0x85, 0x86, 
+    0x7, 0x29, 0x2, 0x2, 0x86, 0x8c, 0x3, 0x2, 0x2, 0x2, 0x87, 0x88, 0x7, 
+    0x4, 0x2, 0x2, 0x88, 0x8c, 0x7, 0x29, 0x2, 0x2, 0x89, 0x8a, 0x7, 0x7, 
+    0x2, 0x2, 0x8a, 0x8c, 0x7, 0x29, 0x2, 0x2, 0x8b, 0x78, 0x3, 0x2, 0x2, 
+    0x2, 0x8b, 0x79, 0x3, 0x2, 0x2, 0x2, 0x8b, 0x7e, 0x3, 0x2, 0x2, 0x2, 
+    0x8b, 0x81, 0x3, 0x2, 0x2, 0x2, 0x8b, 0x82, 0x3, 0x2, 0x2, 0x2, 0x8b, 
+    0x83, 0x3, 0x2, 0x2, 0x2, 0x8b, 0x87, 0x3, 0x2, 0x2, 0x2, 0x8b, 0x89, 
+    0x3, 0x2, 0x2, 0x2, 0x8c, 0x17, 0x3, 0x2, 0x2, 0x2, 0x8d, 0x9c, 0x7, 
+    0x36, 0x2, 0x2, 0x8e, 0x8f, 0x7, 0x36, 0x2, 0x2, 0x8f, 0x90, 0x7, 0x16, 
+    0x2, 0x2, 0x90, 0x91, 0x5, 0x1e, 0x10, 0x2, 0x91, 0x92, 0x7, 0x17, 0x2, 
+    0x2, 0x92, 0x9c, 0x3, 0x2, 0x2, 0x2, 0x93, 0x94, 0x7, 0x36, 0x2, 0x2, 
+    0x94, 0x95, 0x7, 0x16, 0x2, 0x2, 0x95, 0x96, 0x5, 0x1e, 0x10, 0x2, 0x96, 
+    0x97, 0x7, 0x17, 0x2, 0x2, 0x97, 0x98, 0x7, 0x16, 0x2, 0x2, 0x98, 0x99, 
+    0x5, 0x1e, 0x10, 0x2, 0x99, 0x9a, 0x7, 0x17, 0x2, 0x2, 0x9a, 0x9c, 0x3, 
+    0x2, 0x2, 0x2, 0x9b, 0x8d, 0x3, 0x2, 0x2, 0x2, 0x9b, 0x8e, 0x3, 0x2, 
+    0x2, 0x2, 0x9b, 0x93, 0x3, 0x2, 0x2, 0x2, 0x9c, 0x19, 0x3, 0x2, 0x2, 
+    0x2, 0x9d, 0xa1, 0x7, 0x2d, 0x2, 0x2, 0x9e, 0xa1, 0x7, 0x2e, 0x2, 0x2, 
+    0x9f, 0xa1, 0x7, 0x2f, 0x2, 0x2, 0xa0, 0x9d, 0x3, 0x2, 0x2, 0x2, 0xa0, 
+    0x9e, 0x3, 0x2, 0x2, 0x2, 0xa0, 0x9f, 0x3, 0x2, 0x2, 0x2, 0xa1, 0x1b, 
+    0x3, 0x2, 0x2, 0x2, 0xa2, 0xa3, 0x8, 0xf, 0x1, 0x2, 0xa3, 0xb2, 0x7, 
+    0x34, 0x2, 0x2, 0xa4, 0xb2, 0x7, 0x35, 0x2, 0x2, 0xa5, 0xb2, 0x7, 0x33, 
+    0x2, 0x2, 0xa6, 0xb2, 0x7, 0x32, 0x2, 0x2, 0xa7, 0xa8, 0x7, 0x14, 0x2, 
+    0x2, 0xa8, 0xa9, 0x5, 0x1c, 0xf, 0x2, 0xa9, 0xaa, 0x7, 0x15, 0x2, 0x2, 
+    0xaa, 0xb2, 0x3, 0x2, 0x2, 0x2, 0xab, 0xb2, 0x5, 0x18, 0xd, 0x2, 0xac, 
+    0xb2, 0x5, 0x20, 0x11, 0x2, 0xad, 0xae, 0x7, 0x1f, 0x2, 0x2, 0xae, 0xb2, 
+    0x5, 0x1c, 0xf, 0xc, 0xaf, 0xb0, 0x7, 0x26, 0x2, 0x2, 0xb0, 0xb2, 0x5, 
+    0x1c, 0xf, 0xb, 0xb1, 0xa2, 0x3, 0x2, 0x2, 0x2, 0xb1, 0xa4, 0x3, 0x2, 
+    0x2, 0x2, 0xb1, 0xa5, 0x3, 0x2, 0x2, 0x2, 0xb1, 0xa6, 0x3, 0x2, 0x2, 
+    0x2, 0xb1, 0xa7, 0x3, 0x2, 0x2, 0x2, 0xb1, 0xab, 0x3, 0x2, 0x2, 0x2, 
+    0xb1, 0xac, 0x3, 0x2, 0x2, 0x2, 0xb1, 0xad, 0x3, 0x2, 0x2, 0x2, 0xb1, 
+    0xaf, 0x3, 0x2, 0x2, 0x2, 0xb2, 0xd0, 0x3, 0x2, 0x2, 0x2, 0xb3, 0xb4, 
+    0xc, 0xa, 0x2, 0x2, 0xb4, 0xb5, 0x7, 0x23, 0x2, 0x2, 0xb5, 0xcf, 0x5, 
+    0x1c, 0xf, 0xa, 0xb6, 0xb7, 0xc, 0x9, 0x2, 0x2, 0xb7, 0xb8, 0x9, 0x2, 
+    0x2, 0x2, 0xb8, 0xcf, 0x5, 0x1c, 0xf, 0xa, 0xb9, 0xba, 0xc, 0x8, 0x2, 
+    0x2, 0xba, 0xbb, 0x9, 0x3, 0x2, 0x2, 0xbb, 0xcf, 0x5, 0x1c, 0xf, 0x9, 
+    0xbc, 0xbd, 0xc, 0x7, 0x2, 0x2, 0xbd, 0xbe, 0x9, 0x4, 0x2, 0x2, 0xbe, 
+    0xcf, 0x5, 0x1c, 0xf, 0x8, 0xbf, 0xc0, 0xc, 0x6, 0x2, 0x2, 0xc0, 0xc1, 
+    0x9, 0x5, 0x2, 0x2, 0xc1, 0xcf, 0x5, 0x1c, 0xf, 0x7, 0xc2, 0xc3, 0xc, 
+    0x5, 0x2, 0x2, 0xc3, 0xc4, 0x7, 0x24, 0x2, 0x2, 0xc4, 0xcf, 0x5, 0x1c, 
+    0xf, 0x6, 0xc5, 0xc6, 0xc, 0x4, 0x2, 0x2, 0xc6, 0xc7, 0x7, 0x25, 0x2, 
+    0x2, 0xc7, 0xcf, 0x5, 0x1c, 0xf, 0x5, 0xc8, 0xc9, 0xc, 0x3, 0x2, 0x2, 
+    0xc9, 0xca, 0x7, 0x27, 0x2, 0x2, 0xca, 0xcb, 0x5, 0x1c, 0xf, 0x2, 0xcb, 
+    0xcc, 0x7, 0x28, 0x2, 0x2, 0xcc, 0xcd, 0x5, 0x1c, 0xf, 0x4, 0xcd, 0xcf, 
+    0x3, 0x2, 0x2, 0x2, 0xce, 0xb3, 0x3, 0x2, 0x2, 0x2, 0xce, 0xb6, 0x3, 
+    0x2, 0x2, 0x2, 0xce, 0xb9, 0x3, 0x2, 0x2, 0x2, 0xce, 0xbc, 0x3, 0x2, 
+    0x2, 0x2, 0xce, 0xbf, 0x3, 0x2, 0x2, 0x2, 0xce, 0xc2, 0x3, 0x2, 0x2, 
+    0x2, 0xce, 0xc5, 0x3, 0x2, 0x2, 0x2, 0xce, 0xc8, 0x3, 0x2, 0x2, 0x2, 
+    0xcf, 0xd2, 0x3, 0x2, 0x2, 0x2, 0xd0, 0xce, 0x3, 0x2, 0x2, 0x2, 0xd0, 
+    0xd1, 0x3, 0x2, 0x2, 0x2, 0xd1, 0x1d, 0x3, 0x2, 0x2, 0x2, 0xd2, 0xd0, 
+    0x3, 0x2, 0x2, 0x2, 0xd3, 0xd4, 0x8, 0x10, 0x1, 0x2, 0xd4, 0xde, 0x7, 
+    0x35, 0x2, 0x2, 0xd5, 0xd6, 0x7, 0x14, 0x2, 0x2, 0xd6, 0xd7, 0x5, 0x1e, 
+    0x10, 0x2, 0xd7, 0xd8, 0x7, 0x15, 0x2, 0x2, 0xd8, 0xde, 0x3, 0x2, 0x2, 
+    0x2, 0xd9, 0xde, 0x5, 0x18, 0xd, 0x2, 0xda, 0xde, 0x5, 0x20, 0x11, 0x2, 
+    0xdb, 0xdc, 0x7, 0x26, 0x2, 0x2, 0xdc, 0xde, 0x5, 0x1e, 0x10, 0xa, 0xdd, 
+    0xd3, 0x3, 0x2, 0x2, 0x2, 0xdd, 0xd5, 0x3, 0x2, 0x2, 0x2, 0xdd, 0xd9, 
+    0x3, 0x2, 0x2, 0x2, 0xdd, 0xda, 0x3, 0x2, 0x2, 0x2, 0xdd, 0xdb, 0x3, 
+    0x2, 0x2, 0x2, 0xde, 0xf6, 0x3, 0x2, 0x2, 0x2, 0xdf, 0xe0, 0xc, 0x9, 
+    0x2, 0x2, 0xe0, 0xe1, 0x7, 0x23, 0x2, 0x2, 0xe1, 0xf5, 0x5, 0x1e, 0x10, 
+    0x9, 0xe2, 0xe3, 0xc, 0x8, 0x2, 0x2, 0xe3, 0xe4, 0x9, 0x2, 0x2, 0x2, 
+    0xe4, 0xf5, 0x5, 0x1e, 0x10, 0x9, 0xe5, 0xe6, 0xc, 0x7, 0x2, 0x2, 0xe6, 
+    0xe7, 0x9, 0x3, 0x2, 0x2, 0xe7, 0xf5, 0x5, 0x1e, 0x10, 0x8, 0xe8, 0xe9, 
+    0xc, 0x6, 0x2, 0x2, 0xe9, 0xea, 0x9, 0x4, 0x2, 0x2, 0xea, 0xf5, 0x5, 
+    0x1e, 0x10, 0x7, 0xeb, 0xec, 0xc, 0x5, 0x2, 0x2, 0xec, 0xed, 0x9, 0x5, 
+    0x2, 0x2, 0xed, 0xf5, 0x5, 0x1e, 0x10, 0x6, 0xee, 0xef, 0xc, 0x4, 0x2, 
+    0x2, 0xef, 0xf0, 0x7, 0x24, 0x2, 0x2, 0xf0, 0xf5, 0x5, 0x1e, 0x10, 0x5, 
+    0xf1, 0xf2, 0xc, 0x3, 0x2, 0x2, 0xf2, 0xf3, 0x7, 0x25, 0x2, 0x2, 0xf3, 
+    0xf5, 0x5, 0x1e, 0x10, 0x4, 0xf4, 0xdf, 0x3, 0x2, 0x2, 0x2, 0xf4, 0xe2, 
+    0x3, 0x2, 0x2, 0x2, 0xf4, 0xe5, 0x3, 0x2, 0x2, 0x2, 0xf4, 0xe8, 0x3, 
+    0x2, 0x2, 0x2, 0xf4, 0xeb, 0x3, 0x2, 0x2, 0x2, 0xf4, 0xee, 0x3, 0x2, 
+    0x2, 0x2, 0xf4, 0xf1, 0x3, 0x2, 0x2, 0x2, 0xf5, 0xf8, 0x3, 0x2, 0x2, 
+    0x2, 0xf6, 0xf4, 0x3, 0x2, 0x2, 0x2, 0xf6, 0xf7, 0x3, 0x2, 0x2, 0x2, 
+    0xf7, 0x1f, 0x3, 0x2, 0x2, 0x2, 0xf8, 0xf6, 0x3, 0x2, 0x2, 0x2, 0xf9, 
+    0xfa, 0x7, 0x36, 0x2, 0x2, 0xfa, 0xfc, 0x7, 0x14, 0x2, 0x2, 0xfb, 0xfd, 
+    0x5, 0x22, 0x12, 0x2, 0xfc, 0xfb, 0x3, 0x2, 0x2, 0x2, 0xfc, 0xfd, 0x3, 
+    0x2, 0x2, 0x2, 0xfd, 0xfe, 0x3, 0x2, 0x2, 0x2, 0xfe, 0x107, 0x7, 0x15, 
+    0x2, 0x2, 0xff, 0x100, 0x7, 0x5, 0x2, 0x2, 0x100, 0x101, 0x7, 0x14, 
+    0x2, 0x2, 0x101, 0x103, 0x7, 0x33, 0x2, 0x2, 0x102, 0x104, 0x5, 0x24, 
+    0x13, 0x2, 0x103, 0x102, 0x3, 0x2, 0x2, 0x2, 0x103, 0x104, 0x3, 0x2, 
+    0x2, 0x2, 0x104, 0x105, 0x3, 0x2, 0x2, 0x2, 0x105, 0x107, 0x7, 0x15, 
+    0x2, 0x2, 0x106, 0xf9, 0x3, 0x2, 0x2, 0x2, 0x106, 0xff, 0x3, 0x2, 0x2, 
+    0x2, 0x107, 0x21, 0x3, 0x2, 0x2, 0x2, 0x108, 0x10d, 0x5, 0x1c, 0xf, 
+    0x2, 0x109, 0x10a, 0x7, 0x2a, 0x2, 0x2, 0x10a, 0x10c, 0x5, 0x1c, 0xf, 
+    0x2, 0x10b, 0x109, 0x3, 0x2, 0x2, 0x2, 0x10c, 0x10f, 0x3, 0x2, 0x2, 
+    0x2, 0x10d, 0x10b, 0x3, 0x2, 0x2, 0x2, 0x10d, 0x10e, 0x3, 0x2, 0x2, 
+    0x2, 0x10e, 0x23, 0x3, 0x2, 0x2, 0x2, 0x10f, 0x10d, 0x3, 0x2, 0x2, 0x2, 
+    0x110, 0x111, 0x7, 0x2a, 0x2, 0x2, 0x111, 0x113, 0x5, 0x1c, 0xf, 0x2, 
+    0x112, 0x110, 0x3, 0x2, 0x2, 0x2, 0x113, 0x114, 0x3, 0x2, 0x2, 0x2, 
+    0x114, 0x112, 0x3, 0x2, 0x2, 0x2, 0x114, 0x115, 0x3, 0x2, 0x2, 0x2, 
+    0x115, 0x25, 0x3, 0x2, 0x2, 0x2, 0x116, 0x117, 0x7, 0xc, 0x2, 0x2, 0x117, 
+    0x118, 0x7, 0x14, 0x2, 0x2, 0x118, 0x119, 0x5, 0x1c, 0xf, 0x2, 0x119, 
+    0x11a, 0x7, 0x15, 0x2, 0x2, 0x11a, 0x11c, 0x7, 0x18, 0x2, 0x2, 0x11b, 
+    0x11d, 0x5, 0x14, 0xb, 0x2, 0x11c, 0x11b, 0x3, 0x2, 0x2, 0x2, 0x11c, 
+    0x11d, 0x3, 0x2, 0x2, 0x2, 0x11d, 0x11e, 0x3, 0x2, 0x2, 0x2, 0x11e, 
+    0x11f, 0x7, 0x19, 0x2, 0x2, 0x11f, 0x131, 0x3, 0x2, 0x2, 0x2, 0x120, 
+    0x121, 0x7, 0xc, 0x2, 0x2, 0x121, 0x122, 0x7, 0x14, 0x2, 0x2, 0x122, 
+    0x123, 0x5, 0x1c, 0xf, 0x2, 0x123, 0x124, 0x7, 0x15, 0x2, 0x2, 0x124, 
+    0x126, 0x7, 0x18, 0x2, 0x2, 0x125, 0x127, 0x5, 0x14, 0xb, 0x2, 0x126, 
+    0x125, 0x3, 0x2, 0x2, 0x2, 0x126, 0x127, 0x3, 0x2, 0x2, 0x2, 0x127, 
+    0x128, 0x3, 0x2, 0x2, 0x2, 0x128, 0x129, 0x7, 0x19, 0x2, 0x2, 0x129, 
+    0x12a, 0x7, 0x8, 0x2, 0x2, 0x12a, 0x12c, 0x7, 0x18, 0x2, 0x2, 0x12b, 
+    0x12d, 0x5, 0x14, 0xb, 0x2, 0x12c, 0x12b, 0x3, 0x2, 0x2, 0x2, 0x12c, 
+    0x12d, 0x3, 0x2, 0x2, 0x2, 0x12d, 0x12e, 0x3, 0x2, 0x2, 0x2, 0x12e, 
+    0x12f, 0x7, 0x19, 0x2, 0x2, 0x12f, 0x131, 0x3, 0x2, 0x2, 0x2, 0x130, 
+    0x116, 0x3, 0x2, 0x2, 0x2, 0x130, 0x120, 0x3, 0x2, 0x2, 0x2, 0x131, 
+    0x27, 0x3, 0x2, 0x2, 0x2, 0x132, 0x133, 0x7, 0x13, 0x2, 0x2, 0x133, 
+    0x134, 0x7, 0x14, 0x2, 0x2, 0x134, 0x135, 0x5, 0x1c, 0xf, 0x2, 0x135, 
+    0x136, 0x7, 0x15, 0x2, 0x2, 0x136, 0x138, 0x7, 0x18, 0x2, 0x2, 0x137, 
+    0x139, 0x5, 0x14, 0xb, 0x2, 0x138, 0x137, 0x3, 0x2, 0x2, 0x2, 0x138, 
+    0x139, 0x3, 0x2, 0x2, 0x2, 0x139, 0x13a, 0x3, 0x2, 0x2, 0x2, 0x13a, 
+    0x13b, 0x7, 0x19, 0x2, 0x2, 0x13b, 0x14f, 0x3, 0x2, 0x2, 0x2, 0x13c, 
+    0x13d, 0x7, 0xb, 0x2, 0x2, 0x13d, 0x13e, 0x7, 0x14, 0x2, 0x2, 0x13e, 
+    0x13f, 0x5, 0x18, 0xd, 0x2, 0x13f, 0x140, 0x7, 0x2d, 0x2, 0x2, 0x140, 
+    0x141, 0x5, 0x1c, 0xf, 0x2, 0x141, 0x142, 0x7, 0x29, 0x2, 0x2, 0x142, 
+    0x143, 0x5, 0x1c, 0xf, 0x2, 0x143, 0x144, 0x7, 0x29, 0x2, 0x2, 0x144, 
+    0x145, 0x5, 0x18, 0xd, 0x2, 0x145, 0x146, 0x5, 0x1a, 0xe, 0x2, 0x146, 
+    0x147, 0x5, 0x1c, 0xf, 0x2, 0x147, 0x148, 0x7, 0x15, 0x2, 0x2, 0x148, 
+    0x14a, 0x7, 0x18, 0x2, 0x2, 0x149, 0x14b, 0x5, 0x14, 0xb, 0x2, 0x14a, 
+    0x149, 0x3, 0x2, 0x2, 0x2, 0x14a, 0x14b, 0x3, 0x2, 0x2, 0x2, 0x14b, 
+    0x14c, 0x3, 0x2, 0x2, 0x2, 0x14c, 0x14d, 0x7, 0x19, 0x2, 0x2, 0x14d, 
+    0x14f, 0x3, 0x2, 0x2, 0x2, 0x14e, 0x132, 0x3, 0x2, 0x2, 0x2, 0x14e, 
+    0x13c, 0x3, 0x2, 0x2, 0x2, 0x14f, 0x29, 0x3, 0x2, 0x2, 0x2, 0x20, 0x30, 
+    0x34, 0x3f, 0x4d, 0x55, 0x5b, 0x60, 0x70, 0x76, 0x8b, 0x9b, 0xa0, 0xb1, 
+    0xce, 0xd0, 0xdd, 0xf4, 0xf6, 0xfc, 0x103, 0x106, 0x10d, 0x114, 0x11c, 
+    0x126, 0x12c, 0x130, 0x138, 0x14a, 0x14e, 
   };
 
   atn::ATNDeserializer deserializer;

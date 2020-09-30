@@ -4,106 +4,112 @@ grammar miniCgrammar;
 
 program : declarationList EOF;
 
-declarationList : declaration declarationList
-                | declaration
-                ;
+// declarationList : declaration declarationList
+//                 | declaration
+//                 ;
 
-declaration : variableDecl
-            | functionDecl  
+declarationList : declaration+ ;
+
+declaration : variableDecl      # variableDeclaration
+            | functionDecl      # functionDeclaration
             ;
 
 variableDecl : dataType variableDeclList ';' ;
 
-variableDeclList : singleVarDecl ',' variableDeclList
-                 | singleVarDecl
+variableDeclList : singleVarDecl ',' variableDeclList   # multipleCSVariables
+                 | singleVarDecl                        # singleVariable
                  ;
 
-singleVarDecl : Id '[' IntegerLiteral ']' '[' IntegerLiteral']'
-              | Id '[' IntegerLiteral ']'
-              | Id
+singleVarDecl : Id '[' IntegerLiteral ']' '[' IntegerLiteral']'     # twoDarray
+              | Id '[' IntegerLiteral ']'                           # oneDarray
+              | Id                                                  # simpleVariable
               ;
 
-dataType : Int
-         | Char
-         | Bool
-         | Long
-         | Uint
-         | Ulong
+dataType : Int      # IntDataType
+         | Char     # CharDataType
+         | Bool     # BoolDataType
+         | Long     # LongDataType
+         | Uint     # UintDataType
+         | Ulong    # UlongDataType
          ;
 
 functionDecl : dataType Id '(' paramsList? ')' '{' statementList? Return expr ';' '}' ;
 
 paramsList : (dataType Id)(',' dataType Id)* ;
 
-statementList : statement statementList | statement ;
+// statementList : statement statementList | statement ;
 
-statement : variableDecl
-          | location assignOp expr ';'
-          | expr ';'   
-          | conditionalStmt
-          | iterativeStmt
-          | Return expr ';'
-          | Break ';'           // semantic phase: break and continue must be inside a loop
-          | Continue ';'
+statementList : statement+ ;
+
+statement : variableDecl                    # variableDeclStmt
+          | location assignOp expr ';'      # assignmentStmt
+          | expr ';'                        # exprStmt
+          | conditionalStmt                 # conditionStmt
+          | iterativeStmt                   # iterationStmt
+          | Return expr ';'                 # returnStmt
+          | Break ';'                       # breakStmt
+          | Continue ';'                    # continueStmt
           ;
 
-location : Id
-         | Id '['arrayExpr']'
-         | Id '['arrayExpr']' '['arrayExpr']'
+// semantic phase: break and continue must be inside a loop
+
+location : Id                                   # simpleVarLocation
+         | Id '['arrayExpr']'                   # oneDarrayLocation
+         | Id '['arrayExpr']' '['arrayExpr']'   # twoDarrayLocation
          ;
 
-assignOp: '='
-        | '+='
-        | '-='
+assignOp: '='       # equalAssign
+        | '+='      # plusAssign
+        | '-='      # minusAssign
         ;
 
-expr: BoolLiteral
-    | IntegerLiteral
-    | StringLiteral
-    | CharLiteral
-    | '(' expr ')'
-    | location
-    | functionCall
-    | '-' expr
-    | '!' expr
-    | <assoc=right> expr '^' expr
-    | expr ('*'|'/'|'%') expr
-    | expr ('+'|'-') expr
-    | expr ('<'|'>'|'<='|'>=') expr
-    | expr ('=='|'!=') expr
-    | expr '&&' expr
-    | expr '||' expr
-    | expr '?' expr ':' expr
+expr: BoolLiteral                       # boolLitExpr
+    | IntegerLiteral                    # intLitExpr
+    | StringLiteral                     # stringLitExpr
+    | CharLiteral                       # charLitExpr
+    | '(' expr ')'                      # parenthesesExpr
+    | location                          # locationExpr
+    | functionCall                      # functionCallExpr
+    | '-' expr                          # negateExpr
+    | '!' expr                          # notExpr
+    | <assoc=right> expr '^' expr       # exponentExpr
+    | expr ('*'|'/'|'%') expr           # mulDivModExpr
+    | expr ('+'|'-') expr               # addSubExpr
+    | expr ('<'|'>'|'<='|'>=') expr     # relopExpr
+    | expr ('=='|'!=') expr             # equalityExpr
+    | expr '&&' expr                    # logicalANDExpr
+    | expr '||' expr                    # logicalORExpr
+    | expr '?' expr ':' expr            # ternaryExpr
     ;
 
-arrayExpr : IntegerLiteral
-          | '(' arrayExpr ')'
-          | location
-          | functionCall
-          | '!' arrayExpr
-          | <assoc=right> arrayExpr '^' arrayExpr
-          | arrayExpr ('*'|'/'|'%') arrayExpr
-          | arrayExpr ('+'|'-') arrayExpr
-          | arrayExpr ('<'|'>'|'<='|'>=') arrayExpr
-          | arrayExpr ('=='|'!=') arrayExpr
-          | arrayExpr '&&' arrayExpr
-          | arrayExpr '||' arrayExpr
+arrayExpr : IntegerLiteral                              # intLitArrayExpr
+          | '(' arrayExpr ')'                           # parenthesesArrayExpr
+          | location                                    # locationArrayExpr
+          | functionCall                                # functionCallArrayExpr
+          | '!' arrayExpr                               # notArrayExpr
+          | <assoc=right> arrayExpr '^' arrayExpr       # exponentArrayExpr
+          | arrayExpr ('*'|'/'|'%') arrayExpr           # mulDivModArrayExpr
+          | arrayExpr ('+'|'-') arrayExpr               # addSubArrayExpr
+          | arrayExpr ('<'|'>'|'<='|'>=') arrayExpr     # relopArrayExpr
+          | arrayExpr ('=='|'!=') arrayExpr             # equalityArrayExpr
+          | arrayExpr '&&' arrayExpr                    # logicalANDArrayExpr
+          | arrayExpr '||' arrayExpr                    # logicalORArrayExpr
           ; 
 
-functionCall: Id'(' argsList? ')'
-            | Callout'(' StringLiteral calloutArgs? ')'
+functionCall: Id'(' argsList? ')'                           # userDefFnCall
+            | Callout'(' StringLiteral calloutArgs? ')'     # libFnCall
             ;
 
 argsList :  expr ( (',' expr)* ) ;
 
 calloutArgs : (',' expr)+ ;
 
-conditionalStmt : If '(' expr ')' '{' statementList? '}' 
-                | If '(' expr ')' '{' statementList? '}' Else '{' statementList? '}'
+conditionalStmt : If '(' expr ')' '{' statementList? '}'                                # ifStmt
+                | If '(' expr ')' '{' statementList? '}' Else '{' statementList? '}'    # ifElseStmt
                 ;
 
-iterativeStmt : While '(' expr ')' '{' statementList? '}' 
-              | For '(' location '=' expr ';' expr ';' location assignOp expr ')' '{' statementList? '}' 
+iterativeStmt : While '(' expr ')' '{' statementList? '}'                                                       # whileStmt
+              | For '(' location '=' expr ';' expr ';' location assignOp expr ')' '{' statementList? '}'        # forStmt
               ;
 
 
