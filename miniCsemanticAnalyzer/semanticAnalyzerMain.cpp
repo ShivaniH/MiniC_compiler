@@ -50,8 +50,8 @@ int main(int argc, const char* argv[]) {
     if(tryNode != NULL)
         std::cout << "This is at the root : " << "\n";
 
-    ASTProgram* tryNode = dynamic_cast<ASTProgram*>(ast.root);
-    if(tryNode != NULL)
+    ASTProgram* tryAnotherNode = dynamic_cast<ASTProgram*>(ast.root);
+    if(tryAnotherNode != NULL)
         std::cout << "ASTProgram is at the root : " << "\n";
 
     return 0;
