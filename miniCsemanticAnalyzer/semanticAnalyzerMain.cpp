@@ -29,6 +29,7 @@ int main(int argc, const char* argv[]) {
     ASTBuildVisitor abv;
     ASTContext ast;
 
+    /*
     ASTnode *root;
     
     antlrcpp::Any anyObject;
@@ -53,6 +54,9 @@ int main(int argc, const char* argv[]) {
     ASTProgram* tryAnotherNode = dynamic_cast<ASTProgram*>(ast.root);
     if(tryAnotherNode != NULL)
         std::cout << "ASTProgram is at the root : " << "\n";
+    */
+
+    ast.root = abv.visitProgram(miniCparsetree);
 
     return 0;
 }

@@ -9,9 +9,9 @@ class ASTSingleVarDecl;
 class ASTSimpleVariableDecl;
 class AST1DArrayDecl;
 class AST2DArrayDecl;
-class ASTFunctionDecl;
-class ASTParamList;
 class ASTDataType;
+class ASTFunctionDecl;
+class ASTParam;
 
 class ASTExpr;
 class ASTParenthesesExpr;
@@ -43,8 +43,8 @@ class ASTWhileStmt;
 
 class ASTUserFunCall;
 class ASTLibFunCall;
-class ASTUserFunArgs;
-class ASTLibFunArgs;
+class ASTUserFunArg;
+class ASTLibFunArg;
 
 
 class ASTvisitor {
@@ -58,9 +58,9 @@ class ASTvisitor {
     virtual void visit(ASTSimpleVariableDecl& node) = 0;
     virtual void visit(AST1DArrayDecl& node) = 0;
     virtual void visit(AST2DArrayDecl& node) = 0;
-    virtual void visit(ASTFunctionDecl& node) = 0;
-    virtual void visit(ASTParamList& node) = 0;
     virtual void visit(ASTDataType& node) = 0;
+    virtual void visit(ASTFunctionDecl& node) = 0;
+    virtual void visit(ASTParam& node) = 0;
 
     virtual void visit(ASTExpr& node) = 0;
     virtual void visit(ASTParenthesesExpr& node) = 0;
@@ -92,8 +92,8 @@ class ASTvisitor {
 
     virtual void visit(ASTUserFunCall& node) = 0;
     virtual void visit(ASTLibFunCall& node) = 0;
-    virtual void visit(ASTUserFunArgs& node) = 0;
-    virtual void visit(ASTLibFunArgs& node) = 0;
+    virtual void visit(ASTUserFunArg& node) = 0;
+    virtual void visit(ASTLibFunArg& node) = 0;
 };
 
 class ASTnode {
@@ -110,7 +110,7 @@ class ASTnode {
 
 class ASTProgram : public ASTnode {
 
-    // std::vector<ASTDeclaration> declarationList;
+    std::vector<ASTDeclaration*> declarationList;
 
     public:
 
@@ -123,6 +123,22 @@ class ASTProgram : public ASTnode {
 
 class ASTDeclaration : public ASTnode {
 
+    ASTDataType *dataType;       // declarations -> var + func (return data type of the func)
+
+    public:
+
+    ASTDeclaration(ASTDataType *dt) : dataType(dt) {}
+
+    virtual void accept(ASTvisitor& v)
+    {
+        v.visit(*this);
+    }
+};
+
+class ASTCommaSepVarDecl : public ASTDeclaration {
+
+    std::vector<ASTSingleVarDecl*> variableList;
+    
     public:
 
     virtual void accept(ASTvisitor& v)
@@ -131,37 +147,9 @@ class ASTDeclaration : public ASTnode {
     }
 };
 
-class ASTCommaSepVarDecl : public ASTnode {
+class ASTSingleVarDecl : public ASTDeclaration {
 
-    public:
-
-    virtual void accept(ASTvisitor& v)
-    {
-        v.visit(*this);
-    }
-};
-
-class ASTSingleVarDecl : public ASTnode {
-
-    public:
-
-    virtual void accept(ASTvisitor& v)
-    {
-        v.visit(*this);
-    }
-};
-
-class ASTSimpleVariableDecl : public ASTnode {
-
-    public:
-
-    virtual void accept(ASTvisitor& v)
-    {
-        v.visit(*this);
-    }
-};
-
-class AST1DArrayDecl : public ASTnode {
+    std::string varName;
 
     public:
 
@@ -171,9 +159,11 @@ class AST1DArrayDecl : public ASTnode {
     }
 };
 
-class AST2DArrayDecl : public ASTnode {
+class ASTSimpleVariableDecl : public ASTSingleVarDecl {
 
     public:
+
+    ASTSimpleVariableDecl(std::string vName) : varName(vName) {}
 
     virtual void accept(ASTvisitor& v)
     {
@@ -181,9 +171,13 @@ class AST2DArrayDecl : public ASTnode {
     }
 };
 
-class ASTFunctionDecl : public ASTnode {
+class AST1DArrayDecl : public ASTSingleVarDecl {
+
+    int dim1;
 
     public:
+
+    AST1DArrayDecl(std::string vName, int d1) : varName(vName), dim1(d1) {}
 
     virtual void accept(ASTvisitor& v)
     {
@@ -191,9 +185,13 @@ class ASTFunctionDecl : public ASTnode {
     }
 };
 
-class ASTParamList : public ASTnode {
+class AST2DArrayDecl : public ASTSingleVarDecl {
+
+    int dim1, dim2;
 
     public:
+
+    AST2DArrayDecl(std::string vName, int d1, int d2) : varName(vName), dim1(d1), dim2(d2) {}
 
     virtual void accept(ASTvisitor& v)
     {
@@ -203,7 +201,46 @@ class ASTParamList : public ASTnode {
 
 class ASTDataType : public ASTnode {
 
+    std::string dataTypeName;
+
     public:
+
+    ASTDataType(std::string dt) : dataTypeName(dt) {}
+
+    virtual void accept(ASTvisitor& v)
+    {
+        v.visit(*this);
+    }
+};
+
+class ASTFunctionDecl : public ASTDeclaration {
+
+    std::string functionName;
+    std::vector<ASTParam*> paramList;
+    ASTStmtList *stmtList;
+
+    public:
+
+    ASTFunctionDecl(std::string funcName,  
+                    ASTStmtList *stList) : 
+                    functionName(funcName),
+                    stmtList(stList)
+                    {}
+
+    virtual void accept(ASTvisitor& v)
+    {
+        v.visit(*this);
+    }
+};
+
+class ASTParam : public ASTnode {
+
+    ASTDataType *dataType;
+    std::string paramName;
+
+    public:
+
+    ASTParam(ASTDataType *dt, std::string parName) : dataType(dt), paramName(parName) {}
 
     virtual void accept(ASTvisitor& v)
     {
@@ -213,7 +250,7 @@ class ASTDataType : public ASTnode {
 
 /*********************************** GROUP 2 ***************************************/
 
-class ASTExpr : public ASTnode {
+class ASTExpr : public ASTnode {        
 
     public:
 
@@ -223,7 +260,7 @@ class ASTExpr : public ASTnode {
     }
 };
 
-class ASTParenthesesExpr : public ASTnode {
+class ASTParenthesesExpr : public ASTExpr {         // needed?
 
     public:
 
@@ -233,7 +270,9 @@ class ASTParenthesesExpr : public ASTnode {
     }
 };
 
-class ASTLocationExpr : public ASTnode {
+class ASTLocationExpr : public ASTExpr {
+
+    std::string locationName;
 
     public:
 
@@ -243,9 +282,11 @@ class ASTLocationExpr : public ASTnode {
     }
 };
 
-class ASTSimpleVarLocation : public ASTnode {
+class ASTSimpleVarLocation : public ASTLocationExpr {
 
     public:
+
+    ASTSimpleVarLocation(std::string locName) : locationName(locName) {}
 
     virtual void accept(ASTvisitor& v)
     {
@@ -253,9 +294,14 @@ class ASTSimpleVarLocation : public ASTnode {
     }
 };
 
-class ASTOneDarrayLocation : public ASTnode {
+class ASTOneDarrayLocation : public ASTLocationExpr {
+    
+    int dim1;
 
     public:
+
+    ASTOneDarrayLocation(std::string locName, int d1) : 
+    locationName(locName), dim1(d1) {}
 
     virtual void accept(ASTvisitor& v)
     {
@@ -263,9 +309,14 @@ class ASTOneDarrayLocation : public ASTnode {
     }
 };
 
-class ASTTwoDarrayLocation : public ASTnode {
+class ASTTwoDarrayLocation : public ASTLocationExpr {
+
+    int dim1, dim2;
 
     public:
+
+    ASTTwoDarrayLocation(std::string locName, int d1, int d2) : 
+    locationName(locName), dim1(d1), dim2(d2) {}
 
     virtual void accept(ASTvisitor& v)
     {
@@ -273,9 +324,19 @@ class ASTTwoDarrayLocation : public ASTnode {
     }
 };
 
-class ASTUnaryExpr : public ASTnode {
+class ASTUnaryExpr : public ASTExpr {
+
+    std::string unary_operator;
+
+    ASTExpr *operand;
 
     public:
+
+    ASTUnaryExpr(std::string un_operator, ASTExpr* _operand) : unary_operator(un_operator), operand(_operand) {}
+    
+    ASTExpr* getOperand() { return operand; }
+
+    std::string getUnaryOp() { return unary_operator; }
 
     virtual void accept(ASTvisitor& v)
     {
@@ -283,23 +344,23 @@ class ASTUnaryExpr : public ASTnode {
     }
 };
 
-class ASTBinaryExpr : public ASTnode {
+class ASTBinaryExpr : public ASTExpr {
 
     std::string bin_operator;  
 
-    ASTnode *left;
-    ASTnode *right;  
+    ASTExpr *left;
+    ASTExpr *right;  
 
     public:
 
-    ASTBinaryExpr (std::string op, ASTnode* _left, ASTnode* _right ) : 
+    ASTBinaryExpr (std::string op, ASTExpr* _left, ASTExpr* _right ) : 
     bin_operator(op), left(_left), right(_right) {}  
 
-    ASTnode* getLeft() {
+    ASTExpr* getLeft() {
         return left;
     }
 
-    ASTnode* getRight() {
+    ASTExpr* getRight() {
         return right;
     }
 
@@ -314,28 +375,28 @@ class ASTBinaryExpr : public ASTnode {
 
 };
 
-class ASTTernaryExpr : public ASTnode {
+class ASTTernaryExpr : public ASTExpr {
 
-    ASTnode *first;
-    ASTnode *second;
-    ASTnode *third;  
+    ASTExpr *first;
+    ASTExpr *second;
+    ASTExpr *third;  
 
     public:
 
-    ASTTernaryExpr (ASTnode *first, ASTnode *second, ASTnode *third ) :
+    ASTTernaryExpr (ASTExpr *first, ASTExpr *second, ASTExpr *third ) :
     first(first), second(second), third(third) {}  
 
-    ASTnode* getFirst()
+    ASTExpr* getFirst()
     {
         return first;
     }
 
-    ASTnode* getSecond()
+    ASTExpr* getSecond()
     {
         return second;
     }
 
-    ASTnode* getThird()
+    ASTExpr* getThird()
     {
         return third;
     }
@@ -347,7 +408,7 @@ class ASTTernaryExpr : public ASTnode {
 };
 
 
-class ASTArrayExpr : public ASTnode {
+class ASTArrayExpr : public ASTnode {       // ???
 
     public:
 
@@ -357,7 +418,7 @@ class ASTArrayExpr : public ASTnode {
     }
 };
 
-class ASTParenthesesArrayExpr : public ASTnode {
+class ASTParenthesesArrayExpr : public ASTArrayExpr {
 
     public:
 
@@ -393,15 +454,15 @@ class ASTIntLitNode: public ASTnode {
 
 class ASTStringLitNode: public ASTnode {
 
-	int integerLiteral;
+	std::string stringLiteral;
 
 	public:
 
-	ASTIntLitNode(int intlit) : integerLiteral(intlit){}
+	ASTStringLitNode(std::string strLit) : stringLiteral(strLit){}
 
-    int getIntLit()
+    std::string getStringLit()
     {
-        return integerLiteral;
+        return stringLiteral;
     }
 
     virtual void accept(ASTvisitor& v) 
@@ -413,15 +474,15 @@ class ASTStringLitNode: public ASTnode {
 
 class ASTCharLitNode: public ASTnode {
 
-	int integerLiteral;
+	char charLiteral;
 
 	public:
 
-	ASTIntLitNode(int intlit) : integerLiteral(intlit){}
+	ASTCharLitNode(char charlit) : charLiteral(charlit){}
 
-    int getIntLit()
+    char getCharLit()
     {
-        return integerLiteral;
+        return charLiteral;
     }
 
     virtual void accept(ASTvisitor& v) 
@@ -433,15 +494,15 @@ class ASTCharLitNode: public ASTnode {
 
 class ASTBoolLitNode: public ASTnode {
 
-	int integerLiteral;
+	bool boolLiteral;
 
 	public:
 
-	ASTIntLitNode(int intlit) : integerLiteral(intlit){}
+	ASTBoolLitNode(bool boolLit) : boolLiteral(boolLit){}
 
-    int getIntLit()
+    bool getBoolLit()
     {
-        return integerLiteral;
+        return boolLiteral;
     }
 
     virtual void accept(ASTvisitor& v) 
@@ -455,6 +516,8 @@ class ASTBoolLitNode: public ASTnode {
 
 
 class ASTStmtList : public ASTnode {
+
+    std::vector<ASTStmt*> listOfStmts;
 
     public:
 
@@ -474,7 +537,58 @@ class ASTStmt : public ASTnode {
     }
 };
 
-class ASTAssignmentStmt : public ASTnode {
+class ASTAssignmentStmt : public ASTStmt {
+
+    ASTLocationExpr *location;
+    std::string assignOp;
+    ASTExpr *expression;
+
+    public:
+
+    ASTAssignmentStmt(ASTLocationExpr* loc, std::string assign, ASTExpr* expr) :
+    location(loc), assignOp(assign), expression(expr) {}
+
+    ASTLocationExpr* getLocation()
+    {
+        return location;
+    }
+    
+    std::string getAssignOp()
+    {
+        return assignOp;
+    }
+
+    ASTExpr* getExpression()
+    {
+        return expression;
+    }
+
+    virtual void accept(ASTvisitor& v)
+    {
+        v.visit(*this);
+    }
+};
+
+class ASTReturnStmt : public ASTStmt {
+
+    ASTExpr* returnExpr;
+
+    public:
+
+    ASTReturnStmt(ASTExpr* retExp) : returnExpr(retExp) {}
+
+    ASTExpr* getReturnExpr()
+    {
+        return returnExpr;
+    }
+
+    virtual void accept(ASTvisitor& v)
+    {
+        v.visit(*this);
+    }
+};
+
+class ASTBreakStmt : public ASTStmt {
 
     public:
 
@@ -484,7 +598,7 @@ class ASTAssignmentStmt : public ASTnode {
     }
 };
 
-class ASTReturnStmt : public ASTnode {
+class ASTContinueStmt : public ASTStmt {
 
     public:
 
@@ -494,9 +608,14 @@ class ASTReturnStmt : public ASTnode {
     }
 };
 
-class ASTBreakStmt : public ASTnode {
+class ASTIfStmt : public ASTStmt {
+
+    ASTExpr* condition;
+    ASTStmtList* statements;
 
     public:
+
+    ASTIfStmt(ASTExpr* ifcon, ASTStmtList* stmts) : condition(ifcon), statements(stmts) {}
 
     virtual void accept(ASTvisitor& v)
     {
@@ -504,9 +623,15 @@ class ASTBreakStmt : public ASTnode {
     }
 };
 
-class ASTContinueStmt : public ASTnode {
+class ASTIfElseStmt : public ASTStmt {
+
+    ASTExpr* condition;
+    ASTStmtList *thenStatements;
+    ASTStmtList *elseStatements;
 
     public:
+
+    ASTIfElseStmt(ASTExpr* ifcon, ASTStmtList* thenStmts, ASTStmtList* elseStmts) : condition(ifcon), thenStatements(thenStmts), elseStatements(elseStmts) {}
 
     virtual void accept(ASTvisitor& v)
     {
@@ -514,9 +639,36 @@ class ASTContinueStmt : public ASTnode {
     }
 };
 
-class ASTIfStmt : public ASTnode {
+class ASTForStmt : public ASTStmt {
+
+    ASTLocationExpr* initLoc;
+    ASTExpr* initExpr;
+
+    ASTExpr* conditionExpr;
+
+    ASTLocationExpr* updateLoc;
+    std::string assignOp;
+    ASTExpr* updateExpr;
+
+    ASTStmtList *statements;
 
     public:
+
+    ASTForStmt( ASTLocationExpr* inLoc, 
+                ASTExpr* inExpr, 
+                ASTExpr* conExpr, 
+                ASTLocationExpr* upLoc, 
+                std::string op, 
+                ASTExpr* upExpr, 
+                ASTStmtList* stmts ) : 
+                initLoc(inLoc),
+                initExpr(inExpr),
+                conditionExpr(conExpr),
+                updateLoc(upLoc),
+                assignOp(op),
+                updateExpr(upExpr),
+                statements(stmts)
+                {}
 
     virtual void accept(ASTvisitor& v)
     {
@@ -524,29 +676,14 @@ class ASTIfStmt : public ASTnode {
     }
 };
 
-class ASTIfElseStmt : public ASTnode {
+class ASTWhileStmt : public ASTStmt {
+
+    ASTExpr* condition;
+    ASTStmtList* statements;
 
     public:
 
-    virtual void accept(ASTvisitor& v)
-    {
-        v.visit(*this);
-    }
-};
-
-class ASTForStmt : public ASTnode {
-
-    public:
-
-    virtual void accept(ASTvisitor& v)
-    {
-        v.visit(*this);
-    }
-};
-
-class ASTWhileStmt : public ASTnode {
-
-    public:
+    ASTWhileStmt(ASTExpr* con, ASTStmtList* stmts) : condition(con), statements(stmts) {}
 
     virtual void accept(ASTvisitor& v)
     {
@@ -558,7 +695,12 @@ class ASTWhileStmt : public ASTnode {
 
 class ASTUserFunCall : public ASTnode {
 
+    std::string funcName;
+    std::vector<ASTUserFunArg*> args;
+
     public:
+
+    ASTUserFunCall(std::string fnName) : funcName(fnName) {}
 
     virtual void accept(ASTvisitor& v)
     {
@@ -568,7 +710,12 @@ class ASTUserFunCall : public ASTnode {
 
 class ASTLibFunCall : public ASTnode {
 
+    std::string libFuncName;
+    std::vector<ASTLibFunArg*> args;
+
     public:
+
+    ASTLibFunCall(std::string libFnName) : libFuncName(libFnName) {}
 
     virtual void accept(ASTvisitor& v)
     {
@@ -576,9 +723,13 @@ class ASTLibFunCall : public ASTnode {
     }
 };
 
-class ASTUserFunArgs : public ASTnode {
+class ASTUserFunArg : public ASTnode {
+
+    ASTExpr* argument;
 
     public:
+
+    ASTUserFunArg(ASTExpr* arg) : argument(arg) {}
 
     virtual void accept(ASTvisitor& v)
     {
@@ -586,9 +737,13 @@ class ASTUserFunArgs : public ASTnode {
     }
 };
 
-class ASTLibFunArgs : public ASTnode {
+class ASTLibFunArg : public ASTnode {
+
+    ASTExpr* argument;
 
     public:
+
+    ASTLibFunArg(ASTExpr* arg) : argument(arg) {}
 
     virtual void accept(ASTvisitor& v)
     {
@@ -604,7 +759,8 @@ class ASTContext {
     
     public:
 
-    ASTnode *root;
+    // ASTnode *root;
+    ASTProgram *root;
 
     ~ASTContext()
     {

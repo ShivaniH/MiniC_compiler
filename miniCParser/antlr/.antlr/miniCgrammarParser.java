@@ -1448,7 +1448,7 @@ public class miniCgrammarParser extends Parser {
 						setState(201);
 						match(Colon);
 						setState(202);
-						expr(2);
+						expr(1);
 						}
 						break;
 					}
@@ -2385,7 +2385,7 @@ public class miniCgrammarParser extends Parser {
 		"\u00c2\u00c3\f\5\2\2\u00c3\u00c4\7$\2\2\u00c4\u00cf\5\34\17\6\u00c5\u00c6"+
 		"\f\4\2\2\u00c6\u00c7\7%\2\2\u00c7\u00cf\5\34\17\5\u00c8\u00c9\f\3\2\2"+
 		"\u00c9\u00ca\7\'\2\2\u00ca\u00cb\5\34\17\2\u00cb\u00cc\7(\2\2\u00cc\u00cd"+
-		"\5\34\17\4\u00cd\u00cf\3\2\2\2\u00ce\u00b3\3\2\2\2\u00ce\u00b6\3\2\2\2"+
+		"\5\34\17\3\u00cd\u00cf\3\2\2\2\u00ce\u00b3\3\2\2\2\u00ce\u00b6\3\2\2\2"+
 		"\u00ce\u00b9\3\2\2\2\u00ce\u00bc\3\2\2\2\u00ce\u00bf\3\2\2\2\u00ce\u00c2"+
 		"\3\2\2\2\u00ce\u00c5\3\2\2\2\u00ce\u00c8\3\2\2\2\u00cf\u00d2\3\2\2\2\u00d0"+
 		"\u00ce\3\2\2\2\u00d0\u00d1\3\2\2\2\u00d1\35\3\2\2\2\u00d2\u00d0\3\2\2"+

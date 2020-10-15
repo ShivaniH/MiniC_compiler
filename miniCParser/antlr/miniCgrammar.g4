@@ -41,14 +41,14 @@ paramsList : (dataType Id)(',' dataType Id)* ;
 
 statementList : statement+ ;
 
-statement : variableDecl                    # variableDeclStmt
-          | location assignOp expr ';'      # assignmentStmt
-          | expr ';'                        # exprStmt
-          | conditionalStmt                 # conditionStmt
-          | iterativeStmt                   # iterationStmt
-          | Return expr ';'                 # returnStmt
-          | Break ';'                       # breakStmt
-          | Continue ';'                    # continueStmt
+statement : variableDecl                                    # variableDeclStmt
+          | <assoc=right> location assignOp expr ';'        # assignmentStmt
+          | expr ';'                                        # exprStmt
+          | conditionalStmt                                 # conditionStmt
+          | iterativeStmt                                   # iterationStmt
+          | Return expr ';'                                 # returnStmt
+          | Break ';'                                       # breakStmt
+          | Continue ';'                                    # continueStmt
           ;
 
 // semantic phase: break and continue must be inside a loop
@@ -63,23 +63,23 @@ assignOp: '='       # equalAssign
         | '-='      # minusAssign
         ;
 
-expr: BoolLiteral                       # boolLitExpr
-    | IntegerLiteral                    # intLitExpr
-    | StringLiteral                     # stringLitExpr
-    | CharLiteral                       # charLitExpr
-    | '(' expr ')'                      # parenthesesExpr
-    | location                          # locationExpr
-    | functionCall                      # functionCallExpr
-    | '-' expr                          # negateExpr
-    | '!' expr                          # notExpr
-    | <assoc=right> expr '^' expr       # exponentExpr
-    | expr ('*'|'/'|'%') expr           # mulDivModExpr
-    | expr ('+'|'-') expr               # addSubExpr
-    | expr ('<'|'>'|'<='|'>=') expr     # relopExpr
-    | expr ('=='|'!=') expr             # equalityExpr
-    | expr '&&' expr                    # logicalANDExpr
-    | expr '||' expr                    # logicalORExpr
-    | expr '?' expr ':' expr            # ternaryExpr
+expr: BoolLiteral                           # boolLitExpr
+    | IntegerLiteral                        # intLitExpr
+    | StringLiteral                         # stringLitExpr
+    | CharLiteral                           # charLitExpr
+    | '(' expr ')'                          # parenthesesExpr
+    | location                              # locationExpr
+    | functionCall                          # functionCallExpr
+    | <assoc=right> '-' expr                # negateExpr
+    | <assoc=right> '!' expr                # notExpr
+    | <assoc=right> expr '^' expr           # exponentExpr
+    | expr ('*'|'/'|'%') expr               # mulDivModExpr
+    | expr ('+'|'-') expr                   # addSubExpr
+    | expr ('<'|'>'|'<='|'>=') expr         # relopExpr
+    | expr ('=='|'!=') expr                 # equalityExpr
+    | expr '&&' expr                        # logicalANDExpr
+    | expr '||' expr                        # logicalORExpr
+    | <assoc=right> expr '?' expr ':' expr  # ternaryExpr
     ;
 
 arrayExpr : IntegerLiteral                              # intLitArrayExpr

@@ -18,6 +18,8 @@ To work with Antlr's C++ target:
 
 antlr4 -no-listener -visitor -Dlanguage=Cpp miniCgrammar.g4 
 
+
+
 g++ -I /usr/local/include/antlr4-runtime -L /usr/local/lib/antlr4cppRuntime/run/usr/local -lantlr  -o trial  *.cpp
 
 
