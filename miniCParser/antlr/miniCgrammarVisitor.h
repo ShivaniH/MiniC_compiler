@@ -29,9 +29,7 @@ public:
 
     virtual antlrcpp::Any visitVariableDecl(miniCgrammarParser::VariableDeclContext *context) = 0;
 
-    virtual antlrcpp::Any visitMultipleCSVariables(miniCgrammarParser::MultipleCSVariablesContext *context) = 0;
-
-    virtual antlrcpp::Any visitSingleVariable(miniCgrammarParser::SingleVariableContext *context) = 0;
+    virtual antlrcpp::Any visitVariableDeclList(miniCgrammarParser::VariableDeclListContext *context) = 0;
 
     virtual antlrcpp::Any visitTwoDarray(miniCgrammarParser::TwoDarrayContext *context) = 0;
 

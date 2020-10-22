@@ -1,10 +1,11 @@
 #include <vector>
+#include <string>
 
 // 39 subclasses of ASTNode
 
 class ASTProgram;
 class ASTDeclaration;
-class ASTCommaSepVarDecl;
+class ASTVariableDecl;
 class ASTSingleVarDecl;
 class ASTSimpleVariableDecl;
 class AST1DArrayDecl;
@@ -53,7 +54,7 @@ class ASTvisitor {
 
     virtual void visit(ASTProgram& node) = 0;
     virtual void visit(ASTDeclaration& node) = 0;
-    virtual void visit(ASTCommaSepVarDecl& node) = 0;
+    virtual void visit(ASTVariableDecl& node) = 0;
     virtual void visit(ASTSingleVarDecl& node) = 0;
     virtual void visit(ASTSimpleVariableDecl& node) = 0;
     virtual void visit(AST1DArrayDecl& node) = 0;
@@ -114,6 +115,11 @@ class ASTProgram : public ASTnode {
 
     public:
 
+    void addToDeclarations(ASTDeclaration* decl)
+    {
+        declarationList.push_back(decl);
+    }
+
     virtual void accept(ASTvisitor& v)
     {
         v.visit(*this);
@@ -127,6 +133,8 @@ class ASTDeclaration : public ASTnode {
 
     public:
 
+    ASTDeclaration() {}
+
     ASTDeclaration(ASTDataType *dt) : dataType(dt) {}
 
     virtual void accept(ASTvisitor& v)
@@ -135,23 +143,35 @@ class ASTDeclaration : public ASTnode {
     }
 };
 
-class ASTCommaSepVarDecl : public ASTDeclaration {
+class ASTVariableDecl : public ASTDeclaration {
 
     std::vector<ASTSingleVarDecl*> variableList;
-    
+
     public:
+
+    ASTVariableDecl(ASTDataType *dt) : ASTDeclaration(dt) {}
+
+    void addVariable(ASTSingleVarDecl* var)
+    {
+        variableList.push_back(var);
+    }
 
     virtual void accept(ASTvisitor& v)
     {
         v.visit(*this);
     }
+
 };
 
 class ASTSingleVarDecl : public ASTDeclaration {
 
+    protected:
+
     std::string varName;
 
     public:
+
+    ASTSingleVarDecl(std::string vName) : varName(vName) {}
 
     virtual void accept(ASTvisitor& v)
     {
@@ -163,7 +183,7 @@ class ASTSimpleVariableDecl : public ASTSingleVarDecl {
 
     public:
 
-    ASTSimpleVariableDecl(std::string vName) : varName(vName) {}
+    ASTSimpleVariableDecl(std::string vName) : ASTSingleVarDecl(vName) {}
 
     virtual void accept(ASTvisitor& v)
     {
@@ -177,7 +197,7 @@ class AST1DArrayDecl : public ASTSingleVarDecl {
 
     public:
 
-    AST1DArrayDecl(std::string vName, int d1) : varName(vName), dim1(d1) {}
+    AST1DArrayDecl(std::string vName, int d1) : ASTSingleVarDecl(vName), dim1(d1) {}
 
     virtual void accept(ASTvisitor& v)
     {
@@ -191,7 +211,7 @@ class AST2DArrayDecl : public ASTSingleVarDecl {
 
     public:
 
-    AST2DArrayDecl(std::string vName, int d1, int d2) : varName(vName), dim1(d1), dim2(d2) {}
+    AST2DArrayDecl(std::string vName, int d1, int d2) : ASTSingleVarDecl(vName), dim1(d1), dim2(d2) {}
 
     virtual void accept(ASTvisitor& v)
     {
@@ -221,8 +241,10 @@ class ASTFunctionDecl : public ASTDeclaration {
 
     public:
 
-    ASTFunctionDecl(std::string funcName,  
+    ASTFunctionDecl(ASTDataType *dt,
+                    std::string funcName,  
                     ASTStmtList *stList) : 
+                    ASTDeclaration(dt),
                     functionName(funcName),
                     stmtList(stList)
                     {}
@@ -272,9 +294,13 @@ class ASTParenthesesExpr : public ASTExpr {         // needed?
 
 class ASTLocationExpr : public ASTExpr {
 
+    protected:
+
     std::string locationName;
 
     public:
+
+    ASTLocationExpr(std::string locName) : locationName(locName) {}
 
     virtual void accept(ASTvisitor& v)
     {
@@ -286,7 +312,7 @@ class ASTSimpleVarLocation : public ASTLocationExpr {
 
     public:
 
-    ASTSimpleVarLocation(std::string locName) : locationName(locName) {}
+    ASTSimpleVarLocation(std::string locName) : ASTLocationExpr(locName) {}
 
     virtual void accept(ASTvisitor& v)
     {
@@ -301,7 +327,7 @@ class ASTOneDarrayLocation : public ASTLocationExpr {
     public:
 
     ASTOneDarrayLocation(std::string locName, int d1) : 
-    locationName(locName), dim1(d1) {}
+    ASTLocationExpr(locName), dim1(d1) {}
 
     virtual void accept(ASTvisitor& v)
     {
@@ -316,7 +342,7 @@ class ASTTwoDarrayLocation : public ASTLocationExpr {
     public:
 
     ASTTwoDarrayLocation(std::string locName, int d1, int d2) : 
-    locationName(locName), dim1(d1), dim2(d2) {}
+    ASTLocationExpr(locName), dim1(d1), dim2(d2) {}
 
     virtual void accept(ASTvisitor& v)
     {

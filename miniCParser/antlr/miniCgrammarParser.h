@@ -143,34 +143,15 @@ public:
   class  VariableDeclListContext : public antlr4::ParserRuleContext {
   public:
     VariableDeclListContext(antlr4::ParserRuleContext *parent, size_t invokingState);
-   
-    VariableDeclListContext() = default;
-    void copyFrom(VariableDeclListContext *context);
-    using antlr4::ParserRuleContext::copyFrom;
-
     virtual size_t getRuleIndex() const override;
+    std::vector<SingleVarDeclContext *> singleVarDecl();
+    SingleVarDeclContext* singleVarDecl(size_t i);
+    std::vector<antlr4::tree::TerminalNode *> Comma();
+    antlr4::tree::TerminalNode* Comma(size_t i);
 
+
+    virtual antlrcpp::Any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
    
-  };
-
-  class  SingleVariableContext : public VariableDeclListContext {
-  public:
-    SingleVariableContext(VariableDeclListContext *ctx);
-
-    SingleVarDeclContext *singleVarDecl();
-
-    virtual antlrcpp::Any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
-  };
-
-  class  MultipleCSVariablesContext : public VariableDeclListContext {
-  public:
-    MultipleCSVariablesContext(VariableDeclListContext *ctx);
-
-    SingleVarDeclContext *singleVarDecl();
-    antlr4::tree::TerminalNode *Comma();
-    VariableDeclListContext *variableDeclList();
-
-    virtual antlrcpp::Any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
   };
 
   VariableDeclListContext* variableDeclList();

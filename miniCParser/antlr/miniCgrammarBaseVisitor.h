@@ -35,11 +35,7 @@ public:
     return visitChildren(ctx);
   }
 
-  virtual antlrcpp::Any visitMultipleCSVariables(miniCgrammarParser::MultipleCSVariablesContext *ctx) override {
-    return visitChildren(ctx);
-  }
-
-  virtual antlrcpp::Any visitSingleVariable(miniCgrammarParser::SingleVariableContext *ctx) override {
+  virtual antlrcpp::Any visitVariableDeclList(miniCgrammarParser::VariableDeclListContext *ctx) override {
     return visitChildren(ctx);
   }
 

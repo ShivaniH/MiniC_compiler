@@ -4,10 +4,6 @@ grammar miniCgrammar;
 
 program : declarationList EOF;
 
-// declarationList : declaration declarationList
-//                 | declaration
-//                 ;
-
 declarationList : declaration+ ;
 
 declaration : variableDecl      # variableDeclaration
@@ -16,9 +12,11 @@ declaration : variableDecl      # variableDeclaration
 
 variableDecl : dataType variableDeclList ';' ;
 
-variableDeclList : singleVarDecl ',' variableDeclList   # multipleCSVariables
-                 | singleVarDecl                        # singleVariable
-                 ;
+// variableDeclList : singleVarDecl ',' variableDeclList   # multipleCSVariables
+//                  | singleVarDecl                        # singleVariable
+//                  ;
+
+variableDeclList : singleVarDecl (',' singleVarDecl)* ;
 
 singleVarDecl : Id '[' IntegerLiteral ']' '[' IntegerLiteral']'     # twoDarray
               | Id '[' IntegerLiteral ']'                           # oneDarray
@@ -36,9 +34,7 @@ dataType : Int      # IntDataType
 functionDecl : dataType Id '(' paramsList? ')' '{' statementList? Return expr ';' '}' ;
 
 paramsList : (dataType Id)(',' dataType Id)* ;
-
-// statementList : statement statementList | statement ;
-
+ 
 statementList : statement+ ;
 
 statement : variableDecl                                    # variableDeclStmt
