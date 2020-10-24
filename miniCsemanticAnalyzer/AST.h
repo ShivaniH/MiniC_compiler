@@ -227,6 +227,11 @@ class ASTDataType : public ASTnode {
 
     ASTDataType(std::string dt) : dataTypeName(dt) {}
 
+    std::string getDataTypeName()
+    {
+        return dataTypeName;
+    }
+
     virtual void accept(ASTvisitor& v)
     {
         v.visit(*this);
@@ -238,16 +243,24 @@ class ASTFunctionDecl : public ASTDeclaration {
     std::string functionName;
     std::vector<ASTParam*> paramList;
     ASTStmtList *stmtList;
+    ASTReturnStmt *returnExpr;
 
     public:
 
     ASTFunctionDecl(ASTDataType *dt,
                     std::string funcName,  
-                    ASTStmtList *stList) : 
+                    ASTStmtList *stList,
+                    ASTReturnStmt *retExp) : 
                     ASTDeclaration(dt),
                     functionName(funcName),
-                    stmtList(stList)
+                    stmtList(stList),
+                    returnExpr(retExp)
                     {}
+
+    void addParam(ASTParam* param)
+    {
+        paramList.push_back(param);
+    }
 
     virtual void accept(ASTvisitor& v)
     {
@@ -546,6 +559,11 @@ class ASTStmtList : public ASTnode {
     std::vector<ASTStmt*> listOfStmts;
 
     public:
+
+    void addStatement(ASTStmt *stmt)
+    {
+        listOfStmts.push_back(stmt);
+    }
 
     virtual void accept(ASTvisitor& v)
     {
