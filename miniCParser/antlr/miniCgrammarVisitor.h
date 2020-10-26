@@ -117,30 +117,6 @@ public:
 
     virtual antlrcpp::Any visitEqualityExpr(miniCgrammarParser::EqualityExprContext *context) = 0;
 
-    virtual antlrcpp::Any visitLogicalANDArrayExpr(miniCgrammarParser::LogicalANDArrayExprContext *context) = 0;
-
-    virtual antlrcpp::Any visitAddSubArrayExpr(miniCgrammarParser::AddSubArrayExprContext *context) = 0;
-
-    virtual antlrcpp::Any visitLocationArrayExpr(miniCgrammarParser::LocationArrayExprContext *context) = 0;
-
-    virtual antlrcpp::Any visitEqualityArrayExpr(miniCgrammarParser::EqualityArrayExprContext *context) = 0;
-
-    virtual antlrcpp::Any visitExponentArrayExpr(miniCgrammarParser::ExponentArrayExprContext *context) = 0;
-
-    virtual antlrcpp::Any visitLogicalORArrayExpr(miniCgrammarParser::LogicalORArrayExprContext *context) = 0;
-
-    virtual antlrcpp::Any visitNotArrayExpr(miniCgrammarParser::NotArrayExprContext *context) = 0;
-
-    virtual antlrcpp::Any visitMulDivModArrayExpr(miniCgrammarParser::MulDivModArrayExprContext *context) = 0;
-
-    virtual antlrcpp::Any visitParenthesesArrayExpr(miniCgrammarParser::ParenthesesArrayExprContext *context) = 0;
-
-    virtual antlrcpp::Any visitFunctionCallArrayExpr(miniCgrammarParser::FunctionCallArrayExprContext *context) = 0;
-
-    virtual antlrcpp::Any visitRelopArrayExpr(miniCgrammarParser::RelopArrayExprContext *context) = 0;
-
-    virtual antlrcpp::Any visitIntLitArrayExpr(miniCgrammarParser::IntLitArrayExprContext *context) = 0;
-
     virtual antlrcpp::Any visitUserDefFnCall(miniCgrammarParser::UserDefFnCallContext *context) = 0;
 
     virtual antlrcpp::Any visitLibFnCall(miniCgrammarParser::LibFnCallContext *context) = 0;

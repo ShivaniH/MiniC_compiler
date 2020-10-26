@@ -9,14 +9,14 @@ INFO: Created user preferences directory.
 [shivanih@katzchen antlr]$ grun Expr prog ../tests/test0.mc -gui
 [shivanih@katzchen antlr]$ 
 
-
+grun miniCgrammar program ../../miniCsemanticAnalyzer/simpleTest.mc -gui
 
 *****************************************************************************************************
 
 To work with Antlr's C++ target:
 (Download and build antlr's cpp runtime, instructions on github)
 
-antlr4 -no-listener -visitor -Dlanguage=Cpp miniCgrammar.g4 
+antlr4 -no-listener -visitor -Dlanguage=Cpp miniCgrammar.g4
 
 
 

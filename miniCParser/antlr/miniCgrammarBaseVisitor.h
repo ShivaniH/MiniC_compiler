@@ -211,54 +211,6 @@ public:
     return visitChildren(ctx);
   }
 
-  virtual antlrcpp::Any visitLogicalANDArrayExpr(miniCgrammarParser::LogicalANDArrayExprContext *ctx) override {
-    return visitChildren(ctx);
-  }
-
-  virtual antlrcpp::Any visitAddSubArrayExpr(miniCgrammarParser::AddSubArrayExprContext *ctx) override {
-    return visitChildren(ctx);
-  }
-
-  virtual antlrcpp::Any visitLocationArrayExpr(miniCgrammarParser::LocationArrayExprContext *ctx) override {
-    return visitChildren(ctx);
-  }
-
-  virtual antlrcpp::Any visitEqualityArrayExpr(miniCgrammarParser::EqualityArrayExprContext *ctx) override {
-    return visitChildren(ctx);
-  }
-
-  virtual antlrcpp::Any visitExponentArrayExpr(miniCgrammarParser::ExponentArrayExprContext *ctx) override {
-    return visitChildren(ctx);
-  }
-
-  virtual antlrcpp::Any visitLogicalORArrayExpr(miniCgrammarParser::LogicalORArrayExprContext *ctx) override {
-    return visitChildren(ctx);
-  }
-
-  virtual antlrcpp::Any visitNotArrayExpr(miniCgrammarParser::NotArrayExprContext *ctx) override {
-    return visitChildren(ctx);
-  }
-
-  virtual antlrcpp::Any visitMulDivModArrayExpr(miniCgrammarParser::MulDivModArrayExprContext *ctx) override {
-    return visitChildren(ctx);
-  }
-
-  virtual antlrcpp::Any visitParenthesesArrayExpr(miniCgrammarParser::ParenthesesArrayExprContext *ctx) override {
-    return visitChildren(ctx);
-  }
-
-  virtual antlrcpp::Any visitFunctionCallArrayExpr(miniCgrammarParser::FunctionCallArrayExprContext *ctx) override {
-    return visitChildren(ctx);
-  }
-
-  virtual antlrcpp::Any visitRelopArrayExpr(miniCgrammarParser::RelopArrayExprContext *ctx) override {
-    return visitChildren(ctx);
-  }
-
-  virtual antlrcpp::Any visitIntLitArrayExpr(miniCgrammarParser::IntLitArrayExprContext *ctx) override {
-    return visitChildren(ctx);
-  }
-
   virtual antlrcpp::Any visitUserDefFnCall(miniCgrammarParser::UserDefFnCallContext *ctx) override {
     return visitChildren(ctx);
   }

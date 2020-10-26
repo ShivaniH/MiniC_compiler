@@ -12,17 +12,16 @@
 class  miniCgrammarLexer : public antlr4::Lexer {
 public:
   enum {
-    Bool = 1, Break = 2, Callout = 3, Char = 4, Continue = 5, Else = 6, 
-    False = 7, Float = 8, For = 9, If = 10, Int = 11, Long = 12, Return = 13, 
-    True = 14, Uint = 15, Ulong = 16, While = 17, LeftParen = 18, RightParen = 19, 
-    LeftBracket = 20, RightBracket = 21, LeftBrace = 22, RightBrace = 23, 
-    Less = 24, LessEqual = 25, Greater = 26, GreaterEqual = 27, Plus = 28, 
-    Minus = 29, Star = 30, Div = 31, Mod = 32, Caret = 33, And = 34, Or = 35, 
-    Not = 36, Question = 37, Colon = 38, Semi = 39, Comma = 40, SingleQuote = 41, 
-    DoubleQuote = 42, Assign = 43, PlusAssign = 44, MinusAssign = 45, Equal = 46, 
-    NotEqual = 47, CharLiteral = 48, StringLiteral = 49, BoolLiteral = 50, 
-    IntegerLiteral = 51, Id = 52, Newline = 53, Whitespace = 54, Comment = 55, 
-    BlockComment = 56
+    BoolLiteral = 1, Bool = 2, Break = 3, Callout = 4, Char = 5, Continue = 6, 
+    Else = 7, False = 8, Float = 9, For = 10, If = 11, Int = 12, Long = 13, 
+    Return = 14, True = 15, Uint = 16, Ulong = 17, While = 18, LeftParen = 19, 
+    RightParen = 20, LeftBracket = 21, RightBracket = 22, LeftBrace = 23, 
+    RightBrace = 24, Less = 25, LessEqual = 26, Greater = 27, GreaterEqual = 28, 
+    Plus = 29, Minus = 30, Star = 31, Div = 32, Mod = 33, Caret = 34, And = 35, 
+    Or = 36, Not = 37, Question = 38, Colon = 39, Semi = 40, Comma = 41, 
+    SingleQuote = 42, DoubleQuote = 43, Assign = 44, PlusAssign = 45, MinusAssign = 46, 
+    Equal = 47, NotEqual = 48, CharLiteral = 49, StringLiteral = 50, IntegerLiteral = 51, 
+    Id = 52, Newline = 53, Whitespace = 54, Comment = 55, BlockComment = 56
   };
 
   miniCgrammarLexer(antlr4::CharStream *input);

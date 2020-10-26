@@ -12,10 +12,6 @@ declaration : variableDecl      # variableDeclaration
 
 variableDecl : dataType variableDeclList ';' ;
 
-// variableDeclList : singleVarDecl ',' variableDeclList   # multipleCSVariables
-//                  | singleVarDecl                        # singleVariable
-//                  ;
-
 variableDeclList : singleVarDecl (',' singleVarDecl)* ;
 
 singleVarDecl : Id '[' IntegerLiteral ']' '[' IntegerLiteral']'     # twoDarray
@@ -50,8 +46,8 @@ statement : variableDecl                                    # variableDeclStmt
 // semantic phase: break and continue must be inside a loop
 
 location : Id                                   # simpleVarLocation
-         | Id '['arrayExpr']'                   # oneDarrayLocation
-         | Id '['arrayExpr']' '['arrayExpr']'   # twoDarrayLocation
+         | Id '['expr']'                        # oneDarrayLocation
+         | Id '['expr']''['expr']'             # twoDarrayLocation
          ;
 
 assignOp: '='       # equalAssign
@@ -59,38 +55,24 @@ assignOp: '='       # equalAssign
         | '-='      # minusAssign
         ;
 
-expr: BoolLiteral                           # boolLitExpr
-    | IntegerLiteral                        # intLitExpr
-    | StringLiteral                         # stringLitExpr
-    | CharLiteral                           # charLitExpr
-    | '(' expr ')'                          # parenthesesExpr
-    | location                              # locationExpr
-    | functionCall                          # functionCallExpr
-    | <assoc=right> '-' expr                # negateExpr
-    | <assoc=right> '!' expr                # notExpr
-    | <assoc=right> expr '^' expr           # exponentExpr
-    | expr ('*'|'/'|'%') expr               # mulDivModExpr
-    | expr ('+'|'-') expr                   # addSubExpr
-    | expr ('<'|'>'|'<='|'>=') expr         # relopExpr
-    | expr ('=='|'!=') expr                 # equalityExpr
-    | expr '&&' expr                        # logicalANDExpr
-    | expr '||' expr                        # logicalORExpr
-    | <assoc=right> expr '?' expr ':' expr  # ternaryExpr
+expr: BoolLiteral                               # boolLitExpr
+    | IntegerLiteral                            # intLitExpr
+    | StringLiteral                             # stringLitExpr
+    | CharLiteral                               # charLitExpr
+    | '(' expr ')'                              # parenthesesExpr
+    | location                                  # locationExpr
+    | functionCall                              # functionCallExpr
+    | <assoc=right> '-' expr                    # negateExpr
+    | <assoc=right> '!' expr                    # notExpr
+    | <assoc=right> expr '^' expr               # exponentExpr
+    | expr op=('*'|'/'|'%') expr                # mulDivModExpr
+    | expr op=('+'|'-') expr                    # addSubExpr
+    | expr op=('<'|'>'|'<='|'>=') expr          # relopExpr
+    | expr op=('=='|'!=') expr                  # equalityExpr
+    | expr '&&' expr                            # logicalANDExpr
+    | expr '||' expr                            # logicalORExpr
+    | <assoc=right> expr '?' expr ':' expr      # ternaryExpr
     ;
-
-arrayExpr : IntegerLiteral                              # intLitArrayExpr
-          | '(' arrayExpr ')'                           # parenthesesArrayExpr
-          | location                                    # locationArrayExpr
-          | functionCall                                # functionCallArrayExpr
-          | '!' arrayExpr                               # notArrayExpr
-          | <assoc=right> arrayExpr '^' arrayExpr       # exponentArrayExpr
-          | arrayExpr ('*'|'/'|'%') arrayExpr           # mulDivModArrayExpr
-          | arrayExpr ('+'|'-') arrayExpr               # addSubArrayExpr
-          | arrayExpr ('<'|'>'|'<='|'>=') arrayExpr     # relopArrayExpr
-          | arrayExpr ('=='|'!=') arrayExpr             # equalityArrayExpr
-          | arrayExpr '&&' arrayExpr                    # logicalANDArrayExpr
-          | arrayExpr '||' arrayExpr                    # logicalORArrayExpr
-          ; 
 
 functionCall: Id'(' argsList? ')'                           # userDefFnCall
             | Callout'(' StringLiteral calloutArgs? ')'     # libFnCall
@@ -110,6 +92,8 @@ iterativeStmt : While '(' expr ')' '{' statementList? '}'                       
 
 
 /* ----------------------------------------- Lexer Rules ----------------------------------------- */
+
+BoolLiteral : True | False ;    // This needs to be here so that return true and return false are recognized correctly
 
 Bool : 'bool';
 Break : 'break';
@@ -166,28 +150,19 @@ MinusAssign : '-=';
 Equal : '==';
 NotEqual : '!=';
 
-
 CharLiteral : '\'' (~['\r\n"\\] | '\\' ['"nrt0\\]) '\'' ;
 
 StringLiteral : '"' (~['\r\n"]('\\'['"nrt\\])?)* '"' ;
 
-BoolLiteral : True | False ;
-
 IntegerLiteral : [0-9]+ ;
 
 Id : [A-Za-z_][0-9A-Za-z_]* ;
-
-/*
-Distinguishing between signed and unsigned integer literals caused the wrong token to be returned in many situations, too problematic
-
-So, instead using just IntegerLiteral
-*/
 
 Newline : ( '\r' '\n'?
           | '\n'
           )
           -> skip
         ;
-Whitespace : [ \t]+ -> skip ; 
+Whitespace : [ \t]+ -> skip ;
 Comment : '//' ~[\r\n]* -> skip ; 
 BlockComment : '/*' .*? '*/' -> skip ;

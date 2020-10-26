@@ -23,8 +23,8 @@ class ASTTwoDarrayLocation;
 class ASTUnaryExpr;
 class ASTBinaryExpr;
 class ASTTernaryExpr;
-class ASTArrayExpr;
-class ASTParenthesesArrayExpr;
+// class ASTArrayExpr;
+// class ASTParenthesesArrayExpr;
 
 class ASTIntLitNode;
 class ASTStringLitNode;
@@ -72,8 +72,8 @@ class ASTvisitor {
     virtual void visit(ASTUnaryExpr& node) = 0;
     virtual void visit(ASTBinaryExpr& node) = 0;
     virtual void visit(ASTTernaryExpr& node) = 0;
-    virtual void visit(ASTArrayExpr& node) = 0;
-    virtual void visit(ASTParenthesesArrayExpr& node) = 0;
+    // virtual void visit(ASTArrayExpr& node) = 0;
+    // virtual void visit(ASTParenthesesArrayExpr& node) = 0;
 
     virtual void visit(ASTIntLitNode& node) = 0;
     virtual void visit(ASTStringLitNode& node) = 0;
@@ -111,11 +111,13 @@ class ASTnode {
 
 class ASTProgram : public ASTnode {
 
-    std::vector<ASTDeclaration*> declarationList;
+    // std::vector<ASTDeclaration*> declarationList;
+    std::vector<ASTnode*> declarationList;
 
     public:
 
-    void addToDeclarations(ASTDeclaration* decl)
+    // void addToDeclarations(ASTDeclaration* decl)
+    void addToDeclarations(ASTnode* decl)
     {
         declarationList.push_back(decl);
     }
@@ -277,6 +279,11 @@ class ASTParam : public ASTnode {
 
     ASTParam(ASTDataType *dt, std::string parName) : dataType(dt), paramName(parName) {}
 
+    std::string getParamName()
+    {
+        return paramName;
+    }
+
     virtual void accept(ASTvisitor& v)
     {
         v.visit(*this);
@@ -285,7 +292,7 @@ class ASTParam : public ASTnode {
 
 /*********************************** GROUP 2 ***************************************/
 
-class ASTExpr : public ASTnode {        
+class ASTExpr : public ASTnode {
 
     public:
 
@@ -305,7 +312,7 @@ class ASTParenthesesExpr : public ASTExpr {         // needed?
     }
 };
 
-class ASTLocationExpr : public ASTExpr {
+class ASTLocationExpr : public ASTnode {
 
     protected:
 
@@ -363,17 +370,17 @@ class ASTTwoDarrayLocation : public ASTLocationExpr {
     }
 };
 
-class ASTUnaryExpr : public ASTExpr {
+class ASTUnaryExpr : public ASTnode {
 
     std::string unary_operator;
 
-    ASTExpr *operand;
+    ASTnode *operand;
 
     public:
 
-    ASTUnaryExpr(std::string un_operator, ASTExpr* _operand) : unary_operator(un_operator), operand(_operand) {}
+    ASTUnaryExpr(std::string un_operator, ASTnode* _operand) : unary_operator(un_operator), operand(_operand) {}
     
-    ASTExpr* getOperand() { return operand; }
+    ASTnode* getOperand() { return operand; }
 
     std::string getUnaryOp() { return unary_operator; }
 
@@ -383,23 +390,23 @@ class ASTUnaryExpr : public ASTExpr {
     }
 };
 
-class ASTBinaryExpr : public ASTExpr {
+class ASTBinaryExpr : public ASTnode {
 
     std::string bin_operator;  
 
-    ASTExpr *left;
-    ASTExpr *right;  
+    ASTnode *left;
+    ASTnode *right;  
 
     public:
 
-    ASTBinaryExpr (std::string op, ASTExpr* _left, ASTExpr* _right ) : 
+    ASTBinaryExpr (std::string op, ASTnode* _left, ASTnode* _right ) : 
     bin_operator(op), left(_left), right(_right) {}  
 
-    ASTExpr* getLeft() {
+    ASTnode* getLeft() {
         return left;
     }
 
-    ASTExpr* getRight() {
+    ASTnode* getRight() {
         return right;
     }
 
@@ -414,28 +421,28 @@ class ASTBinaryExpr : public ASTExpr {
 
 };
 
-class ASTTernaryExpr : public ASTExpr {
+class ASTTernaryExpr : public ASTnode {
 
-    ASTExpr *first;
-    ASTExpr *second;
-    ASTExpr *third;  
+    ASTnode *first;
+    ASTnode *second;
+    ASTnode *third;  
 
     public:
 
-    ASTTernaryExpr (ASTExpr *first, ASTExpr *second, ASTExpr *third ) :
+    ASTTernaryExpr (ASTnode *first, ASTnode *second, ASTnode *third ) :
     first(first), second(second), third(third) {}  
 
-    ASTExpr* getFirst()
+    ASTnode* getFirst()
     {
         return first;
     }
 
-    ASTExpr* getSecond()
+    ASTnode* getSecond()
     {
         return second;
     }
 
-    ASTExpr* getThird()
+    ASTnode* getThird()
     {
         return third;
     }
@@ -446,7 +453,7 @@ class ASTTernaryExpr : public ASTExpr {
     }
 };
 
-
+/*
 class ASTArrayExpr : public ASTnode {       // ???
 
     public:
@@ -466,7 +473,7 @@ class ASTParenthesesArrayExpr : public ASTArrayExpr {
         v.visit(*this);
     }
 };
-
+*/
 
 /*********************************** GROUP 3 ***************************************/
 
@@ -554,23 +561,6 @@ class ASTBoolLitNode: public ASTnode {
 /*********************************** GROUP 4 ***************************************/
 
 
-class ASTStmtList : public ASTnode {
-
-    std::vector<ASTStmt*> listOfStmts;
-
-    public:
-
-    void addStatement(ASTStmt *stmt)
-    {
-        listOfStmts.push_back(stmt);
-    }
-
-    virtual void accept(ASTvisitor& v)
-    {
-        v.visit(*this);
-    }
-};
-
 class ASTStmt : public ASTnode {
 
     public:
@@ -581,15 +571,35 @@ class ASTStmt : public ASTnode {
     }
 };
 
+class ASTStmtList : public ASTnode {
+
+    // std::vector<ASTStmt*> listOfStmts;
+    std::vector<ASTnode*> listOfStmts;
+
+    public:
+
+    // void addStatement(ASTStmt *stmt)
+    void addStatement(ASTnode *stmt)
+    {
+        listOfStmts.push_back(stmt);
+    }
+
+    virtual void accept(ASTvisitor& v)
+    {
+        v.visit(*this);
+    }
+};
+
+
 class ASTAssignmentStmt : public ASTStmt {
 
     ASTLocationExpr *location;
     std::string assignOp;
-    ASTExpr *expression;
+    ASTnode *expression;
 
     public:
 
-    ASTAssignmentStmt(ASTLocationExpr* loc, std::string assign, ASTExpr* expr) :
+    ASTAssignmentStmt(ASTLocationExpr* loc, std::string assign, ASTnode* expr) :
     location(loc), assignOp(assign), expression(expr) {}
 
     ASTLocationExpr* getLocation()
@@ -602,7 +612,7 @@ class ASTAssignmentStmt : public ASTStmt {
         return assignOp;
     }
 
-    ASTExpr* getExpression()
+    ASTnode* getExpression()
     {
         return expression;
     }
@@ -615,13 +625,16 @@ class ASTAssignmentStmt : public ASTStmt {
 
 class ASTReturnStmt : public ASTStmt {
 
-    ASTExpr* returnExpr;
+    // ASTExpr* returnExpr;
+    ASTnode *returnExpr;
 
     public:
 
-    ASTReturnStmt(ASTExpr* retExp) : returnExpr(retExp) {}
+    // ASTReturnStmt(ASTExpr* retExp) : returnExpr(retExp) {}
+    ASTReturnStmt(ASTnode* retExp) : returnExpr(retExp) {}
 
-    ASTExpr* getReturnExpr()
+    // ASTExpr* getReturnExpr()
+    ASTnode* getReturnExpr()
     {
         return returnExpr;
     }
@@ -654,12 +667,12 @@ class ASTContinueStmt : public ASTStmt {
 
 class ASTIfStmt : public ASTStmt {
 
-    ASTExpr* condition;
+    ASTnode* condition;
     ASTStmtList* statements;
 
     public:
 
-    ASTIfStmt(ASTExpr* ifcon, ASTStmtList* stmts) : condition(ifcon), statements(stmts) {}
+    ASTIfStmt(ASTnode* ifcon, ASTStmtList* stmts) : condition(ifcon), statements(stmts) {}
 
     virtual void accept(ASTvisitor& v)
     {
@@ -669,13 +682,13 @@ class ASTIfStmt : public ASTStmt {
 
 class ASTIfElseStmt : public ASTStmt {
 
-    ASTExpr* condition;
+    ASTnode* condition;
     ASTStmtList *thenStatements;
     ASTStmtList *elseStatements;
 
     public:
 
-    ASTIfElseStmt(ASTExpr* ifcon, ASTStmtList* thenStmts, ASTStmtList* elseStmts) : condition(ifcon), thenStatements(thenStmts), elseStatements(elseStmts) {}
+    ASTIfElseStmt(ASTnode* ifcon, ASTStmtList* thenStmts, ASTStmtList* elseStmts) : condition(ifcon), thenStatements(thenStmts), elseStatements(elseStmts) {}
 
     virtual void accept(ASTvisitor& v)
     {
@@ -686,24 +699,24 @@ class ASTIfElseStmt : public ASTStmt {
 class ASTForStmt : public ASTStmt {
 
     ASTLocationExpr* initLoc;
-    ASTExpr* initExpr;
+    ASTnode* initExpr;
 
-    ASTExpr* conditionExpr;
+    ASTnode* conditionExpr;
 
     ASTLocationExpr* updateLoc;
     std::string assignOp;
-    ASTExpr* updateExpr;
+    ASTnode* updateExpr;
 
     ASTStmtList *statements;
 
     public:
 
     ASTForStmt( ASTLocationExpr* inLoc, 
-                ASTExpr* inExpr, 
-                ASTExpr* conExpr, 
+                ASTnode* inExpr, 
+                ASTnode* conExpr, 
                 ASTLocationExpr* upLoc, 
                 std::string op, 
-                ASTExpr* upExpr, 
+                ASTnode* upExpr, 
                 ASTStmtList* stmts ) : 
                 initLoc(inLoc),
                 initExpr(inExpr),
@@ -722,12 +735,12 @@ class ASTForStmt : public ASTStmt {
 
 class ASTWhileStmt : public ASTStmt {
 
-    ASTExpr* condition;
+    ASTnode* condition;
     ASTStmtList* statements;
 
     public:
 
-    ASTWhileStmt(ASTExpr* con, ASTStmtList* stmts) : condition(con), statements(stmts) {}
+    ASTWhileStmt(ASTnode* con, ASTStmtList* stmts) : condition(con), statements(stmts) {}
 
     virtual void accept(ASTvisitor& v)
     {
@@ -769,11 +782,11 @@ class ASTLibFunCall : public ASTnode {
 
 class ASTUserFunArg : public ASTnode {
 
-    ASTExpr* argument;
+    ASTnode* argument;
 
     public:
 
-    ASTUserFunArg(ASTExpr* arg) : argument(arg) {}
+    ASTUserFunArg(ASTnode* arg) : argument(arg) {}
 
     virtual void accept(ASTvisitor& v)
     {
@@ -783,11 +796,11 @@ class ASTUserFunArg : public ASTnode {
 
 class ASTLibFunArg : public ASTnode {
 
-    ASTExpr* argument;
+    ASTnode* argument;
 
     public:
 
-    ASTLibFunArg(ASTExpr* arg) : argument(arg) {}
+    ASTLibFunArg(ASTnode* arg) : argument(arg) {}
 
     virtual void accept(ASTvisitor& v)
     {

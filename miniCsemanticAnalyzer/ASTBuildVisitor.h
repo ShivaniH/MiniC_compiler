@@ -14,9 +14,9 @@ class ASTBuildVisitor : public miniCgrammarBaseVisitor {
         std::cout << "At program node\n";
 
         ASTProgram *rootNode = new ASTProgram();
-        ASTDeclaration *decl;
+        // ASTDeclaration *decl;
+        ASTnode *decl;
 
-        // for(auto declaration : visitDeclarationList(ctx->declarationList()))
         for(auto declaration : (ctx->declarationList()->declaration()))     // declaration() returns a vector of DeclarationContext*
         {
             decl = visit(declaration);
@@ -37,10 +37,12 @@ class ASTBuildVisitor : public miniCgrammarBaseVisitor {
     }
 
     virtual antlrcpp::Any visitVariableDecl(miniCgrammarParser::VariableDeclContext *ctx) override {
+        
+        std::cout << "At variable decl\n";
 
         ASTDataType *adt = visit(ctx->dataType());
 
-        std::cout << "At variable decl, data type = " << adt->getDataTypeName() << "\n";
+        std::cout << "Back to variable decl, data type = " << adt->getDataTypeName() << "\n";
 
         ASTVariableDecl *varDeclaration = new ASTVariableDecl(adt);
 
@@ -55,7 +57,7 @@ class ASTBuildVisitor : public miniCgrammarBaseVisitor {
             }
         }
         
-        return (ASTDeclaration*) varDeclaration;
+        return (ASTnode*) varDeclaration;
     }
 
     virtual antlrcpp::Any visitSimpleVariable(miniCgrammarParser::SimpleVariableContext *ctx) override {
@@ -146,46 +148,45 @@ class ASTBuildVisitor : public miniCgrammarBaseVisitor {
 
     virtual antlrcpp::Any visitFunctionDecl(miniCgrammarParser::FunctionDeclContext *ctx) override {
         
+        std::cout << "At functionDecl\n";
         ASTDataType *adt = visit(ctx->dataType());
         std::string functionName = ctx->Id()->getSymbol()->getText();
 
-        cout << "At functionDecl, return data type = " << adt->getDataTypeName() << " func name = " << functionName << "\n";
+        std::cout << "Back to functionDecl, return data type = " << adt->getDataTypeName() << " func name = " << functionName << "\n";
 
-        ASTExpr *retExpr = visit(ctx->expr());
-        ASTReturnStmt *retStmt = new ASTReturnStmt(retExpr);
+        ASTStmtList *stmtList;
 
-        ASTStmtList *stmtList = new ASTStmtList();
-
-        ASTStmt *oneStmt;
-
-        for(auto stat : ctx->statementList()->statement())
+        if(ctx->statementList() != nullptr)
         {
-            oneStmt = visit(stat);
-            if(oneStmt != nullptr)
-            {
-                stmtList.addStatement(oneStmt);
-            }
+            stmtList = visitStatementList(ctx->statementList());
         }
+        else {
+            stmtList = nullptr;
+        } 
+
+        ASTnode *retExpr = (visit(ctx->expr()));
+        ASTReturnStmt *retStmt = new ASTReturnStmt(retExpr);
+        std::cout << "got return expr\n";
 
         ASTFunctionDecl *fun = new ASTFunctionDecl(adt, functionName, stmtList, retStmt);
+
+        if(ctx->paramsList() != nullptr)
+        {
+            int numParams = (ctx->paramsList()->dataType()).size();
+            std::cout << "Function declaraion for " << functionName << ", numParams = " << numParams << "\n";
+
+            for(int i = 0; i < numParams; ++i)
+            {
+                auto dtContext = ctx->paramsList()->dataType()[i];
+                auto idContext = ctx->paramsList()->Id()[i];
+                
+                ASTParam *param = new ASTParam(visit(dtContext), idContext->getSymbol()->getText());
+                std::cout << "got a param named " << param->getParamName() << "\n";
+                fun->addParam(param);
+            }
+        }
         
-        // Maybe use a normal for loop rather than for each, so you can get the data type and id in one shot
-
-        for(auto dtContext: ctx->paramsList()->dataType())
-        {
-
-        }
-
-        for(auto idContext : ctx->paramsList()->Id())
-        {
-
-        }
-
-        /*
-        TODO: 
-        2. param list
-        3. statement list (body)
-        */
+        return (ASTnode*) fun;
 
     }
 
@@ -196,8 +197,10 @@ class ASTBuildVisitor : public miniCgrammarBaseVisitor {
     virtual antlrcpp::Any visitStatementList(miniCgrammarParser::StatementListContext *ctx) override {
         
         ASTStmtList *listStmts = new ASTStmtList();
-
-        ASTStmt *oneStmt;
+        
+        std::cout << "At statementList\n";
+        // ASTStmt *oneStmt;
+        ASTnode *oneStmt;
 
         for(auto stmt : ctx->statement())
         {
@@ -214,6 +217,7 @@ class ASTBuildVisitor : public miniCgrammarBaseVisitor {
 
     virtual antlrcpp::Any visitVariableDeclStmt(miniCgrammarParser::VariableDeclStmtContext *ctx) override {
         
+        std::cout << "At variable declaration stmt\n";
         return visit(ctx->variableDecl());
 
     }
@@ -225,25 +229,42 @@ class ASTBuildVisitor : public miniCgrammarBaseVisitor {
     }
 
     virtual antlrcpp::Any visitExprStmt(miniCgrammarParser::ExprStmtContext *ctx) override {
-        return visitChildren(ctx);
+        
+        std::cout << "At Expr statement\n";
+        // return (visit(ctx->expr()).as<ASTStmt*>());
+        // auto expression = visit(ctx->expr());
+        // std::cout << "back to Expr statement\n";
+        // return (expression);
+
+        return(visit(ctx->expr()));
+
     }
 
     virtual antlrcpp::Any visitSimpleVarLocation(miniCgrammarParser::SimpleVarLocationContext *ctx) override {
         
         std::string locName = ctx->Id()->getSymbol()->getText();
+        std::cout << "At simple variable location, locName = " << locName << "\n";
+
         ASTSimpleVarLocation *simpleLoc = new ASTSimpleVarLocation(locName);
-        return (ASTLocationExpr*) simpleLoc;
+        return (ASTnode*) simpleLoc;
 
     }
 
+    /*
     virtual antlrcpp::Any visitOneDarrayLocation(miniCgrammarParser::OneDarrayLocationContext *ctx) override {
         
         std::string locName = ctx->Id()->getSymbol()->getText();
+
+        // TODO: removed arrayExpr. reflect changes
+
         // int dim = 
+        // std::cout << "At oneD array location, locName = " << locName << "dim = " << dim << "\n";
+
         // ASTOneDarrayLocation *oneDLoc = new ASTOneDarrayLocation(locName, );
         // return (ASTLocationExpr*) oneDLoc;
 
     }
+    */
 
     virtual antlrcpp::Any visitTwoDarrayLocation(miniCgrammarParser::TwoDarrayLocationContext *ctx) override {
         return visitChildren(ctx);
@@ -256,18 +277,18 @@ class ASTBuildVisitor : public miniCgrammarBaseVisitor {
     virtual antlrcpp::Any visitNegateExpr(miniCgrammarParser::NegateExprContext *ctx) override {
         
         std::cout << "At unary negation expr\n";
-        ASTExpr *operand = visit(ctx->expr());
+        ASTnode *operand = visit(ctx->expr());
         ASTUnaryExpr *negUnary = new ASTUnaryExpr("-", operand);
-        return (ASTExpr*) negUnary;
+        return (ASTnode*) negUnary;
 
     }
 
     virtual antlrcpp::Any visitNotExpr(miniCgrammarParser::NotExprContext *ctx) override {
         
         std::cout << "At logical NOT expr\n";
-        ASTExpr *operand = visit(ctx->expr());
+        ASTnode *operand = visit(ctx->expr());
         ASTUnaryExpr *notUnary = new ASTUnaryExpr("!", operand);
-        return (ASTExpr*) notUnary;
+        return (ASTnode*) notUnary;
 
     }
 
@@ -277,39 +298,146 @@ class ASTBuildVisitor : public miniCgrammarBaseVisitor {
     virtual antlrcpp::Any visitExponentExpr(miniCgrammarParser::ExponentExprContext *ctx) override {
         
         std::cout << "At exponent expr\n";
-        ASTExpr *leftChild = ctx->expr()[0];
-        ASTExpr *rightChild = ctx->expr()[1];
+        ASTnode *leftChild = visit(ctx->expr()[0]);
+        ASTnode *rightChild = visit(ctx->expr()[1]);
         ASTBinaryExpr *exponExpr = new ASTBinaryExpr("^", leftChild, rightChild);
-        return (ASTExpr*) exponExpr;
+        return (ASTnode*) exponExpr;
 
     }
 
     virtual antlrcpp::Any visitMulDivModExpr(miniCgrammarParser::MulDivModExprContext *ctx) override {
          
-        ASTExpr *leftChild = ctx->expr()[0];
-        ASTExpr *rightChild = ctx->expr()[1];
+        ASTnode *leftChild = visit(ctx->expr()[0]);
+        ASTnode *rightChild = visit(ctx->expr()[1]);
 
         ASTBinaryExpr *muldivmodExpr;
 
-        if(ctx->Star()->getSymbol()->getText() == '*')
+        if (ctx->Star() != nullptr)
         {
-            muldivmodExpr = new ASTBinaryExpr('*', leftChild, rightChild);
+            muldivmodExpr = new ASTBinaryExpr("*", leftChild, rightChild);
             std::cout << "At multiplication expr\n";
         }
-        else if (ctx->Div()->getSymbol()->getText() == '/')
+        else if (ctx->Div() != nullptr)
         {
-            muldivmodExpr = new ASTBinaryExpr('/', leftChild, rightChild);
+            muldivmodExpr = new ASTBinaryExpr("/", leftChild, rightChild);
             std::cout << "At division expr\n";
         }
         else {
-            muldivmodExpr = new ASTBinaryExpr('%', leftChild, rightChild);
+            muldivmodExpr = new ASTBinaryExpr("%", leftChild, rightChild);
             std::cout << "At modulo expr\n";
         }
 
-        return (ASTExpr*) muldivmodExpr;
+        return (ASTnode*) muldivmodExpr;
 
     }
 
+    virtual antlrcpp::Any visitAddSubExpr(miniCgrammarParser::AddSubExprContext *ctx) override {
+        
+        ASTnode *leftChild = visit(ctx->expr()[0]);
+        ASTnode *rightChild = visit(ctx->expr()[1]);
+
+        ASTBinaryExpr *addsubmodExpr;
+
+        if (ctx->Plus() != nullptr)
+        {
+            addsubmodExpr = new ASTBinaryExpr("+", leftChild, rightChild);
+            std::cout << "At addition expr\n";
+        }
+        else {
+            addsubmodExpr = new ASTBinaryExpr("-", leftChild, rightChild);
+            std::cout << "At subtraction expr\n";
+        }
+
+        return (ASTnode*) addsubmodExpr;
+
+    }
+
+    virtual antlrcpp::Any visitRelopExpr(miniCgrammarParser::RelopExprContext *ctx) override {
+        
+        ASTnode *leftChild = visit(ctx->expr()[0]);
+        ASTnode *rightChild = visit(ctx->expr()[1]);
+
+        ASTBinaryExpr *relopExpr;
+
+        if (ctx->Less() != nullptr)
+        {
+            relopExpr = new ASTBinaryExpr("<", leftChild, rightChild);
+            std::cout << "At less than expr\n";
+        }
+        else if (ctx->LessEqual() != nullptr)
+        {
+            relopExpr = new ASTBinaryExpr("<=", leftChild, rightChild);
+            std::cout << "At less than or equal expr\n";
+        }
+        else if (ctx->Greater() != nullptr)
+        {
+            relopExpr = new ASTBinaryExpr(">", leftChild, rightChild);
+            std::cout << "At greater than expr\n";
+        }
+        else {
+            relopExpr = new ASTBinaryExpr(">=", leftChild, rightChild);
+            std::cout << "At greater than or equal expr\n";
+        }
+
+        return (ASTnode*) relopExpr;
+
+    }
+
+    virtual antlrcpp::Any visitEqualityExpr(miniCgrammarParser::EqualityExprContext *ctx) override {
+        
+        ASTnode *leftChild = visit(ctx->expr()[0]);
+        ASTnode *rightChild = visit(ctx->expr()[1]);
+
+        ASTBinaryExpr *equalExpr;
+
+        if (ctx->Equal() != nullptr)
+        {
+            equalExpr = new ASTBinaryExpr("==", leftChild, rightChild);
+            std::cout << "At equal to check expr\n";
+        }
+        else {
+            equalExpr = new ASTBinaryExpr("!=", leftChild, rightChild);
+            std::cout << "At not equal check expr\n";
+        }
+
+        return (ASTnode*) equalExpr;
+    }
+
+    virtual antlrcpp::Any visitLogicalANDExpr(miniCgrammarParser::LogicalANDExprContext *ctx) override {
+        
+        std::cout << "At logical AND expr\n";
+        ASTnode *leftChild = visit(ctx->expr()[0]);
+        ASTnode *rightChild = visit(ctx->expr()[1]);
+
+        ASTBinaryExpr *logANDExpr = new ASTBinaryExpr("&&", leftChild, rightChild);
+        return (ASTnode*) logANDExpr;
+    }
+
+    virtual antlrcpp::Any visitLogicalORExpr(miniCgrammarParser::LogicalORExprContext *ctx) override {
+        
+        std::cout << "At logical OR expr\n";
+        ASTnode *leftChild = visit(ctx->expr()[0]);
+        ASTnode *rightChild = visit(ctx->expr()[1]);
+
+        ASTBinaryExpr *logORExpr = new ASTBinaryExpr("||", leftChild, rightChild);
+        return (ASTnode*) logORExpr;
+    }
+
+    virtual antlrcpp::Any visitTernaryExpr(miniCgrammarParser::TernaryExprContext *ctx) override {
+        
+        std::cout << "At ternary op expr\n";
+        ASTnode *firstChild = visit(ctx->expr()[0]);
+        ASTnode *secondChild = visit(ctx->expr()[1]);
+        ASTnode *thirdChild = visit(ctx->expr()[2]);
+
+        ASTTernaryExpr *ternaryExpr = new ASTTernaryExpr(firstChild, secondChild, thirdChild);
+        return (ASTnode*) ternaryExpr;
+
+    }
+
+    virtual antlrcpp::Any visitParenthesesExpr(miniCgrammarParser::ParenthesesExprContext *ctx) override {
+        return visitChildren(ctx);
+    }
 
     virtual antlrcpp::Any visitFunctionCallExpr(miniCgrammarParser::FunctionCallExprContext *ctx) override {
         return visitChildren(ctx);
@@ -324,17 +452,21 @@ class ASTBuildVisitor : public miniCgrammarBaseVisitor {
     }
 
     virtual antlrcpp::Any visitReturnStmt(miniCgrammarParser::ReturnStmtContext *ctx) override {
+        
+        std::cout << "At return stmt\n";
         return visitChildren(ctx);
     }
 
     virtual antlrcpp::Any visitBreakStmt(miniCgrammarParser::BreakStmtContext *ctx) override {
         
-        return (new ASTBreakStmt());
+        std::cout << "At break stmt\n";
+        return (ASTnode*)(new ASTBreakStmt());
     }
 
     virtual antlrcpp::Any visitContinueStmt(miniCgrammarParser::ContinueStmtContext *ctx) override {
         
-        return (new ASTContinueStmt());
+        std::cout << "At continue stmt\n";
+        return (ASTnode*)(new ASTContinueStmt());
 
     }
 
@@ -347,7 +479,7 @@ class ASTBuildVisitor : public miniCgrammarBaseVisitor {
 
         std::cout << "visited int lit node with value " << value << "\n";
 
-        return (ASTExpr*)(new ASTIntLitNode(value));
+        return (ASTnode*)(new ASTIntLitNode(value));
     }
 
     virtual antlrcpp::Any visitStringLitExpr(miniCgrammarParser::StringLitExprContext *ctx) override {
@@ -356,26 +488,27 @@ class ASTBuildVisitor : public miniCgrammarBaseVisitor {
 
         std::cout << "visited string lit node with value " << value << "\n";
 
-        return (ASTExpr*)(new ASTStringLitNode(value));
+        return (ASTnode*)(new ASTStringLitNode(value));
     }
 
     virtual antlrcpp::Any visitCharLitExpr(miniCgrammarParser::CharLitExprContext *ctx) override {
         
         std::string value = ctx->CharLiteral()->getSymbol()->getText();
 
-        std::cout << "visited char lit node with value " << value << "\n";
+        std::cout << "visited char lit node with value " << value[0] << "\n";
 
-        return (ASTExpr*)(new ASTCharLitNode(value));
+        return (ASTnode*)(new ASTCharLitNode(value[0]));
 
     }
 
     virtual antlrcpp::Any visitBoolLitExpr(miniCgrammarParser::BoolLitExprContext *ctx) override {
 
         std::string value = ctx->BoolLiteral()->getSymbol()->getText();
+        bool boolValue = ((value == "true") ? true : false);
 
         std::cout << "visited bool lit node with value " << value << "\n";
 
-        return (ASTExpr*)(new ASTBoolLitNode(value));
+        return (ASTnode*)(new ASTBoolLitNode(boolValue));
     }
 
 };

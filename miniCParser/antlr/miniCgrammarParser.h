@@ -12,25 +12,24 @@
 class  miniCgrammarParser : public antlr4::Parser {
 public:
   enum {
-    Bool = 1, Break = 2, Callout = 3, Char = 4, Continue = 5, Else = 6, 
-    False = 7, Float = 8, For = 9, If = 10, Int = 11, Long = 12, Return = 13, 
-    True = 14, Uint = 15, Ulong = 16, While = 17, LeftParen = 18, RightParen = 19, 
-    LeftBracket = 20, RightBracket = 21, LeftBrace = 22, RightBrace = 23, 
-    Less = 24, LessEqual = 25, Greater = 26, GreaterEqual = 27, Plus = 28, 
-    Minus = 29, Star = 30, Div = 31, Mod = 32, Caret = 33, And = 34, Or = 35, 
-    Not = 36, Question = 37, Colon = 38, Semi = 39, Comma = 40, SingleQuote = 41, 
-    DoubleQuote = 42, Assign = 43, PlusAssign = 44, MinusAssign = 45, Equal = 46, 
-    NotEqual = 47, CharLiteral = 48, StringLiteral = 49, BoolLiteral = 50, 
-    IntegerLiteral = 51, Id = 52, Newline = 53, Whitespace = 54, Comment = 55, 
-    BlockComment = 56
+    BoolLiteral = 1, Bool = 2, Break = 3, Callout = 4, Char = 5, Continue = 6, 
+    Else = 7, False = 8, Float = 9, For = 10, If = 11, Int = 12, Long = 13, 
+    Return = 14, True = 15, Uint = 16, Ulong = 17, While = 18, LeftParen = 19, 
+    RightParen = 20, LeftBracket = 21, RightBracket = 22, LeftBrace = 23, 
+    RightBrace = 24, Less = 25, LessEqual = 26, Greater = 27, GreaterEqual = 28, 
+    Plus = 29, Minus = 30, Star = 31, Div = 32, Mod = 33, Caret = 34, And = 35, 
+    Or = 36, Not = 37, Question = 38, Colon = 39, Semi = 40, Comma = 41, 
+    SingleQuote = 42, DoubleQuote = 43, Assign = 44, PlusAssign = 45, MinusAssign = 46, 
+    Equal = 47, NotEqual = 48, CharLiteral = 49, StringLiteral = 50, IntegerLiteral = 51, 
+    Id = 52, Newline = 53, Whitespace = 54, Comment = 55, BlockComment = 56
   };
 
   enum {
     RuleProgram = 0, RuleDeclarationList = 1, RuleDeclaration = 2, RuleVariableDecl = 3, 
     RuleVariableDeclList = 4, RuleSingleVarDecl = 5, RuleDataType = 6, RuleFunctionDecl = 7, 
     RuleParamsList = 8, RuleStatementList = 9, RuleStatement = 10, RuleLocation = 11, 
-    RuleAssignOp = 12, RuleExpr = 13, RuleArrayExpr = 14, RuleFunctionCall = 15, 
-    RuleArgsList = 16, RuleCalloutArgs = 17, RuleConditionalStmt = 18, RuleIterativeStmt = 19
+    RuleAssignOp = 12, RuleExpr = 13, RuleFunctionCall = 14, RuleArgsList = 15, 
+    RuleCalloutArgs = 16, RuleConditionalStmt = 17, RuleIterativeStmt = 18
   };
 
   miniCgrammarParser(antlr4::TokenStream *input);
@@ -57,7 +56,6 @@ public:
   class LocationContext;
   class AssignOpContext;
   class ExprContext;
-  class ArrayExprContext;
   class FunctionCallContext;
   class ArgsListContext;
   class CalloutArgsContext;
@@ -446,8 +444,8 @@ public:
     antlr4::tree::TerminalNode *Id();
     std::vector<antlr4::tree::TerminalNode *> LeftBracket();
     antlr4::tree::TerminalNode* LeftBracket(size_t i);
-    std::vector<ArrayExprContext *> arrayExpr();
-    ArrayExprContext* arrayExpr(size_t i);
+    std::vector<ExprContext *> expr();
+    ExprContext* expr(size_t i);
     std::vector<antlr4::tree::TerminalNode *> RightBracket();
     antlr4::tree::TerminalNode* RightBracket(size_t i);
 
@@ -469,7 +467,7 @@ public:
 
     antlr4::tree::TerminalNode *Id();
     antlr4::tree::TerminalNode *LeftBracket();
-    ArrayExprContext *arrayExpr();
+    ExprContext *expr();
     antlr4::tree::TerminalNode *RightBracket();
 
     virtual antlrcpp::Any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
@@ -547,6 +545,7 @@ public:
   public:
     AddSubExprContext(ExprContext *ctx);
 
+    antlr4::Token *op = nullptr;
     std::vector<ExprContext *> expr();
     ExprContext* expr(size_t i);
     antlr4::tree::TerminalNode *Plus();
@@ -577,6 +576,7 @@ public:
   public:
     RelopExprContext(ExprContext *ctx);
 
+    antlr4::Token *op = nullptr;
     std::vector<ExprContext *> expr();
     ExprContext* expr(size_t i);
     antlr4::tree::TerminalNode *Less();
@@ -591,6 +591,7 @@ public:
   public:
     MulDivModExprContext(ExprContext *ctx);
 
+    antlr4::Token *op = nullptr;
     std::vector<ExprContext *> expr();
     ExprContext* expr(size_t i);
     antlr4::tree::TerminalNode *Star();
@@ -705,6 +706,7 @@ public:
   public:
     EqualityExprContext(ExprContext *ctx);
 
+    antlr4::Token *op = nullptr;
     std::vector<ExprContext *> expr();
     ExprContext* expr(size_t i);
     antlr4::tree::TerminalNode *Equal();
@@ -715,153 +717,6 @@ public:
 
   ExprContext* expr();
   ExprContext* expr(int precedence);
-  class  ArrayExprContext : public antlr4::ParserRuleContext {
-  public:
-    ArrayExprContext(antlr4::ParserRuleContext *parent, size_t invokingState);
-   
-    ArrayExprContext() = default;
-    void copyFrom(ArrayExprContext *context);
-    using antlr4::ParserRuleContext::copyFrom;
-
-    virtual size_t getRuleIndex() const override;
-
-   
-  };
-
-  class  LogicalANDArrayExprContext : public ArrayExprContext {
-  public:
-    LogicalANDArrayExprContext(ArrayExprContext *ctx);
-
-    std::vector<ArrayExprContext *> arrayExpr();
-    ArrayExprContext* arrayExpr(size_t i);
-    antlr4::tree::TerminalNode *And();
-
-    virtual antlrcpp::Any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
-  };
-
-  class  AddSubArrayExprContext : public ArrayExprContext {
-  public:
-    AddSubArrayExprContext(ArrayExprContext *ctx);
-
-    std::vector<ArrayExprContext *> arrayExpr();
-    ArrayExprContext* arrayExpr(size_t i);
-    antlr4::tree::TerminalNode *Plus();
-    antlr4::tree::TerminalNode *Minus();
-
-    virtual antlrcpp::Any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
-  };
-
-  class  LocationArrayExprContext : public ArrayExprContext {
-  public:
-    LocationArrayExprContext(ArrayExprContext *ctx);
-
-    LocationContext *location();
-
-    virtual antlrcpp::Any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
-  };
-
-  class  EqualityArrayExprContext : public ArrayExprContext {
-  public:
-    EqualityArrayExprContext(ArrayExprContext *ctx);
-
-    std::vector<ArrayExprContext *> arrayExpr();
-    ArrayExprContext* arrayExpr(size_t i);
-    antlr4::tree::TerminalNode *Equal();
-    antlr4::tree::TerminalNode *NotEqual();
-
-    virtual antlrcpp::Any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
-  };
-
-  class  ExponentArrayExprContext : public ArrayExprContext {
-  public:
-    ExponentArrayExprContext(ArrayExprContext *ctx);
-
-    std::vector<ArrayExprContext *> arrayExpr();
-    ArrayExprContext* arrayExpr(size_t i);
-    antlr4::tree::TerminalNode *Caret();
-
-    virtual antlrcpp::Any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
-  };
-
-  class  LogicalORArrayExprContext : public ArrayExprContext {
-  public:
-    LogicalORArrayExprContext(ArrayExprContext *ctx);
-
-    std::vector<ArrayExprContext *> arrayExpr();
-    ArrayExprContext* arrayExpr(size_t i);
-    antlr4::tree::TerminalNode *Or();
-
-    virtual antlrcpp::Any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
-  };
-
-  class  NotArrayExprContext : public ArrayExprContext {
-  public:
-    NotArrayExprContext(ArrayExprContext *ctx);
-
-    antlr4::tree::TerminalNode *Not();
-    ArrayExprContext *arrayExpr();
-
-    virtual antlrcpp::Any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
-  };
-
-  class  MulDivModArrayExprContext : public ArrayExprContext {
-  public:
-    MulDivModArrayExprContext(ArrayExprContext *ctx);
-
-    std::vector<ArrayExprContext *> arrayExpr();
-    ArrayExprContext* arrayExpr(size_t i);
-    antlr4::tree::TerminalNode *Star();
-    antlr4::tree::TerminalNode *Div();
-    antlr4::tree::TerminalNode *Mod();
-
-    virtual antlrcpp::Any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
-  };
-
-  class  ParenthesesArrayExprContext : public ArrayExprContext {
-  public:
-    ParenthesesArrayExprContext(ArrayExprContext *ctx);
-
-    antlr4::tree::TerminalNode *LeftParen();
-    ArrayExprContext *arrayExpr();
-    antlr4::tree::TerminalNode *RightParen();
-
-    virtual antlrcpp::Any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
-  };
-
-  class  FunctionCallArrayExprContext : public ArrayExprContext {
-  public:
-    FunctionCallArrayExprContext(ArrayExprContext *ctx);
-
-    FunctionCallContext *functionCall();
-
-    virtual antlrcpp::Any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
-  };
-
-  class  RelopArrayExprContext : public ArrayExprContext {
-  public:
-    RelopArrayExprContext(ArrayExprContext *ctx);
-
-    std::vector<ArrayExprContext *> arrayExpr();
-    ArrayExprContext* arrayExpr(size_t i);
-    antlr4::tree::TerminalNode *Less();
-    antlr4::tree::TerminalNode *Greater();
-    antlr4::tree::TerminalNode *LessEqual();
-    antlr4::tree::TerminalNode *GreaterEqual();
-
-    virtual antlrcpp::Any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
-  };
-
-  class  IntLitArrayExprContext : public ArrayExprContext {
-  public:
-    IntLitArrayExprContext(ArrayExprContext *ctx);
-
-    antlr4::tree::TerminalNode *IntegerLiteral();
-
-    virtual antlrcpp::Any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
-  };
-
-  ArrayExprContext* arrayExpr();
-  ArrayExprContext* arrayExpr(int precedence);
   class  FunctionCallContext : public antlr4::ParserRuleContext {
   public:
     FunctionCallContext(antlr4::ParserRuleContext *parent, size_t invokingState);
@@ -1038,7 +893,6 @@ public:
 
   virtual bool sempred(antlr4::RuleContext *_localctx, size_t ruleIndex, size_t predicateIndex) override;
   bool exprSempred(ExprContext *_localctx, size_t predicateIndex);
-  bool arrayExprSempred(ArrayExprContext *_localctx, size_t predicateIndex);
 
 private:
   static std::vector<antlr4::dfa::DFA> _decisionToDFA;
