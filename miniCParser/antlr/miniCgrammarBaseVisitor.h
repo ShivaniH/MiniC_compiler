@@ -131,18 +131,6 @@ public:
     return visitChildren(ctx);
   }
 
-  virtual antlrcpp::Any visitEqualAssign(miniCgrammarParser::EqualAssignContext *ctx) override {
-    return visitChildren(ctx);
-  }
-
-  virtual antlrcpp::Any visitPlusAssign(miniCgrammarParser::PlusAssignContext *ctx) override {
-    return visitChildren(ctx);
-  }
-
-  virtual antlrcpp::Any visitMinusAssign(miniCgrammarParser::MinusAssignContext *ctx) override {
-    return visitChildren(ctx);
-  }
-
   virtual antlrcpp::Any visitExponentExpr(miniCgrammarParser::ExponentExprContext *ctx) override {
     return visitChildren(ctx);
   }

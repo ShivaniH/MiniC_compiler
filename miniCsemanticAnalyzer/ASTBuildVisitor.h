@@ -190,10 +190,6 @@ class ASTBuildVisitor : public miniCgrammarBaseVisitor {
 
     }
 
-    virtual antlrcpp::Any visitParamsList(miniCgrammarParser::ParamsListContext *ctx) override {
-        return visitChildren(ctx);
-    }
-
     virtual antlrcpp::Any visitStatementList(miniCgrammarParser::StatementListContext *ctx) override {
         
         ASTStmtList *listStmts = new ASTStmtList();
@@ -223,8 +219,28 @@ class ASTBuildVisitor : public miniCgrammarBaseVisitor {
     }
 
     virtual antlrcpp::Any visitAssignmentStmt(miniCgrammarParser::AssignmentStmtContext *ctx) override {
-        
-        
+
+        ASTnode *location = visit(ctx->location());
+        ASTnode *expr = visit(ctx->expr());
+        std::string assignOp;
+
+        if(ctx->Assign() != nullptr)
+        {
+            assignOp = "=";
+        }
+        else if(ctx->PlusAssign() != nullptr)
+        {
+            assignOp = "+=";
+        }
+        else {
+            assignOp = "-=";
+        }
+
+        std::cout << "At assignment statement, assignOp is " << assignOp << "\n";
+
+        ASTAssignmentStmt *assignStmt = new ASTAssignmentStmt(location, assignOp, expr);
+
+        return (ASTnode*) assignStmt;
 
     }
 
@@ -240,6 +256,37 @@ class ASTBuildVisitor : public miniCgrammarBaseVisitor {
 
     }
 
+    virtual antlrcpp::Any visitConditionStmt(miniCgrammarParser::ConditionStmtContext *ctx) override {
+        
+        std::cout << "At conditional stmt\n";
+        return (visit(ctx->conditionalStmt()));
+    }
+
+    virtual antlrcpp::Any visitIterationStmt(miniCgrammarParser::IterationStmtContext *ctx) override {
+        
+        std::cout << "At iteration stmt\n";
+        return (visit(ctx->iterativeStmt()));
+    }
+
+    virtual antlrcpp::Any visitReturnStmt(miniCgrammarParser::ReturnStmtContext *ctx) override {
+        
+        std::cout << "At return stmt\n";
+        return visit(ctx->expr());
+    }
+
+    virtual antlrcpp::Any visitBreakStmt(miniCgrammarParser::BreakStmtContext *ctx) override {
+        
+        std::cout << "At break stmt\n";
+        return (ASTnode*)(new ASTBreakStmt());
+    }
+
+    virtual antlrcpp::Any visitContinueStmt(miniCgrammarParser::ContinueStmtContext *ctx) override {
+        
+        std::cout << "At continue stmt\n";
+        return (ASTnode*)(new ASTContinueStmt());
+
+    }
+
     virtual antlrcpp::Any visitSimpleVarLocation(miniCgrammarParser::SimpleVarLocationContext *ctx) override {
         
         std::string locName = ctx->Id()->getSymbol()->getText();
@@ -250,26 +297,40 @@ class ASTBuildVisitor : public miniCgrammarBaseVisitor {
 
     }
 
-    /*
     virtual antlrcpp::Any visitOneDarrayLocation(miniCgrammarParser::OneDarrayLocationContext *ctx) override {
         
         std::string locName = ctx->Id()->getSymbol()->getText();
 
-        // TODO: removed arrayExpr. reflect changes
+        ASTnode *dim = visit(ctx->expr());
+        std::cout << "At oneD array location, locName = " << locName << "\n";
 
-        // int dim = 
-        // std::cout << "At oneD array location, locName = " << locName << "dim = " << dim << "\n";
-
-        // ASTOneDarrayLocation *oneDLoc = new ASTOneDarrayLocation(locName, );
-        // return (ASTLocationExpr*) oneDLoc;
+        ASTOneDarrayLocation *oneDLoc = new ASTOneDarrayLocation(locName, dim);
+        return (ASTnode*) oneDLoc;
 
     }
-    */
 
     virtual antlrcpp::Any visitTwoDarrayLocation(miniCgrammarParser::TwoDarrayLocationContext *ctx) override {
-        return visitChildren(ctx);
+        
+        std::string locName = ctx->Id()->getSymbol()->getText();
+
+        ASTnode *dim1 = visit(ctx->expr()[0]);
+        ASTnode *dim2 = visit(ctx->expr()[1]);
+        std::cout << "At twoD array location, locName = " << locName << "\n";
+
+        ASTTwoDarrayLocation *twoDLoc = new ASTTwoDarrayLocation(locName, dim1, dim2);
+        return (ASTnode*) twoDLoc;
     }
 
+    virtual antlrcpp::Any visitParenthesesExpr(miniCgrammarParser::ParenthesesExprContext *ctx) override {
+        
+        std::cout << "At ParenthesesExpr statement\n";
+
+        ASTnode *expression = visit(ctx->expr());
+        
+        ASTParenthesesExpr *parExpr = new ASTParenthesesExpr(expression);
+
+        return (ASTnode*) parExpr;
+    }
 
     /*      UNARY OPERATORS     */
 
@@ -435,44 +496,6 @@ class ASTBuildVisitor : public miniCgrammarBaseVisitor {
 
     }
 
-    virtual antlrcpp::Any visitParenthesesExpr(miniCgrammarParser::ParenthesesExprContext *ctx) override {
-        return visitChildren(ctx);
-    }
-
-    virtual antlrcpp::Any visitFunctionCallExpr(miniCgrammarParser::FunctionCallExprContext *ctx) override {
-        return visitChildren(ctx);
-    }
-
-    virtual antlrcpp::Any visitConditionStmt(miniCgrammarParser::ConditionStmtContext *ctx) override {
-        return visitChildren(ctx);
-    }
-
-    virtual antlrcpp::Any visitIterationStmt(miniCgrammarParser::IterationStmtContext *ctx) override {
-        return visitChildren(ctx);
-    }
-
-    virtual antlrcpp::Any visitReturnStmt(miniCgrammarParser::ReturnStmtContext *ctx) override {
-        
-        std::cout << "At return stmt\n";
-        return visitChildren(ctx);
-    }
-
-    virtual antlrcpp::Any visitBreakStmt(miniCgrammarParser::BreakStmtContext *ctx) override {
-        
-        std::cout << "At break stmt\n";
-        return (ASTnode*)(new ASTBreakStmt());
-    }
-
-    virtual antlrcpp::Any visitContinueStmt(miniCgrammarParser::ContinueStmtContext *ctx) override {
-        
-        std::cout << "At continue stmt\n";
-        return (ASTnode*)(new ASTContinueStmt());
-
-    }
-
-
-
-
     virtual antlrcpp::Any visitIntLitExpr(miniCgrammarParser::IntLitExprContext *ctx) override {
 
         int value = std::stoi(ctx->IntegerLiteral()->getSymbol()->getText());
@@ -509,6 +532,182 @@ class ASTBuildVisitor : public miniCgrammarBaseVisitor {
         std::cout << "visited bool lit node with value " << value << "\n";
 
         return (ASTnode*)(new ASTBoolLitNode(boolValue));
+    }
+
+     virtual antlrcpp::Any visitFunctionCallExpr(miniCgrammarParser::FunctionCallExprContext *ctx) override {
+        std::cout << "At functionCall Expr\n";
+        return visit(ctx->functionCall());
+    }
+
+    virtual antlrcpp::Any visitUserDefFnCall(miniCgrammarParser::UserDefFnCallContext *ctx) override {
+
+        std::string funName = ctx->Id()->getSymbol()->getText();
+
+        ASTnode *argExpr;
+
+        ASTUserFunCall *userFun = new ASTUserFunCall(funName);
+
+        std::cout << "At user def functionCall Expr, func name = " << funName << "\n";
+        
+        if(ctx->argsList() != nullptr)
+        {
+            for(auto argument : ctx->argsList()->expr())
+            {
+                argExpr = visit(argument);
+
+                if(argExpr != nullptr)
+                {
+                    ASTUserFunArg *arg = new ASTUserFunArg(argExpr);
+                    userFun->addArg(arg);
+                }
+            }
+        }
+        
+        return (ASTnode*) userFun;
+    }
+
+    virtual antlrcpp::Any visitLibFnCall(miniCgrammarParser::LibFnCallContext *ctx) override {
+        
+        std::string funName = ctx->StringLiteral()->getSymbol()->getText();
+
+        ASTnode *argExpr;
+
+        ASTLibFunCall *libFun = new ASTLibFunCall(funName);
+
+        std::cout << "At library function call Expr, func name = " << funName << "\n";
+        
+        if(ctx->calloutArgs() != nullptr)
+        {
+            for(auto argument : ctx->calloutArgs()->expr())
+            {
+                argExpr = visit(argument);
+
+                if(argExpr != nullptr)
+                {
+                    ASTLibFunArg *arg = new ASTLibFunArg(argExpr);
+                    libFun->addArg(arg);
+                }
+            }
+        }
+        
+        return (ASTnode*) libFun;
+    }
+
+    virtual antlrcpp::Any visitIfStmt(miniCgrammarParser::IfStmtContext *ctx) override {
+        
+        std::cout << "At if stmt\n";
+
+        ASTnode *condition = visit(ctx->expr());
+
+        ASTStmtList *statements;
+
+        if(ctx->statementList() != nullptr)
+        {
+            statements = visitStatementList(ctx->statementList());
+        }
+        else 
+        {
+            statements = nullptr;
+        }
+
+        ASTIfStmt *ifStat = new ASTIfStmt(condition, statements);
+
+        return (ASTnode*) ifStat;
+    }
+
+    virtual antlrcpp::Any visitIfElseStmt(miniCgrammarParser::IfElseStmtContext *ctx) override {
+        
+        std::cout << "At if-else stmt\n";
+
+        ASTnode *condition = visit(ctx->expr());
+
+        ASTStmtList *ifStatements, *elseStatements;
+
+        if(ctx->statementList().size() != 0)
+        {
+            ifStatements = visitStatementList(ctx->statementList()[0]);
+            elseStatements = visitStatementList(ctx->statementList()[1]);
+        }
+        else 
+        {
+            ifStatements = nullptr;
+            elseStatements = nullptr;
+        }
+
+        ASTIfElseStmt *ifElseStat = new ASTIfElseStmt(condition, ifStatements, elseStatements);
+
+        return (ASTnode*) ifElseStat;
+    }
+
+    virtual antlrcpp::Any visitWhileStmt(miniCgrammarParser::WhileStmtContext *ctx) override {
+        
+        std::cout << "At while stmt\n";
+
+        ASTnode *condition = visit(ctx->expr());
+
+        ASTStmtList *statements;
+        
+        if(ctx->statementList() != nullptr)
+        {
+            statements = visitStatementList(ctx->statementList());
+        }
+        else 
+        {
+            statements = nullptr;
+        }
+
+        ASTWhileStmt *whileStat = new ASTWhileStmt(condition, statements);
+
+        return (ASTnode*) whileStat;
+    }
+
+    virtual antlrcpp::Any visitForStmt(miniCgrammarParser::ForStmtContext *ctx) override {
+        
+        std::cout << "At for stmt\n";
+
+        ASTnode* initLoc = visit(ctx->location()[0]);
+        ASTnode* initExpr = visit(ctx->expr()[0]);
+
+        ASTnode* conditionExpr = visit(ctx->expr()[1]);
+
+        ASTnode* updateLoc = visit(ctx->location()[1]);
+        ASTnode* updateExpr = visit(ctx->expr()[2]);
+
+        std::string assignOp;
+
+        if(ctx->Assign()[1] != nullptr)
+        {
+            assignOp = "=";
+        }
+        else if (ctx->PlusAssign() != nullptr)
+        {
+            assignOp = "+=";
+        }
+        else 
+        {
+            assignOp = "-=";
+        }
+
+        ASTStmtList *statements;
+
+        if(ctx->statementList() != nullptr)
+        {
+            statements = visitStatementList(ctx->statementList());
+        }
+        else 
+        {
+            statements = nullptr;
+        }
+
+        ASTForStmt *forStat = new ASTForStmt(   initLoc, 
+                                                initExpr, 
+                                                conditionExpr, 
+                                                updateLoc,
+                                                assignOp,
+                                                updateExpr,
+                                                statements  );
+
+        return (ASTnode*) forStat;
     }
 
 };

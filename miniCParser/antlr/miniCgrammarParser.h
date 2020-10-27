@@ -28,8 +28,8 @@ public:
     RuleProgram = 0, RuleDeclarationList = 1, RuleDeclaration = 2, RuleVariableDecl = 3, 
     RuleVariableDeclList = 4, RuleSingleVarDecl = 5, RuleDataType = 6, RuleFunctionDecl = 7, 
     RuleParamsList = 8, RuleStatementList = 9, RuleStatement = 10, RuleLocation = 11, 
-    RuleAssignOp = 12, RuleExpr = 13, RuleFunctionCall = 14, RuleArgsList = 15, 
-    RuleCalloutArgs = 16, RuleConditionalStmt = 17, RuleIterativeStmt = 18
+    RuleExpr = 12, RuleFunctionCall = 13, RuleArgsList = 14, RuleCalloutArgs = 15, 
+    RuleConditionalStmt = 16, RuleIterativeStmt = 17
   };
 
   miniCgrammarParser(antlr4::TokenStream *input);
@@ -54,7 +54,6 @@ public:
   class StatementListContext;
   class StatementContext;
   class LocationContext;
-  class AssignOpContext;
   class ExprContext;
   class FunctionCallContext;
   class ArgsListContext;
@@ -405,10 +404,13 @@ public:
   public:
     AssignmentStmtContext(StatementContext *ctx);
 
+    antlr4::Token *op = nullptr;
     LocationContext *location();
-    AssignOpContext *assignOp();
     ExprContext *expr();
     antlr4::tree::TerminalNode *Semi();
+    antlr4::tree::TerminalNode *Assign();
+    antlr4::tree::TerminalNode *PlusAssign();
+    antlr4::tree::TerminalNode *MinusAssign();
 
     virtual antlrcpp::Any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
   };
@@ -474,48 +476,6 @@ public:
   };
 
   LocationContext* location();
-
-  class  AssignOpContext : public antlr4::ParserRuleContext {
-  public:
-    AssignOpContext(antlr4::ParserRuleContext *parent, size_t invokingState);
-   
-    AssignOpContext() = default;
-    void copyFrom(AssignOpContext *context);
-    using antlr4::ParserRuleContext::copyFrom;
-
-    virtual size_t getRuleIndex() const override;
-
-   
-  };
-
-  class  PlusAssignContext : public AssignOpContext {
-  public:
-    PlusAssignContext(AssignOpContext *ctx);
-
-    antlr4::tree::TerminalNode *PlusAssign();
-
-    virtual antlrcpp::Any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
-  };
-
-  class  EqualAssignContext : public AssignOpContext {
-  public:
-    EqualAssignContext(AssignOpContext *ctx);
-
-    antlr4::tree::TerminalNode *Assign();
-
-    virtual antlrcpp::Any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
-  };
-
-  class  MinusAssignContext : public AssignOpContext {
-  public:
-    MinusAssignContext(AssignOpContext *ctx);
-
-    antlr4::tree::TerminalNode *MinusAssign();
-
-    virtual antlrcpp::Any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
-  };
-
-  AssignOpContext* assignOp();
 
   class  ExprContext : public antlr4::ParserRuleContext {
   public:
@@ -855,19 +815,22 @@ public:
   public:
     ForStmtContext(IterativeStmtContext *ctx);
 
+    antlr4::Token *op = nullptr;
     antlr4::tree::TerminalNode *For();
     antlr4::tree::TerminalNode *LeftParen();
     std::vector<LocationContext *> location();
     LocationContext* location(size_t i);
-    antlr4::tree::TerminalNode *Assign();
+    std::vector<antlr4::tree::TerminalNode *> Assign();
+    antlr4::tree::TerminalNode* Assign(size_t i);
     std::vector<ExprContext *> expr();
     ExprContext* expr(size_t i);
     std::vector<antlr4::tree::TerminalNode *> Semi();
     antlr4::tree::TerminalNode* Semi(size_t i);
-    AssignOpContext *assignOp();
     antlr4::tree::TerminalNode *RightParen();
     antlr4::tree::TerminalNode *LeftBrace();
     antlr4::tree::TerminalNode *RightBrace();
+    antlr4::tree::TerminalNode *PlusAssign();
+    antlr4::tree::TerminalNode *MinusAssign();
     StatementListContext *statementList();
 
     virtual antlrcpp::Any accept(antlr4::tree::ParseTreeVisitor *visitor) override;

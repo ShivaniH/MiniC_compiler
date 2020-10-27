@@ -77,12 +77,6 @@ public:
 
     virtual antlrcpp::Any visitTwoDarrayLocation(miniCgrammarParser::TwoDarrayLocationContext *context) = 0;
 
-    virtual antlrcpp::Any visitEqualAssign(miniCgrammarParser::EqualAssignContext *context) = 0;
-
-    virtual antlrcpp::Any visitPlusAssign(miniCgrammarParser::PlusAssignContext *context) = 0;
-
-    virtual antlrcpp::Any visitMinusAssign(miniCgrammarParser::MinusAssignContext *context) = 0;
-
     virtual antlrcpp::Any visitExponentExpr(miniCgrammarParser::ExponentExprContext *context) = 0;
 
     virtual antlrcpp::Any visitAddSubExpr(miniCgrammarParser::AddSubExprContext *context) = 0;

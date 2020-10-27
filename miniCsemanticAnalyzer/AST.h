@@ -1,7 +1,7 @@
 #include <vector>
 #include <string>
 
-// 39 subclasses of ASTNode
+// 37 subclasses of ASTNode
 
 class ASTProgram;
 class ASTDeclaration;
@@ -302,10 +302,14 @@ class ASTExpr : public ASTnode {
     }
 };
 
-class ASTParenthesesExpr : public ASTExpr {         // needed?
+class ASTParenthesesExpr : public ASTExpr {         
+
+    ASTnode *expr;
 
     public:
 
+    ASTParenthesesExpr(ASTnode *exp) : expr(exp) {}
+    
     virtual void accept(ASTvisitor& v)
     {
         v.visit(*this);
@@ -342,12 +346,12 @@ class ASTSimpleVarLocation : public ASTLocationExpr {
 
 class ASTOneDarrayLocation : public ASTLocationExpr {
     
-    int dim1;
+    ASTnode *dim;
 
     public:
 
-    ASTOneDarrayLocation(std::string locName, int d1) : 
-    ASTLocationExpr(locName), dim1(d1) {}
+    ASTOneDarrayLocation(std::string locName, ASTnode *d1) : 
+    ASTLocationExpr(locName), dim(d1) {}
 
     virtual void accept(ASTvisitor& v)
     {
@@ -357,11 +361,11 @@ class ASTOneDarrayLocation : public ASTLocationExpr {
 
 class ASTTwoDarrayLocation : public ASTLocationExpr {
 
-    int dim1, dim2;
+    ASTnode *dim1, *dim2;
 
     public:
 
-    ASTTwoDarrayLocation(std::string locName, int d1, int d2) : 
+    ASTTwoDarrayLocation(std::string locName, ASTnode *d1, ASTnode *d2) : 
     ASTLocationExpr(locName), dim1(d1), dim2(d2) {}
 
     virtual void accept(ASTvisitor& v)
@@ -453,27 +457,6 @@ class ASTTernaryExpr : public ASTnode {
     }
 };
 
-/*
-class ASTArrayExpr : public ASTnode {       // ???
-
-    public:
-
-    virtual void accept(ASTvisitor& v)
-    {
-        v.visit(*this);
-    }
-};
-
-class ASTParenthesesArrayExpr : public ASTArrayExpr {
-
-    public:
-
-    virtual void accept(ASTvisitor& v)
-    {
-        v.visit(*this);
-    }
-};
-*/
 
 /*********************************** GROUP 3 ***************************************/
 
@@ -593,16 +576,16 @@ class ASTStmtList : public ASTnode {
 
 class ASTAssignmentStmt : public ASTStmt {
 
-    ASTLocationExpr *location;
+    ASTnode *location;
     std::string assignOp;
     ASTnode *expression;
 
     public:
 
-    ASTAssignmentStmt(ASTLocationExpr* loc, std::string assign, ASTnode* expr) :
+    ASTAssignmentStmt(ASTnode* loc, std::string assign, ASTnode* expr) :
     location(loc), assignOp(assign), expression(expr) {}
 
-    ASTLocationExpr* getLocation()
+    ASTnode* getLocation()
     {
         return location;
     }
@@ -698,12 +681,12 @@ class ASTIfElseStmt : public ASTStmt {
 
 class ASTForStmt : public ASTStmt {
 
-    ASTLocationExpr* initLoc;
+    ASTnode* initLoc;
     ASTnode* initExpr;
 
     ASTnode* conditionExpr;
 
-    ASTLocationExpr* updateLoc;
+    ASTnode* updateLoc;
     std::string assignOp;
     ASTnode* updateExpr;
 
@@ -711,10 +694,10 @@ class ASTForStmt : public ASTStmt {
 
     public:
 
-    ASTForStmt( ASTLocationExpr* inLoc, 
+    ASTForStmt( ASTnode* inLoc, 
                 ASTnode* inExpr, 
                 ASTnode* conExpr, 
-                ASTLocationExpr* upLoc, 
+                ASTnode* upLoc, 
                 std::string op, 
                 ASTnode* upExpr, 
                 ASTStmtList* stmts ) : 
@@ -759,6 +742,11 @@ class ASTUserFunCall : public ASTnode {
 
     ASTUserFunCall(std::string fnName) : funcName(fnName) {}
 
+    void addArg(ASTUserFunArg *arg)
+    {
+        args.push_back(arg);
+    }
+
     virtual void accept(ASTvisitor& v)
     {
         v.visit(*this);
@@ -774,13 +762,18 @@ class ASTLibFunCall : public ASTnode {
 
     ASTLibFunCall(std::string libFnName) : libFuncName(libFnName) {}
 
+    void addArg(ASTLibFunArg *arg)
+    {
+        args.push_back(arg);
+    }
+
     virtual void accept(ASTvisitor& v)
     {
         v.visit(*this);
     }
 };
 
-class ASTUserFunArg : public ASTnode {
+class ASTUserFunArg : public ASTnode {          // This class and the one below feel like unnecesary wrappers
 
     ASTnode* argument;
 
@@ -816,7 +809,6 @@ class ASTContext {
     
     public:
 
-    // ASTnode *root;
     ASTProgram *root;
 
     ~ASTContext()

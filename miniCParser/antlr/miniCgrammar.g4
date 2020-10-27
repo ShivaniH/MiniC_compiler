@@ -33,27 +33,22 @@ paramsList : (dataType Id)(',' dataType Id)* ;
  
 statementList : statement+ ;
 
-statement : variableDecl                                    # variableDeclStmt
-          | <assoc=right> location assignOp expr ';'        # assignmentStmt
-          | expr ';'                                        # exprStmt
-          | conditionalStmt                                 # conditionStmt
-          | iterativeStmt                                   # iterationStmt
-          | Return expr ';'                                 # returnStmt
-          | Break ';'                                       # breakStmt
-          | Continue ';'                                    # continueStmt
+statement : variableDecl                                                # variableDeclStmt
+          | <assoc=right> location op=('='|'+='|'-=') expr ';'          # assignmentStmt
+          | expr ';'                                                    # exprStmt
+          | conditionalStmt                                             # conditionStmt
+          | iterativeStmt                                               # iterationStmt
+          | Return expr ';'                                             # returnStmt
+          | Break ';'                                                   # breakStmt
+          | Continue ';'                                                # continueStmt
           ;
 
 // semantic phase: break and continue must be inside a loop
 
 location : Id                                   # simpleVarLocation
          | Id '['expr']'                        # oneDarrayLocation
-         | Id '['expr']''['expr']'             # twoDarrayLocation
+         | Id '['expr']''['expr']'              # twoDarrayLocation
          ;
-
-assignOp: '='       # equalAssign
-        | '+='      # plusAssign
-        | '-='      # minusAssign
-        ;
 
 expr: BoolLiteral                               # boolLitExpr
     | IntegerLiteral                            # intLitExpr
@@ -86,10 +81,10 @@ conditionalStmt : If '(' expr ')' '{' statementList? '}'                        
                 | If '(' expr ')' '{' statementList? '}' Else '{' statementList? '}'    # ifElseStmt
                 ;
 
-iterativeStmt : While '(' expr ')' '{' statementList? '}'                                                       # whileStmt
-              | For '(' location '=' expr ';' expr ';' location assignOp expr ')' '{' statementList? '}'        # forStmt
+iterativeStmt : While '(' expr ')' '{' statementList? '}'                                                                 # whileStmt
+              | For '(' location '=' expr ';' expr ';' location op=('='|'+='|'-=') expr ')' '{' statementList? '}'        # forStmt
               ;
-
+                                                        // should this (loc assign expr) be right associative too?
 
 /* ----------------------------------------- Lexer Rules ----------------------------------------- */
 
