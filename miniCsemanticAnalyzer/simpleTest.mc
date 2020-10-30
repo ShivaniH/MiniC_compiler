@@ -1,6 +1,6 @@
-// int x, a[9];
+int x, a[9];
 
-// char wee[3][2];
+char wee[3][2];
 
 int main(int argc, char v)
 {
@@ -9,7 +9,7 @@ int main(int argc, char v)
 
     // !8;
 
-    // char n;
+    char n;
 
     // 2%3;
 
@@ -20,14 +20,14 @@ int main(int argc, char v)
     {
         x = (y + z)/10^3;
     }
-    */
     
-    /*
     for(i = 1; i < n; i += 5)
     {
         a[d + 3][(4 && p)];
     }
     */
+
+    // 10^3^8;
 
     // nyan(x, y, z);
 
@@ -37,14 +37,13 @@ int main(int argc, char v)
 
     // callout("jump");
 
-    x += 5 > 10 ? a : b;
+    // x += 5 > 10 ? a : b;
 
     return 0;
 }
 
-/*
+
 bool something()
 {
     return true;
 }
-*/

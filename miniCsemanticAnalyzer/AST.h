@@ -122,6 +122,11 @@ class ASTProgram : public ASTnode {
         declarationList.push_back(decl);
     }
 
+    std::vector<ASTnode*> getDeclarations()
+    {
+        return declarationList;
+    }
+
     virtual void accept(ASTvisitor& v)
     {
         v.visit(*this);
@@ -138,6 +143,11 @@ class ASTDeclaration : public ASTnode {
     ASTDeclaration() {}
 
     ASTDeclaration(ASTDataType *dt) : dataType(dt) {}
+
+    ASTDataType* getDataType()
+    {
+        return dataType;
+    }
 
     virtual void accept(ASTvisitor& v)
     {
@@ -158,6 +168,11 @@ class ASTVariableDecl : public ASTDeclaration {
         variableList.push_back(var);
     }
 
+    std::vector<ASTSingleVarDecl*> getVariables()
+    {
+        return variableList;
+    }
+
     virtual void accept(ASTvisitor& v)
     {
         v.visit(*this);
@@ -174,6 +189,11 @@ class ASTSingleVarDecl : public ASTDeclaration {
     public:
 
     ASTSingleVarDecl(std::string vName) : varName(vName) {}
+
+    std::string getVariableName()
+    {
+        return varName;
+    }
 
     virtual void accept(ASTvisitor& v)
     {
@@ -201,6 +221,11 @@ class AST1DArrayDecl : public ASTSingleVarDecl {
 
     AST1DArrayDecl(std::string vName, int d1) : ASTSingleVarDecl(vName), dim1(d1) {}
 
+    int getDim()
+    {
+        return dim1;
+    }
+
     virtual void accept(ASTvisitor& v)
     {
         v.visit(*this);
@@ -214,6 +239,15 @@ class AST2DArrayDecl : public ASTSingleVarDecl {
     public:
 
     AST2DArrayDecl(std::string vName, int d1, int d2) : ASTSingleVarDecl(vName), dim1(d1), dim2(d2) {}
+
+    std::vector<int> getDims()
+    {
+        std::vector<int> x(2);
+        x[0] = dim1;
+        x[1] = dim2;
+
+        return x;
+    }
 
     virtual void accept(ASTvisitor& v)
     {
@@ -264,6 +298,23 @@ class ASTFunctionDecl : public ASTDeclaration {
         paramList.push_back(param);
     }
 
+    std::string getFunctionName()
+    {
+        return functionName;
+    }
+
+    std::vector<ASTParam*> getParamList() const {
+        return paramList;
+    }
+
+    ASTStmtList *getStmtList() const {
+        return stmtList;
+    }
+
+    ASTReturnStmt *getReturnStmt() const {
+        return returnExpr;
+    }
+
     virtual void accept(ASTvisitor& v)
     {
         v.visit(*this);
@@ -273,6 +324,7 @@ class ASTFunctionDecl : public ASTDeclaration {
 class ASTParam : public ASTnode {
 
     ASTDataType *dataType;
+
     std::string paramName;
 
     public:
@@ -282,6 +334,10 @@ class ASTParam : public ASTnode {
     std::string getParamName()
     {
         return paramName;
+    }
+
+    ASTDataType *getDataType() const {
+        return dataType;
     }
 
     virtual void accept(ASTvisitor& v)
@@ -305,10 +361,14 @@ class ASTExpr : public ASTnode {
 class ASTParenthesesExpr : public ASTExpr {         
 
     ASTnode *expr;
-
+    
     public:
 
     ASTParenthesesExpr(ASTnode *exp) : expr(exp) {}
+
+    ASTnode* getExpr() const {
+        return expr;
+    }
     
     virtual void accept(ASTvisitor& v)
     {
@@ -325,6 +385,11 @@ class ASTLocationExpr : public ASTnode {
     public:
 
     ASTLocationExpr(std::string locName) : locationName(locName) {}
+
+    std::string getLocationName()
+    {
+        return locationName;
+    }
 
     virtual void accept(ASTvisitor& v)
     {
@@ -353,6 +418,10 @@ class ASTOneDarrayLocation : public ASTLocationExpr {
     ASTOneDarrayLocation(std::string locName, ASTnode *d1) : 
     ASTLocationExpr(locName), dim(d1) {}
 
+    ASTnode* getDim() const {
+        return dim;
+    }
+
     virtual void accept(ASTvisitor& v)
     {
         v.visit(*this);
@@ -367,6 +436,15 @@ class ASTTwoDarrayLocation : public ASTLocationExpr {
 
     ASTTwoDarrayLocation(std::string locName, ASTnode *d1, ASTnode *d2) : 
     ASTLocationExpr(locName), dim1(d1), dim2(d2) {}
+
+    std::vector<ASTnode*> getDims()
+    {
+        std::vector<ASTnode*> x(2);
+        x[0] = dim1;
+        x[1] = dim2;
+
+        return x;
+    }
 
     virtual void accept(ASTvisitor& v)
     {
@@ -567,6 +645,10 @@ class ASTStmtList : public ASTnode {
         listOfStmts.push_back(stmt);
     }
 
+    std::vector<ASTnode*> getListOfStmts() const {
+        return listOfStmts;
+    }
+
     virtual void accept(ASTvisitor& v)
     {
         v.visit(*this);
@@ -657,6 +739,14 @@ class ASTIfStmt : public ASTStmt {
 
     ASTIfStmt(ASTnode* ifcon, ASTStmtList* stmts) : condition(ifcon), statements(stmts) {}
 
+    ASTnode* getCondition() const {
+        return condition;
+    }
+
+    ASTStmtList* getStatements() const {
+        return statements;
+    }
+
     virtual void accept(ASTvisitor& v)
     {
         v.visit(*this);
@@ -672,6 +762,18 @@ class ASTIfElseStmt : public ASTStmt {
     public:
 
     ASTIfElseStmt(ASTnode* ifcon, ASTStmtList* thenStmts, ASTStmtList* elseStmts) : condition(ifcon), thenStatements(thenStmts), elseStatements(elseStmts) {}
+
+    ASTnode* getCondition() const {
+        return condition;
+    }
+
+    ASTStmtList *getThenStatements() const {
+        return thenStatements;
+    }
+
+    ASTStmtList *getElseStatements() const {
+        return elseStatements;
+    }
 
     virtual void accept(ASTvisitor& v)
     {
@@ -710,6 +812,34 @@ class ASTForStmt : public ASTStmt {
                 statements(stmts)
                 {}
 
+    ASTnode* getInitLoc() const {
+        return initLoc;
+    }
+
+    ASTnode* getInitExpr() const {
+        return initExpr;
+    }
+
+    ASTnode* getConditionExpr() const {
+        return conditionExpr;
+    }
+
+    ASTnode* getUpdateLoc() const {
+        return updateLoc;
+    }
+
+    std::string getAssignOp() const {
+        return assignOp;
+    }
+
+    ASTnode* getUpdateExpr() const {
+        return updateExpr;
+    }
+
+    ASTStmtList *getStatements() const {
+        return statements;
+    }
+
     virtual void accept(ASTvisitor& v)
     {
         v.visit(*this);
@@ -725,6 +855,14 @@ class ASTWhileStmt : public ASTStmt {
 
     ASTWhileStmt(ASTnode* con, ASTStmtList* stmts) : condition(con), statements(stmts) {}
 
+    ASTnode* getCondition() const {
+        return condition;
+    }
+
+    ASTStmtList* getStatements() const {
+        return statements;
+    }
+
     virtual void accept(ASTvisitor& v)
     {
         v.visit(*this);
@@ -737,7 +875,7 @@ class ASTUserFunCall : public ASTnode {
 
     std::string funcName;
     std::vector<ASTUserFunArg*> args;
-
+    
     public:
 
     ASTUserFunCall(std::string fnName) : funcName(fnName) {}
@@ -745,6 +883,14 @@ class ASTUserFunCall : public ASTnode {
     void addArg(ASTUserFunArg *arg)
     {
         args.push_back(arg);
+    }
+
+    std::string getFuncName() const {
+        return funcName;
+    }
+
+    std::vector<ASTUserFunArg*> getArgs() const {
+        return args;
     }
 
     virtual void accept(ASTvisitor& v)
@@ -767,19 +913,31 @@ class ASTLibFunCall : public ASTnode {
         args.push_back(arg);
     }
 
+    std::string getLibFuncName() const {
+        return libFuncName;
+    }
+
+    std::vector<ASTLibFunArg*> getArgs() const {
+        return args;
+    }
+
     virtual void accept(ASTvisitor& v)
     {
         v.visit(*this);
     }
 };
 
-class ASTUserFunArg : public ASTnode {          // This class and the one below feel like unnecesary wrappers
+class ASTUserFunArg : public ASTnode {          // This class and the one below feel like (unnecesary?) wrappers
 
     ASTnode* argument;
 
     public:
 
     ASTUserFunArg(ASTnode* arg) : argument(arg) {}
+
+    ASTnode* getArgument() const {
+        return argument;
+    }
 
     virtual void accept(ASTvisitor& v)
     {
@@ -794,6 +952,10 @@ class ASTLibFunArg : public ASTnode {
     public:
 
     ASTLibFunArg(ASTnode* arg) : argument(arg) {}
+
+    ASTnode* getArgument() const {
+        return argument;
+    }
 
     virtual void accept(ASTvisitor& v)
     {

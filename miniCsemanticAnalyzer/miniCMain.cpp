@@ -5,6 +5,7 @@
 #include "miniCgrammarParser.h"
 
 #include "ASTBuildVisitor.h"
+#include "SymTabASTVisitor.h"
 
 using namespace antlr4;
 using namespace antlrcpp;
@@ -18,18 +19,38 @@ int main(int argc, const char* argv[]) {
     miniCgrammarLexer lexer(&input);
     CommonTokenStream tokens(&lexer);
     miniCgrammarParser parser(&tokens);
-
-    // std::cout << "Works\n";
-
-    // tree::ParseTree* miniCparsetree = parser.program();
-    // std::cout << miniCparsetree->toStringTree(&parser) << "\n\n";
-
+    
     miniCgrammarParser::ProgramContext* miniCparsetree = parser.program();
 
     ASTBuildVisitor abv;
     ASTContext ast;
 
-    /*
+    std::cout << "\nConstructing AST . . . \n";
+    ast.root = abv.visitProgram(miniCparsetree);
+
+    SymTabASTVisitor fillSymTab;
+
+    SymTab *symbolTable;         // Make this SymTab ptr a member of SymTabASTVisitor ? But then hierarchical structure? Maybe put the SymTab ptr in ASTnode ??
+    
+    if (ast.root != NULL)
+    {
+        std::cout << "\n\nVisiting AST to create a symbol table. . . \n";
+        fillSymTab.visit(*ast.root);
+        
+        std::cout << "\n\nPrinting root sym tab\n";
+        fillSymTab.rootSymTab->printSymTab();
+    }
+
+    return 0;
+}
+
+
+
+
+
+
+
+ /*
     ASTnode *root;
     
     antlrcpp::Any anyObject;
@@ -54,9 +75,4 @@ int main(int argc, const char* argv[]) {
     ASTProgram* tryAnotherNode = dynamic_cast<ASTProgram*>(ast.root);
     if(tryAnotherNode != NULL)
         std::cout << "ASTProgram is at the root : " << "\n";
-    */
-
-    ast.root = abv.visitProgram(miniCparsetree);
-
-    return 0;
-}
+*/

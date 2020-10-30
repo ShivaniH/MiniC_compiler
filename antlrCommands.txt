@@ -33,3 +33,11 @@ g++ -I ../miniCParser/antlr -I /usr/local/include/antlr4-runtime -L /usr/local/l
 ./trial ../samplePrograms/sample1.mc
 
 
+
+UPDATE:
+
+export LD_LIBRARY_PATH="/usr/local/lib:$LD_LIBRARY_PATH"
+
+g++ -I ../miniCParser/antlr -I /usr/local/include/antlr4-runtime -L /usr/local/lib -lantlr4-runtime  -o trial  ../miniCParser/antlr/miniCgrammarLexer.cpp ../miniCParser/antlr/miniCgrammarParser.cpp miniCMain.cpp
+
+./trial ../samplePrograms/sample1.mc
