@@ -10,7 +10,24 @@
 using namespace antlr4;
 using namespace antlrcpp;
 
-int main(int argc, const char* argv[]) {
+void printSymbolTable(SymTab* symTab)
+{
+    symTab->printSymTab();
+
+    std::vector<SymTab*> children = symTab->getChildren();
+
+    if(children.size() != 0)
+    {
+        for(auto child : children)
+        {
+            printSymbolTable(child);
+        }
+    }
+
+}
+
+int main(int argc, const char* argv[]) 
+{
 
     std::ifstream stream;
     stream.open(argv[1]);
@@ -29,16 +46,19 @@ int main(int argc, const char* argv[]) {
     ast.root = abv.visitProgram(miniCparsetree);
 
     SymTabASTVisitor fillSymTab;
-
-    SymTab *symbolTable;         // Make this SymTab ptr a member of SymTabASTVisitor ? But then hierarchical structure? Maybe put the SymTab ptr in ASTnode ??
     
     if (ast.root != NULL)
     {
         std::cout << "\n\nVisiting AST to create a symbol table. . . \n";
         fillSymTab.visit(*ast.root);
         
-        std::cout << "\n\nPrinting root sym tab\n";
-        fillSymTab.rootSymTab->printSymTab();
+        std::cout << "\n\nPrinting sym tab tree\n";
+        printSymbolTable(fillSymTab.rootSymTab);
+
+        semCheckASTVisitor semanticChecker(fillSymTab.rootSymTab);
+
+        std::cout << "\n\nSemantic checks:\n";
+        semanticChecker.visit(ast.root);
     }
 
     return 0;

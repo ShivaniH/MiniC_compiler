@@ -1,11 +1,10 @@
 #include <iostream>
-#include "SymTab.h"
 
-class SymTabASTVisitor : public ASTvisitor
+class semCheckASTVisitor : public ASTvisitor
 {   
-    SymTab *currentSymtab;
+    SymTab *rootSymbolTable;
 
-    std::string currentDataType;
+    SymTab *currentSymTab;
 
     int functionNum, ifNum, elseNum, forNum, whileNum;
 
@@ -17,23 +16,19 @@ class SymTabASTVisitor : public ASTvisitor
 
     public:
 
-    SymTab *rootSymTab;
+    semCheckASTVisitor() {}
 
-    SymTabASTVisitor()
-    {
-        rootSymTab = new SymTab("root");
-    }
+    semCheckASTVisitor(SymTab *symTab) : rootSymbolTable(symTab)
+    {}
 
     /*********************************** GROUP 1 ***************************************/
 
 
     virtual void visit(ASTProgram& node)
     {
+        currentSymTab = rootSymbolTable;
+
         std::vector<ASTnode*> declarations = node.getDeclarations();
-
-        currentSymtab = rootSymTab;
-
-        std::cout << "SYMTAB: root\n";
 
         if(declarations.size() != 0)
         {
@@ -72,11 +67,6 @@ class SymTabASTVisitor : public ASTvisitor
     {
         std::string varName = node.getVariableName();
         std::cout << varName << "\n";
-
-        // VariableEntry *varEntry = new VariableEntry(currentDataType, "simple");
-        VariableEntry varEntry(currentDataType, "simple");
-
-        currentSymtab->addEntry(varName, varEntry);
     }
 
     virtual void visit(AST1DArrayDecl& node)
@@ -86,12 +76,6 @@ class SymTabASTVisitor : public ASTvisitor
         
         int dim = node.getDim();
         std::cout << dim << "\n";
-
-        // VariableEntry *varEntry = new VariableEntry(currentDataType, "oneD");
-        VariableEntry varEntry(currentDataType, "oneD");
-        varEntry.setDimOne(dim);
-
-        currentSymtab->addEntry(varName, varEntry);
 
     }
 
@@ -103,13 +87,6 @@ class SymTabASTVisitor : public ASTvisitor
         std::vector<int> dims = node.getDims();     // Cannot be an empty vector, already checked by the parser
         std::cout << dims[0] << dims[1] << "\n";
 
-        // VariableEntry *varEntry = new VariableEntry(currentDataType, "twoD");
-        VariableEntry varEntry(currentDataType, "twoD");
-        varEntry.setDimOne(dims[0]);
-        varEntry.setDimTwo(dims[1]);
-
-        currentSymtab->addEntry(varName, varEntry);
-
     }
 
     virtual void visit(ASTDataType& node)
@@ -118,20 +95,31 @@ class SymTabASTVisitor : public ASTvisitor
         
         std::cout << dataType << "\n";
         
-        currentDataType = dataType;
     }
 
     virtual void visit(ASTFunctionDecl& node)
     {
+        std::vector<SymTab*> children = rootSymbolTable->getChildren();
+
+        if(children.size() != 0)
+        {
+            for(SymTab* child : children)
+            {
+                if (child->getName() == ("function"+functionNum))
+                {
+                    currentSymTab = child;
+                    break;
+                }
+            }
+        }
+        else {
+            std::cout << "\nSomething is wrong in the symTab hierarchy!\n";
+        }
+
         node.getDataType()->accept(*this);
         
         std::string funName = node.getFunctionName();
         std::cout << funName << "\n";
-
-        // FunctionEntry *funEntry = new FunctionEntry(currentDataType);
-        FunctionEntry funEntry(currentDataType);
-
-        rootSymTab->addEntry(funName, funEntry);
 
         std::vector<ASTParam*> parameters = node.getParamList();
 
@@ -142,29 +130,17 @@ class SymTabASTVisitor : public ASTvisitor
                 p->accept(*this);
             }
         }
-
-        SymTab *localFunST = new SymTab("function"+functionNum);
-
-        ++functionNum;
-
-        rootSymTab->addChild(localFunST);
-
-        localFunST->setParent(rootSymTab);
-
-        currentSymtab = localFunST;
-
-        std::cout << "SYMTAB: made by " << funName << "\n";
         
         if(node.getStmtList() != nullptr)
         {
             node.getStmtList()->accept(*this);
         }
 
-        currentSymtab = rootSymTab;
-
-        std::cout << "SYMTAB: root\n";
-
         node.getReturnStmt()->accept(*this);
+
+        ++functionNum;
+        
+        currentSymTab = rootSymbolTable;
     }
 
     virtual void visit(ASTParam& node)
@@ -197,18 +173,32 @@ class SymTabASTVisitor : public ASTvisitor
 
     virtual void visit(ASTSimpleVarLocation& node)
     {
-        std::cout << node.getLocationName() << "\n";
+        std::string varName = node.getLocationName();
+        std::cout << varName << "\n";
+
+        // Check if it's present in the symTab
+
+        
     }
 
     virtual void visit(ASTOneDarrayLocation& node)
     {
-        std::cout << node.getLocationName() << "\n";
+        std::string varName = node.getLocationName();
+        std::cout << varName << "\n";
+
+        // Check if it's present in the symTab
+
+
         node.getDim()->accept(*this);
     }
 
     virtual void visit(ASTTwoDarrayLocation& node)
     {
-        std::cout << node.getLocationName() << "\n";
+        std::string varName = node.getLocationName();
+        std::cout << varName << "\n";
+
+        // Check if it's present in the symTab
+
         std::vector<ASTnode*> dims = node.getDims();    // Cannot be an empty vector, already checked by the parser
 
         dims[0]->accept(*this);
@@ -313,80 +303,118 @@ class SymTabASTVisitor : public ASTvisitor
 
     virtual void visit(ASTIfStmt& node)
     {
+        std::vector<SymTab*> children = currentSymTab->getChildren();
+
+        if(children.size() != 0)
+        {
+            for(SymTab* child : children)
+            {
+                if (child->getName() == ("if"+ifNum))
+                {
+                    currentSymTab = child;
+                    break;
+                }
+            }
+        }
+        else {
+            std::cout << "\nSomething is wrong in the symTab hierarchy!\n";
+        }
+
         std::cout << "if ";
         node.getCondition()->accept(*this);
-
-        SymTab *localST = new SymTab("if"+ifNum);
-        ++ifNum;
-
-        currentSymtab->addChild(localST);
-
-        localST->setParent(currentSymtab);
-
-        SymTab *parentSymTab = currentSymtab;
-
-        currentSymtab = localST;
-
-        std::cout << "SYMTAB: made by if statement\n";
 
         if(node.getStatements() != nullptr)
         {
             node.getStatements()->accept(*this);
         }
 
-        currentSymtab = parentSymTab;
+        ++ifNum;
+
+        currentSymTab = currentSymTab->getParent();
     }
 
     virtual void visit(ASTIfElseStmt& node)
     {
+        std::vector<SymTab*> children = currentSymTab->getChildren();
+
+        if(children.size() != 0)
+        {
+            for(SymTab* child : children)
+            {
+                if (child->getName() == ("if"+ifNum))
+                {
+                    currentSymTab = child;
+                    break;
+                }
+            }
+        }
+        else {
+            std::cout << "\nSomething is wrong in the symTab hierarchy!\n";
+        }
+
         std::cout << "if ";
         node.getCondition()->accept(*this);
-
-        SymTab *localST = new SymTab("if"+ifNum);
-        ++ifNum;
-
-        currentSymtab->addChild(localST);   
-
-        localST->setParent(currentSymtab);
-
-        SymTab *parentSymTab = currentSymtab;
-
-        currentSymtab = localST;
-
-        std::cout << "SYMTAB: made by if-else statement -- if block\n";
 
         if(node.getThenStatements() != nullptr)
         {
             node.getThenStatements()->accept(*this);
         }
 
-        currentSymtab = parentSymTab;
+        ++ifNum;
+
+        currentSymTab = currentSymTab->getParent();
+
+
+
+
+        children = currentSymTab->getChildren();
+
+        if(children.size() != 0)
+        {
+            for(SymTab* child : children)
+            {
+                if (child->getName() == ("else"+elseNum))
+                {
+                    currentSymTab = child;
+                    break;
+                }
+            }
+        }
+        else {
+            std::cout << "\nSomething is wrong in the symTab hierarchy!\n";
+        }
 
         std::cout << "else ";
-
-        SymTab *localSTElse = new SymTab("else"+elseNum);
-        ++elseNum;
-
-        currentSymtab->addChild(localSTElse);
-
-        localST->setParent(currentSymtab);
-
-        parentSymTab = currentSymtab;
-
-        currentSymtab = localSTElse;
-
-        std::cout << "SYMTAB: made by if-else statement -- else block\n";
 
         if(node.getElseStatements() != nullptr)
         {
             node.getElseStatements()->accept(*this);
         }
 
-        currentSymtab = parentSymTab;
+        ++elseNum;
+
+        currentSymTab = currentSymTab->getParent();
     }
 
     virtual void visit(ASTForStmt& node)
     {
+        std::vector<SymTab*> children = currentSymTab->getChildren();
+
+        if(children.size() != 0)
+        {
+            for(SymTab* child : children)
+            {
+                if (child->getName() == ("for"+forNum))
+                {
+                    currentSymTab = child;
+                    break;
+                }
+            }
+        }
+        else {
+            std::cout << "\nSomething is wrong in the symTab hierarchy!\n";
+        }
+
         std::cout << "for ";
 
         node.getInitLoc()->accept(*this);
@@ -399,53 +427,46 @@ class SymTabASTVisitor : public ASTvisitor
         std::cout << node.getAssignOp();
         node.getUpdateExpr()->accept(*this);
 
-        SymTab *localST = new SymTab("for"+forNum);
-
-        ++forNum;
-
-        currentSymtab->addChild(localST);
-
-        localST->setParent(currentSymtab);
-
-        SymTab *parentSymTab = currentSymtab;
-
-        currentSymtab = localST;
-
-        std::cout << "SYMTAB: made by for statement\n";
-
         if(node.getStatements() != nullptr)
         {
             node.getStatements()->accept(*this);
         }
 
-        currentSymtab = parentSymTab;
+        ++forNum;
+
+        currentSymTab = currentSymTab->getParent();
     }
 
     virtual void visit(ASTWhileStmt& node)
     {
+        std::vector<SymTab*> children = currentSymTab->getChildren();
+
+        if(children.size() != 0)
+        {
+            for(SymTab* child : children)
+            {
+                if (child->getName() == ("while"+whileNum))
+                {
+                    currentSymTab = child;
+                    break;
+                }
+            }
+        }
+        else {
+            std::cout << "\nSomething is wrong in the symTab hierarchy!\n";
+        }
+
         std::cout << "while ";
         node.getCondition()->accept(*this);
-
-        SymTab *localST = new SymTab("while"+whileNum);
-
-        ++whileNum;
-
-        currentSymtab->addChild(localST);
-
-        localST->setParent(currentSymtab);
-
-        SymTab *parentSymTab = currentSymtab;
-
-        currentSymtab = localST;
-
-        std::cout << "SYMTAB: made by while statement\n";
         
         if(node.getStatements() != nullptr)
         {
             node.getStatements()->accept(*this);
         }
 
-        currentSymtab = parentSymTab;
+        ++whileNum;
+        
+        currentSymTab = currentSymTab->getParent();
     }
 
 

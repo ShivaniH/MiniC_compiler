@@ -62,9 +62,21 @@ class FunctionEntry : public SymTabEntry {     // for now, can use it to check i
 class SymTab {
 
     std::map<std::string, SymTabEntry> symbolTable;        // key: identifier (var or fun name), value: other_info_about_var/fun
+    
+    std::string tableName;
+    
     std::vector<SymTab*> children;
+    SymTab* parent;
 
     public:
+
+    SymTab() 
+    {
+        tableName = "";
+        parent = nullptr;
+    }
+
+    SymTab(std::string tabName) : tableName(tabName) {}
 
     void addEntry(std::string identifier, SymTabEntry entry)
     {
@@ -76,11 +88,51 @@ class SymTab {
         children.push_back(child);
     }
 
+    void setParent(SymTab *par)
+    {
+        parent = par;
+    }
+
+    std::string getName()
+    {
+        return tableName;
+    }
+
+    std::vector<SymTab*> getChildren()
+    {
+        return children;
+    }
+
+    SymTab* getParent()
+    {
+        return parent;
+    }
+
+    bool searchEntry(std::string id)
+    {   
+        std::map<std::string, SymTabEntry>::iterator it;
+        it = symbolTable.find(id);
+
+        if( it != symbolTable.end())
+        {
+            return true;
+        }
+        else 
+        {
+            return false;
+        }
+    }
+
     void printSymTab()
     {
-        for(auto elem : symbolTable)
+        if(!symbolTable.empty())
         {
-            std::cout << elem.first << " " << elem.second.getDataType() << "\n";
+            std::cout << "\nPrinting symbol table at the node: " << tableName << "\n";
+
+            for(auto elem : symbolTable)
+            {
+                std::cout << elem.first << " " << elem.second.getDataType() << "\n";
+            }
         }
     }
 };
