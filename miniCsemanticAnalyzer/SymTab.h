@@ -7,6 +7,8 @@ class SymTabEntry {
 
     public:
 
+    SymTabEntry() {}
+
     SymTabEntry(std::string dt) : dataType(dt)
     {}
 
@@ -121,6 +123,11 @@ class SymTab {
         {
             return false;
         }
+    }
+
+    std::string getIdentifierDataType(std::string id)
+    {
+        return symbolTable[id].getDataType();
     }
 
     void printSymTab()

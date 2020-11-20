@@ -1,4 +1,4 @@
-// Generated from /run/media/shivanih/DATA/shiva/IIITH/sem3/Compilers/MajorProject/minic-grammar-ShivaniH/miniCParser/antlr/miniCgrammar.g4 by ANTLR 4.7.1
+// Generated from /home/shivanih/Desktop/IIITHsem3/Compilers/MajorProject/minic-grammar-ShivaniH/miniCParser/antlr/miniCgrammar.g4 by ANTLR 4.7.1
 import org.antlr.v4.runtime.atn.*;
 import org.antlr.v4.runtime.dfa.DFA;
 import org.antlr.v4.runtime.*;

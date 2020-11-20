@@ -6,6 +6,7 @@
 
 #include "ASTBuildVisitor.h"
 #include "SymTabASTVisitor.h"
+#include "semCheckASTVisitor.h"
 
 using namespace antlr4;
 using namespace antlrcpp;
@@ -58,7 +59,7 @@ int main(int argc, const char* argv[])
         semCheckASTVisitor semanticChecker(fillSymTab.rootSymTab);
 
         std::cout << "\n\nSemantic checks:\n";
-        semanticChecker.visit(ast.root);
+        semanticChecker.visit(*ast.root);
     }
 
     return 0;

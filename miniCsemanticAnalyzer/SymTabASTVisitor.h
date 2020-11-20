@@ -9,12 +9,6 @@ class SymTabASTVisitor : public ASTvisitor
 
     int functionNum, ifNum, elseNum, forNum, whileNum;
 
-    functionNum = 1;
-    ifNum = 1;
-    elseNum = 1;
-    forNum = 1;
-    whileNum = 1;
-
     public:
 
     SymTab *rootSymTab;
@@ -22,6 +16,12 @@ class SymTabASTVisitor : public ASTvisitor
     SymTabASTVisitor()
     {
         rootSymTab = new SymTab("root");
+
+        functionNum = 1;
+        ifNum = 1;
+        elseNum = 1;
+        forNum = 1;
+        whileNum = 1;
     }
 
     /*********************************** GROUP 1 ***************************************/

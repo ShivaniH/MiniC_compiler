@@ -1,4 +1,7 @@
 #include <iostream>
+#include <stdlib.h> 
+
+// TODO: Sub-expression type mismatch --> Unary, Binary, Ternary, Assignment stmt
 
 class semCheckASTVisitor : public ASTvisitor
 {   
@@ -6,20 +9,33 @@ class semCheckASTVisitor : public ASTvisitor
 
     SymTab *currentSymTab;
 
-    int functionNum, ifNum, elseNum, forNum, whileNum;
+    std::string currentDataType;
 
-    functionNum = 1;
-    ifNum = 1;
-    elseNum = 1;
-    forNum = 1;
-    whileNum = 1;
+    int functionNum, ifNum, elseNum, forNum, whileNum;
 
     public:
 
-    semCheckASTVisitor() {}
+    semCheckASTVisitor() 
+    {     
+        functionNum = 1;
+        ifNum = 1;
+        elseNum = 1;
+        forNum = 1;
+        whileNum = 1;
+
+        currentDataType = "";
+    }
 
     semCheckASTVisitor(SymTab *symTab) : rootSymbolTable(symTab)
-    {}
+    {
+        functionNum = 1;
+        ifNum = 1;
+        elseNum = 1;
+        forNum = 1;
+        whileNum = 1;
+
+        currentDataType = "";
+    }
 
     /*********************************** GROUP 1 ***************************************/
 
@@ -178,7 +194,24 @@ class semCheckASTVisitor : public ASTvisitor
 
         // Check if it's present in the symTab
 
-        
+        bool present = currentSymTab->searchEntry(varName);
+
+        SymTab *tempSymTab = currentSymTab;
+
+        while(!present && tempSymTab->getParent() != nullptr)
+        {
+            tempSymTab = tempSymTab->getParent();
+            present = tempSymTab->searchEntry(varName);
+        }
+
+        if(!present)
+        {
+            std::cout<< "ERROR: Variable " << varName << " is undeclared\n";
+
+            exit(EXIT_FAILURE);
+        }
+
+        currentDataType = currentSymTab->getIdentifierDataType(varName);
     }
 
     virtual void visit(ASTOneDarrayLocation& node)
@@ -188,8 +221,26 @@ class semCheckASTVisitor : public ASTvisitor
 
         // Check if it's present in the symTab
 
+        bool present = currentSymTab->searchEntry(varName);
+
+        SymTab *tempSymTab = currentSymTab;
+
+        while(!present && tempSymTab->getParent() != nullptr)
+        {
+            tempSymTab = tempSymTab->getParent();
+            present = tempSymTab->searchEntry(varName);
+        }
+
+        if(!present)
+        {
+            std::cout<< "ERROR: Variable " << varName << " is undeclared\n";
+
+            exit(EXIT_FAILURE);
+        }
 
         node.getDim()->accept(*this);
+
+        currentDataType = currentSymTab->getIdentifierDataType(varName);
     }
 
     virtual void visit(ASTTwoDarrayLocation& node)
@@ -199,10 +250,29 @@ class semCheckASTVisitor : public ASTvisitor
 
         // Check if it's present in the symTab
 
+        bool present = currentSymTab->searchEntry(varName);
+
+        SymTab *tempSymTab = currentSymTab;
+
+        while(!present && tempSymTab->getParent() != nullptr)
+        {
+            tempSymTab = tempSymTab->getParent();
+            present = tempSymTab->searchEntry(varName);
+        }
+
+        if(!present)
+        {
+            std::cout<< "ERROR: Variable " << varName << " is undeclared\n";
+
+            exit(EXIT_FAILURE);
+        }
+
         std::vector<ASTnode*> dims = node.getDims();    // Cannot be an empty vector, already checked by the parser
 
         dims[0]->accept(*this);
         dims[1]->accept(*this);
+
+        currentDataType = currentSymTab->getIdentifierDataType(varName);
     }
 
     virtual void visit(ASTUnaryExpr& node)
@@ -213,9 +283,24 @@ class semCheckASTVisitor : public ASTvisitor
 
     virtual void visit(ASTBinaryExpr& node)
     {
+        std::string leftDT, rightDT;
+
         node.getLeft()->accept(*this);
+        leftDT = currentDataType;
+
         std::cout << node.getBin_operator() << "\n";
+
         node.getRight()->accept(*this);
+        rightDT = currentDataType;
+
+        // std::cout << "leftDT = " << leftDT << "rightDT = " << rightDT << "\n";
+
+        if(leftDT != rightDT)
+        {
+            std::cout << "ERROR: Type mismatch, cannot apply " << node.getBin_operator() << " to " << leftDT << " and " << rightDT << "\n";
+
+            exit(EXIT_FAILURE);
+        }
     }
 
     virtual void visit(ASTTernaryExpr& node)
@@ -234,6 +319,8 @@ class semCheckASTVisitor : public ASTvisitor
     virtual void visit(ASTIntLitNode& node)
     {
         std::cout << node.getIntLit() << "\n";
+
+        currentDataType = "int";        // !!!!!!!! THIS COULD BE UINT, ULONG OR LONG !!!! 
     }
 
     virtual void visit(ASTStringLitNode& node)
@@ -244,6 +331,8 @@ class semCheckASTVisitor : public ASTvisitor
     virtual void visit(ASTCharLitNode& node)
     {
         std::cout << node.getCharLit() << "\n";
+
+        currentDataType = "char";
     }
 
     virtual void visit(ASTBoolLitNode& node)
@@ -255,6 +344,8 @@ class semCheckASTVisitor : public ASTvisitor
         else {
             std::cout << "false" << "\n";
         }
+
+        currentDataType = "bool";
     }
 
     /*********************************** GROUP 4 ***************************************/
