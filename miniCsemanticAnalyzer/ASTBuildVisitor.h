@@ -1,6 +1,8 @@
 #include "miniCgrammarBaseVisitor.h"
 #include "AST.h"
 
+#include <algorithm>
+
 /*
 Visit nodes of the Parse tree created by Antlr and create an AST using info from those nodes
 */
@@ -498,7 +500,7 @@ class ASTBuildVisitor : public miniCgrammarBaseVisitor {
 
     virtual antlrcpp::Any visitIntLitExpr(miniCgrammarParser::IntLitExprContext *ctx) override {
 
-        int value = std::stoi(ctx->IntegerLiteral()->getSymbol()->getText());
+        unsigned long int value = std::stoi(ctx->IntegerLiteral()->getSymbol()->getText());
 
         std::cout << "visited int lit node with value " << value << "\n";
 
@@ -569,6 +571,8 @@ class ASTBuildVisitor : public miniCgrammarBaseVisitor {
     virtual antlrcpp::Any visitLibFnCall(miniCgrammarParser::LibFnCallContext *ctx) override {
         
         std::string funName = ctx->StringLiteral()->getSymbol()->getText();
+
+        funName.erase(std::remove( funName.begin(), funName.end(), '\"' ), funName.end());
 
         ASTnode *argExpr;
 

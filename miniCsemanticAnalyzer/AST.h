@@ -541,13 +541,13 @@ class ASTTernaryExpr : public ASTnode {
 
 class ASTIntLitNode: public ASTnode {
 
-	int integerLiteral;
+	unsigned long int integerLiteral;
 
 	public:
 
-	ASTIntLitNode(int intlit) : integerLiteral(intlit){}
+	ASTIntLitNode(unsigned long int intlit) : integerLiteral(intlit){}
 
-    int getIntLit()
+    unsigned long int getIntLit()
     {
         return integerLiteral;
     }

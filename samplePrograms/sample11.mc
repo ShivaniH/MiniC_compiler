@@ -23,7 +23,7 @@ int main()
     {
         if(text[i] >= 'a' && text[i] <= 'z')
         {
-            histogram[text[i] - 97] += 1;
+            histogram[text[i] - 'a'] += 1;
         }
     }
 

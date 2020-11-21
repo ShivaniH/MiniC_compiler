@@ -3,7 +3,7 @@ int main()
     int n, sum, i, k;
     sum = 0;
 
-    i + 'x';
+    sum = 5 + 37 - 'e' + 9;
 
     callout("printf", "Enter n and k: ");
 

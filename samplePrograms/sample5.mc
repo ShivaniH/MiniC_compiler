@@ -36,7 +36,7 @@ int permutation(int start, int end)
 
 int main() 
 {
-    int i;
+    int i, n;
     
     callout("printf", "Enter a positive integer (less than or equal to 10000): ");
 

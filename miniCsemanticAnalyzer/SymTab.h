@@ -78,7 +78,10 @@ class SymTab {
         parent = nullptr;
     }
 
-    SymTab(std::string tabName) : tableName(tabName) {}
+    SymTab(std::string tabName) : tableName(tabName) 
+    {
+        parent = nullptr;
+    }
 
     void addEntry(std::string identifier, SymTabEntry entry)
     {
@@ -132,6 +135,8 @@ class SymTab {
 
     void printSymTab()
     {
+        // std::cout << "\nPrinting symbol table at the node: " << tableName << "\n";
+
         if(!symbolTable.empty())
         {
             std::cout << "\nPrinting symbol table at the node: " << tableName << "\n";

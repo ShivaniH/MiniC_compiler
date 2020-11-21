@@ -1,7 +1,6 @@
 #include <iostream>
 #include <stdlib.h> 
-
-// TODO: Sub-expression type mismatch --> Unary, Binary, Ternary, Assignment stmt
+#include <limits>
 
 class semCheckASTVisitor : public ASTvisitor
 {   
@@ -10,6 +9,9 @@ class semCheckASTVisitor : public ASTvisitor
     SymTab *currentSymTab;
 
     std::string currentDataType;
+
+    bool signedInteger;
+
 
     int functionNum, ifNum, elseNum, forNum, whileNum;
 
@@ -24,6 +26,7 @@ class semCheckASTVisitor : public ASTvisitor
         whileNum = 1;
 
         currentDataType = "";
+        signedInteger = false;
     }
 
     semCheckASTVisitor(SymTab *symTab) : rootSymbolTable(symTab)
@@ -35,6 +38,7 @@ class semCheckASTVisitor : public ASTvisitor
         whileNum = 1;
 
         currentDataType = "";
+        signedInteger = false;
     }
 
     /*********************************** GROUP 1 ***************************************/
@@ -55,14 +59,11 @@ class semCheckASTVisitor : public ASTvisitor
         }
     }
 
-    virtual void visit(ASTDeclaration& node)
-    {
-        // node.getDataType()->accept(*this);      // Don't visit here
-    }
+    virtual void visit(ASTDeclaration& node) {}
 
     virtual void visit(ASTVariableDecl& node)
     {
-        node.getDataType()->accept(*this);       // Visit here
+        node.getDataType()->accept(*this);
 
         std::vector<ASTSingleVarDecl*> variables = node.getVariables();
 
@@ -74,10 +75,7 @@ class semCheckASTVisitor : public ASTvisitor
         }
     }
 
-    virtual void visit(ASTSingleVarDecl& node)
-    {
-        // std::cout << node.getVariableName() << "\n";    // Don't visit here
-    }
+    virtual void visit(ASTSingleVarDecl& node) {}
 
     virtual void visit(ASTSimpleVariableDecl& node)
     {
@@ -121,7 +119,7 @@ class semCheckASTVisitor : public ASTvisitor
         {
             for(SymTab* child : children)
             {
-                if (child->getName() == ("function"+functionNum))
+                if ( child->getName() == ("function" + std::to_string(functionNum) ) )
                 {
                     currentSymTab = child;
                     break;
@@ -170,10 +168,8 @@ class semCheckASTVisitor : public ASTvisitor
 
 
 
-    virtual void visit(ASTExpr& node)
-    {
-        
-    }
+    virtual void visit(ASTExpr& node) {}
+
 
     virtual void visit(ASTParenthesesExpr& node)
     {
@@ -182,10 +178,8 @@ class semCheckASTVisitor : public ASTvisitor
         std::cout << " ) \n";
     }
 
-    virtual void visit(ASTLocationExpr& node)
-    {
-        
-    }
+    virtual void visit(ASTLocationExpr& node) {}
+    
 
     virtual void visit(ASTSimpleVarLocation& node)
     {
@@ -198,10 +192,14 @@ class semCheckASTVisitor : public ASTvisitor
 
         SymTab *tempSymTab = currentSymTab;
 
-        while(!present && tempSymTab->getParent() != nullptr)
+        // std::cout << "symtab = " << tempSymTab->getName() << "present = " << present << "\n";
+
+        while(!present && (tempSymTab->getParent() != nullptr) )
         {
             tempSymTab = tempSymTab->getParent();
             present = tempSymTab->searchEntry(varName);
+
+            // std::cout << "symtab = " << tempSymTab->getName() << "present = " << present << "\n";
         }
 
         if(!present)
@@ -211,7 +209,7 @@ class semCheckASTVisitor : public ASTvisitor
             exit(EXIT_FAILURE);
         }
 
-        currentDataType = currentSymTab->getIdentifierDataType(varName);
+        currentDataType = tempSymTab->getIdentifierDataType(varName);
     }
 
     virtual void visit(ASTOneDarrayLocation& node)
@@ -240,7 +238,8 @@ class semCheckASTVisitor : public ASTvisitor
 
         node.getDim()->accept(*this);
 
-        currentDataType = currentSymTab->getIdentifierDataType(varName);
+        currentDataType = tempSymTab->getIdentifierDataType(varName);
+        
     }
 
     virtual void visit(ASTTwoDarrayLocation& node)
@@ -272,14 +271,36 @@ class semCheckASTVisitor : public ASTvisitor
         dims[0]->accept(*this);
         dims[1]->accept(*this);
 
-        currentDataType = currentSymTab->getIdentifierDataType(varName);
+        currentDataType = tempSymTab->getIdentifierDataType(varName);
     }
 
+
     virtual void visit(ASTUnaryExpr& node)
-    {
-        std::cout << node.getUnaryOp() << "\n";
+    {   
+        std::string unaryOp = node.getUnaryOp();
+        std::cout << unaryOp << "\n";
+
+        if(unaryOp == "-")
+        {
+            signedInteger = true;
+        }
+
         node.getOperand()->accept(*this);
+
+        if (unaryOp == "-" && ( currentDataType == "bool" || currentDataType == "char" ) )
+        {
+            std::cout << "ERROR: Type mismatch, cannot apply " << unaryOp << " to " << currentDataType << "\n";
+
+            exit(EXIT_FAILURE);
+        }
+        else if (unaryOp == "!" && currentDataType == "char")
+        {
+            std::cout << "ERROR: Type mismatch, cannot apply ! to a char\n";
+
+            exit(EXIT_FAILURE);
+        }
     }
+
 
     virtual void visit(ASTBinaryExpr& node)
     {
@@ -297,15 +318,33 @@ class semCheckASTVisitor : public ASTvisitor
 
         if(leftDT != rightDT)
         {
-            std::cout << "ERROR: Type mismatch, cannot apply " << node.getBin_operator() << " to " << leftDT << " and " << rightDT << "\n";
+            if ( (leftDT == "int" || leftDT == "uint" || leftDT == "long" || leftDT == "ulong") && (rightDT == "int" || rightDT == "uint" || rightDT == "long" || rightDT == "ulong") )
+            {
+                // This is fine. Not handling overflows.
+            }
+            else
+            {
+                std::cout << "ERROR: Type mismatch, cannot apply " << node.getBin_operator() << " to " << leftDT << " and " << rightDT << "\n";
 
-            exit(EXIT_FAILURE);
+                exit(EXIT_FAILURE);
+            }
         }
+
+        currentDataType = leftDT;
     }
+
 
     virtual void visit(ASTTernaryExpr& node)
     {
         node.getFirst()->accept(*this);
+
+        if(currentDataType != "bool" && currentDataType != "int")
+        {
+            std::cout << "ERROR: Type mismatch, the first operand of ?: must have the type bool or int\n";
+
+            exit(EXIT_FAILURE);
+        }
+
         std::cout << " ? ";
         node.getSecond()->accept(*this);
         std::cout << " : ";
@@ -318,9 +357,33 @@ class semCheckASTVisitor : public ASTvisitor
 
     virtual void visit(ASTIntLitNode& node)
     {
-        std::cout << node.getIntLit() << "\n";
+        unsigned long int intVal = node.getIntLit();
 
-        currentDataType = "int";        // !!!!!!!! THIS COULD BE UINT, ULONG OR LONG !!!! 
+        std::cout << intVal << "\n";
+
+        if(signedInteger == true)
+        {
+            if ( intVal > std::numeric_limits<int>::min() && intVal < std::numeric_limits<int>::max() )
+            {
+                currentDataType = "int";
+            }
+            else if ( intVal > std::numeric_limits<long>::min() && intVal < std::numeric_limits<long>::max() )
+            {
+                currentDataType = "long";
+            }
+        }
+        else {
+            if ( intVal > std::numeric_limits<unsigned int>::min() && intVal < std::numeric_limits<unsigned int>::max() )
+            {
+                currentDataType = "uint";
+            }
+            else if ( intVal > std::numeric_limits<unsigned long>::min() && intVal < std::numeric_limits<unsigned long>::max() )
+            {
+                currentDataType = "ulong";
+            }
+        }
+
+        signedInteger = false;
     }
 
     virtual void visit(ASTStringLitNode& node)
@@ -364,16 +427,40 @@ class semCheckASTVisitor : public ASTvisitor
         }
     }
 
-    virtual void visit(ASTStmt& node)
-    {
-        
-    }
+
+    virtual void visit(ASTStmt& node) {}
+
 
     virtual void visit(ASTAssignmentStmt& node)
     {
+        std::string LHSdataType, RHSdataType;
+
         node.getLocation()->accept(*this);
+        LHSdataType = currentDataType;
+
         std::cout << node.getAssignOp() << "\n";
+
         node.getExpression()->accept(*this);
+        RHSdataType = currentDataType;
+
+        if(LHSdataType != RHSdataType)
+        {
+            if( (LHSdataType == "uint" || LHSdataType == "ulong") && (RHSdataType == "int" || RHSdataType == "long") )
+            {
+                std::cout << "ERROR: Type mismatch, cannot assign " << RHSdataType << " to " << LHSdataType << "\n";
+
+                exit(EXIT_FAILURE);
+            }
+            else if ( (LHSdataType == "int" || LHSdataType == "uint" || LHSdataType == "long" || LHSdataType == "ulong") && (RHSdataType == "int" || RHSdataType == "uint" || RHSdataType == "long" || RHSdataType == "ulong") )
+            {
+                // Fine otherwise
+            }
+            else {
+                std::cout << "ERROR: Type mismatch, cannot assign " << RHSdataType << " to " << LHSdataType << "\n";
+
+                exit(EXIT_FAILURE);
+            }
+        }
     }
 
     virtual void visit(ASTReturnStmt& node)
@@ -400,7 +487,7 @@ class semCheckASTVisitor : public ASTvisitor
         {
             for(SymTab* child : children)
             {
-                if (child->getName() == ("if"+ifNum))
+                if (child->getName() == ("if" + std::to_string(ifNum)))
                 {
                     currentSymTab = child;
                     break;
@@ -410,6 +497,8 @@ class semCheckASTVisitor : public ASTvisitor
         else {
             std::cout << "\nSomething is wrong in the symTab hierarchy!\n";
         }
+
+        ++ifNum;
 
         std::cout << "if ";
         node.getCondition()->accept(*this);
@@ -419,10 +508,9 @@ class semCheckASTVisitor : public ASTvisitor
             node.getStatements()->accept(*this);
         }
 
-        ++ifNum;
-
         currentSymTab = currentSymTab->getParent();
     }
+
 
     virtual void visit(ASTIfElseStmt& node)
     {
@@ -432,7 +520,7 @@ class semCheckASTVisitor : public ASTvisitor
         {
             for(SymTab* child : children)
             {
-                if (child->getName() == ("if"+ifNum))
+                if (child->getName() == ("if" + std::to_string(ifNum)))
                 {
                     currentSymTab = child;
                     break;
@@ -443,6 +531,8 @@ class semCheckASTVisitor : public ASTvisitor
             std::cout << "\nSomething is wrong in the symTab hierarchy!\n";
         }
 
+        ++ifNum;
+
         std::cout << "if ";
         node.getCondition()->accept(*this);
 
@@ -450,8 +540,6 @@ class semCheckASTVisitor : public ASTvisitor
         {
             node.getThenStatements()->accept(*this);
         }
-
-        ++ifNum;
 
         currentSymTab = currentSymTab->getParent();
 
@@ -464,7 +552,7 @@ class semCheckASTVisitor : public ASTvisitor
         {
             for(SymTab* child : children)
             {
-                if (child->getName() == ("else"+elseNum))
+                if (child->getName() == ("else" + std::to_string(elseNum)))
                 {
                     currentSymTab = child;
                     break;
@@ -475,6 +563,8 @@ class semCheckASTVisitor : public ASTvisitor
             std::cout << "\nSomething is wrong in the symTab hierarchy!\n";
         }
 
+        ++elseNum;
+
         std::cout << "else ";
 
         if(node.getElseStatements() != nullptr)
@@ -482,10 +572,9 @@ class semCheckASTVisitor : public ASTvisitor
             node.getElseStatements()->accept(*this);
         }
 
-        ++elseNum;
-
         currentSymTab = currentSymTab->getParent();
     }
+
 
     virtual void visit(ASTForStmt& node)
     {
@@ -495,7 +584,7 @@ class semCheckASTVisitor : public ASTvisitor
         {
             for(SymTab* child : children)
             {
-                if (child->getName() == ("for"+forNum))
+                if (child->getName() == ("for" + std::to_string(forNum)))
                 {
                     currentSymTab = child;
                     break;
@@ -505,6 +594,8 @@ class semCheckASTVisitor : public ASTvisitor
         else {
             std::cout << "\nSomething is wrong in the symTab hierarchy!\n";
         }
+
+        ++forNum;
 
         std::cout << "for ";
 
@@ -523,10 +614,9 @@ class semCheckASTVisitor : public ASTvisitor
             node.getStatements()->accept(*this);
         }
 
-        ++forNum;
-
         currentSymTab = currentSymTab->getParent();
     }
+    
 
     virtual void visit(ASTWhileStmt& node)
     {
@@ -536,7 +626,7 @@ class semCheckASTVisitor : public ASTvisitor
         {
             for(SymTab* child : children)
             {
-                if (child->getName() == ("while"+whileNum))
+                if (child->getName() == ("while" + std::to_string(whileNum)))
                 {
                     currentSymTab = child;
                     break;
@@ -547,6 +637,8 @@ class semCheckASTVisitor : public ASTvisitor
             std::cout << "\nSomething is wrong in the symTab hierarchy!\n";
         }
 
+        ++whileNum;
+
         std::cout << "while ";
         node.getCondition()->accept(*this);
         
@@ -554,8 +646,6 @@ class semCheckASTVisitor : public ASTvisitor
         {
             node.getStatements()->accept(*this);
         }
-
-        ++whileNum;
         
         currentSymTab = currentSymTab->getParent();
     }
@@ -566,7 +656,8 @@ class semCheckASTVisitor : public ASTvisitor
 
     virtual void visit(ASTUserFunCall& node)
     {
-        std::cout << node.getFuncName() << " ( ";
+        std::string funName = node.getFuncName();
+        std::cout << funName << " ( ";
         std::vector<ASTUserFunArg*> args = node.getArgs();
 
         if(args.size() != 0)
@@ -577,12 +668,16 @@ class semCheckASTVisitor : public ASTvisitor
             }
         }
 
+        currentDataType = rootSymbolTable->getIdentifierDataType(funName);
+
         std::cout << " ) \n";
     }
 
+
     virtual void visit(ASTLibFunCall& node)
     {
-        std::cout << "callout ( " << node.getLibFuncName() << "  ";
+        std::string libFunName = node.getLibFuncName();
+        std::cout << "callout ( " << libFunName << "  ";
 
         std::vector<ASTLibFunArg*> args = node.getArgs();
 
@@ -594,13 +689,30 @@ class semCheckASTVisitor : public ASTvisitor
             }
         }
 
+        // This is bad
+
+        if(libFunName == "scanInt")
+        {
+            currentDataType = "int";
+        }
+        else if (libFunName == "scanString")
+        {
+            currentDataType = "char";
+        }
+        else if (libFunName == "strlen")
+        {
+            currentDataType = "int";
+        }
+
         std::cout << " ) \n";
     }
+
 
     virtual void visit(ASTUserFunArg& node)
     {
         node.getArgument()->accept(*this);
     }
+
 
     virtual void visit(ASTLibFunArg& node)
     {

@@ -133,17 +133,8 @@ class SymTabASTVisitor : public ASTvisitor
 
         rootSymTab->addEntry(funName, funEntry);
 
-        std::vector<ASTParam*> parameters = node.getParamList();
-
-        if(parameters.size() != 0)
-        {
-            for(ASTParam *p : parameters)
-            {
-                p->accept(*this);
-            }
-        }
-
-        SymTab *localFunST = new SymTab("function"+functionNum);
+        std::string funTableName = "function" +  std::to_string(functionNum);
+        SymTab *localFunST = new SymTab(funTableName);
 
         ++functionNum;
 
@@ -154,23 +145,39 @@ class SymTabASTVisitor : public ASTvisitor
         currentSymtab = localFunST;
 
         std::cout << "SYMTAB: made by " << funName << "\n";
+
+        std::vector<ASTParam*> parameters = node.getParamList();
+
+        if(parameters.size() != 0)
+        {
+            for(ASTParam *p : parameters)
+            {
+                p->accept(*this);
+            }
+        }
         
         if(node.getStmtList() != nullptr)
         {
             node.getStmtList()->accept(*this);
         }
 
+        node.getReturnStmt()->accept(*this);
+
         currentSymtab = rootSymTab;
 
         std::cout << "SYMTAB: root\n";
-
-        node.getReturnStmt()->accept(*this);
     }
 
     virtual void visit(ASTParam& node)
     {
         node.getDataType()->accept(*this);
-        std::cout << node.getParamName() << "\n";
+
+        std::string varName = node.getParamName();
+        std::cout << varName << "\n";
+
+        VariableEntry varEntry(currentDataType, "simple");
+
+        currentSymtab->addEntry(varName, varEntry);
     }
 
 
@@ -316,7 +323,7 @@ class SymTabASTVisitor : public ASTvisitor
         std::cout << "if ";
         node.getCondition()->accept(*this);
 
-        SymTab *localST = new SymTab("if"+ifNum);
+        SymTab *localST = new SymTab("if" + std::to_string(ifNum));
         ++ifNum;
 
         currentSymtab->addChild(localST);
@@ -337,15 +344,16 @@ class SymTabASTVisitor : public ASTvisitor
         currentSymtab = parentSymTab;
     }
 
+
     virtual void visit(ASTIfElseStmt& node)
     {
         std::cout << "if ";
         node.getCondition()->accept(*this);
 
-        SymTab *localST = new SymTab("if"+ifNum);
+        SymTab *localST = new SymTab("if" + std::to_string(ifNum));
         ++ifNum;
 
-        currentSymtab->addChild(localST);   
+        currentSymtab->addChild(localST);
 
         localST->setParent(currentSymtab);
 
@@ -362,14 +370,16 @@ class SymTabASTVisitor : public ASTvisitor
 
         currentSymtab = parentSymTab;
 
+
+
         std::cout << "else ";
 
-        SymTab *localSTElse = new SymTab("else"+elseNum);
+        SymTab *localSTElse = new SymTab("else" + std::to_string(elseNum));
         ++elseNum;
 
         currentSymtab->addChild(localSTElse);
 
-        localST->setParent(currentSymtab);
+        localSTElse->setParent(currentSymtab);
 
         parentSymTab = currentSymtab;
 
@@ -385,6 +395,7 @@ class SymTabASTVisitor : public ASTvisitor
         currentSymtab = parentSymTab;
     }
 
+
     virtual void visit(ASTForStmt& node)
     {
         std::cout << "for ";
@@ -399,7 +410,7 @@ class SymTabASTVisitor : public ASTvisitor
         std::cout << node.getAssignOp();
         node.getUpdateExpr()->accept(*this);
 
-        SymTab *localST = new SymTab("for"+forNum);
+        SymTab *localST = new SymTab("for" + std::to_string(forNum));
 
         ++forNum;
 
@@ -426,7 +437,7 @@ class SymTabASTVisitor : public ASTvisitor
         std::cout << "while ";
         node.getCondition()->accept(*this);
 
-        SymTab *localST = new SymTab("while"+whileNum);
+        SymTab *localST = new SymTab("while" + std::to_string(whileNum));
 
         ++whileNum;
 
