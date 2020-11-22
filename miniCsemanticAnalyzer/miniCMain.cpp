@@ -7,6 +7,7 @@
 #include "ASTBuildVisitor.h"
 #include "SymTabASTVisitor.h"
 #include "semCheckASTVisitor.h"
+#include "IRGenVisitor.h"
 
 using namespace antlr4;
 using namespace antlrcpp;

@@ -41,3 +41,13 @@ export LD_LIBRARY_PATH="/usr/local/lib:$LD_LIBRARY_PATH"
 g++ -I ../miniCParser/antlr -I /usr/local/include/antlr4-runtime -L /usr/local/lib -lantlr4-runtime  -o miniCcompiler  ../miniCParser/antlr/miniCgrammarLexer.cpp ../miniCParser/antlr/miniCgrammarParser.cpp miniCMain.cpp
 
 ./miniCcompiler ../samplePrograms/sample1.mc
+
+
+
+
+
+UPDATED G++ COMMAND TO SUPPORT LLVM:
+
+LLVM_CONFIG="/home/shivanih/Desktop/IIITHsem3/Compilers/llvm-project/build/bin/llvm-config"
+
+g++ -I ../miniCParser/antlr -I /usr/local/include/antlr4-runtime -L /usr/local/lib -lantlr4-runtime  `$LLVM_CONFIG --system-libs --cppflags --ldflags --libs core`  -o miniCcompiler  ../miniCParser/antlr/miniCgrammarLexer.cpp ../miniCParser/antlr/miniCgrammarParser.cpp miniCMain.cpp
