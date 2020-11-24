@@ -1,9 +1,15 @@
 #include<map>
 #include<vector>
 
+#include <llvm/IR/Instructions.h>
+
+
 class SymTabEntry {
 
     std::string dataType;
+
+    // Should be in VariableEntry ideally, but that's problematic
+    llvm::AllocaInst *stackMem;
 
     public:
 
@@ -16,12 +22,24 @@ class SymTabEntry {
     {
         return dataType;
     }
+
+    void setStackMem(llvm::AllocaInst *val)
+    {
+        stackMem = val;
+    }
+
+    llvm::AllocaInst* getStackMem()
+    {
+        return stackMem;
+    }
 };
 
 class VariableEntry : public SymTabEntry {
 
     std::string varType;    // simple, oneD, twoD
     int dim1, dim2;
+
+    // llvm::AllocaInst *stackMem;
 
     public:
 
@@ -49,6 +67,16 @@ class VariableEntry : public SymTabEntry {
         }
     }
 
+    // void setStackMem(llvm::AllocaInst *val)
+    // {
+    //     stackMem = val;
+    // }
+
+    // llvm::AllocaInst* getStackMem()
+    // {
+    //     return stackMem;
+    // }
+
 };
 
 class FunctionEntry : public SymTabEntry {     // for now, can use it to check if main() is present, and whether a function being called has already been defined
@@ -68,6 +96,7 @@ class SymTab {
     std::string tableName;
     
     std::vector<SymTab*> children;
+
     SymTab* parent;
 
     public:
@@ -131,6 +160,19 @@ class SymTab {
     std::string getIdentifierDataType(std::string id)
     {
         return symbolTable[id].getDataType();
+    }
+
+    void setVarStackMemory(std::string id, llvm::AllocaInst *val)
+    {
+        // VariableEntry *varEnt = dynamic_cast<VariableEntry*>(&(symbolTable[id]));
+        // varEnt->setStackMem(val);
+
+        symbolTable[id].setStackMem(val);
+    }
+
+    llvm::AllocaInst* getVarStackMemory(std::string id)
+    {
+        return symbolTable[id].getStackMem();
     }
 
     void printSymTab()

@@ -1,0 +1,5 @@
+1. Add a AllocaInst* member (needed to make the variables mutable!) to VariableEntry, along with a getter and setter
+
+2. Set/get this value in the IRGenVisitor's visit functions
+
+3. IF this doesn't work as expected, just leave your existing symbol table alone, and create that NamedValues map like they have

@@ -4,16 +4,24 @@
 #include "llvm/IR/DerivedTypes.h"
 #include "llvm/IR/Function.h"
 #include "llvm/IR/IRBuilder.h"
-#include <llvm/IR/Instructions.h>
 #include "llvm/IR/LLVMContext.h"
 #include "llvm/IR/Module.h"
 #include "llvm/IR/Type.h"
 #include "llvm/IR/Verifier.h"
+#include <llvm/Support/raw_ostream.h>
 
 
 #include <iostream>
 #include <stdlib.h> 
 #include <limits>
+
+using namespace llvm;
+
+
+static llvm::LLVMContext TheContext;
+static llvm::Module *TheModule = new Module("miniC", TheContext);
+static llvm::IRBuilder<> Builder(TheContext);
+
 
 class IRGenVisitor : public ASTvisitor
 {   
@@ -25,8 +33,11 @@ class IRGenVisitor : public ASTvisitor
 
     bool signedInteger;
 
+    llvm::Value* currentValue;
 
     int functionNum, ifNum, elseNum, forNum, whileNum;
+
+
 
     public:
 
@@ -40,6 +51,7 @@ class IRGenVisitor : public ASTvisitor
 
         currentDataType = "";
         signedInteger = false;
+        currentValue = nullptr;
     }
 
     IRGenVisitor(SymTab *symTab) : rootSymbolTable(symTab)
@@ -52,7 +64,51 @@ class IRGenVisitor : public ASTvisitor
 
         currentDataType = "";
         signedInteger = false;
+        currentValue = nullptr;
     }
+
+
+    llvm::Type* getLLVMType(std::string type)
+    {
+        // llvm::Type *llvmTypeToRet;
+
+        if (type == "int" || type == "uint") 
+        {
+            // llvmTypeToRet = Type::getInt32Ty(TheContext);
+
+            return(Type::getInt32Ty(TheContext));
+        } 
+        else if (type == "long" || type == "ulong")
+        {
+            // llvmTypeToRet = Type::getInt64Ty(TheContext);
+
+            return(Type::getInt64Ty(TheContext));
+        }
+        else if (type == "bool") 
+        {
+            // llvmTypeToRet = Type::getInt1Ty(TheContext);
+
+            return(Type::getInt1Ty(TheContext));
+        }
+        else if (type == "char") 
+        {
+            // llvmTypeToRet = Type::getInt8Ty(TheContext);
+
+            return(Type::getInt8Ty(TheContext));
+        }
+    }
+
+
+
+    static AllocaInst *CreateEntryBlockAlloca(Function *TheFunction, const std::string varName, llvm::Type *varDataType) 
+    {
+        IRBuilder<> TmpB(&TheFunction->getEntryBlock(), TheFunction->getEntryBlock().begin());
+        
+        AllocaInst *alloca_instruction = TmpB.CreateAlloca( varDataType, 0, varName);
+ 
+        return alloca_instruction;
+    }
+
 
     /*********************************** GROUP 1 ***************************************/
 
@@ -70,9 +126,23 @@ class IRGenVisitor : public ASTvisitor
                 decl->accept(*this);
             }
         }
+
+        std::string Str;
+        raw_string_ostream OS(Str);
+        OS << *TheModule;
+        std::cout << Str;
+        // OS.flush();
+        // std::ofstream out("output.txt");
+        // out << Str;
+        // out.close();
     }
 
+
+
     virtual void visit(ASTDeclaration& node) {}
+
+
+
 
     virtual void visit(ASTVariableDecl& node)
     {
@@ -88,13 +158,19 @@ class IRGenVisitor : public ASTvisitor
         }
     }
 
+
+
     virtual void visit(ASTSingleVarDecl& node) {}
+
+
 
     virtual void visit(ASTSimpleVariableDecl& node)
     {
         std::string varName = node.getVariableName();
         // std::cout << varName << "\n";
     }
+
+
 
     virtual void visit(AST1DArrayDecl& node)
     {
@@ -106,6 +182,8 @@ class IRGenVisitor : public ASTvisitor
 
     }
 
+
+
     virtual void visit(AST2DArrayDecl& node)
     {
         std::string varName = node.getVariableName();
@@ -116,6 +194,8 @@ class IRGenVisitor : public ASTvisitor
 
     }
 
+
+
     virtual void visit(ASTDataType& node)
     {
         std::string dataType = node.getDataTypeName();
@@ -123,6 +203,8 @@ class IRGenVisitor : public ASTvisitor
         // std::cout << dataType << "\n";
         
     }
+
+
 
     virtual void visit(ASTFunctionDecl& node)
     {
@@ -142,21 +224,94 @@ class IRGenVisitor : public ASTvisitor
         else {
             std::cout << "\nSomething is wrong in the symTab hierarchy!\n";
         }
-
-        node.getDataType()->accept(*this);
         
         std::string funName = node.getFunctionName();
         // std::cout << funName << "\n";
 
         std::vector<ASTParam*> parameters = node.getParamList();
 
+
+
+        /************* LLVM IR ***************/
+
+        std::string retType = rootSymbolTable->getIdentifierDataType(funName);
+
+        llvm::Type *returnType = getLLVMType(retType);
+
+
+        std::vector<llvm::Type*> args;
+
+        std::string dataType;
+
+
+        // Getting LLVM Types for arguments
+
+        llvm::Function *func = nullptr;
+
         if(parameters.size() != 0)
         {
             for(ASTParam *p : parameters)
             {
-                p->accept(*this);
+                dataType = currentSymTab->getIdentifierDataType( p->getParamName() );
+                args.push_back( getLLVMType(dataType) );
+            }
+
+            func = llvm::Function::Create(
+            llvm::FunctionType::get(returnType, args, false),
+            llvm::Function::ExternalLinkage,
+            funName,
+            TheModule
+            );
+        }
+        else {
+            func = llvm::Function::Create(
+            llvm::FunctionType::get(returnType, false),
+            llvm::Function::ExternalLinkage,
+            funName,
+            TheModule
+            );
+        }
+
+        // Creating LLVM Function
+
+        // Setting arg names in LLVM Function args
+
+        int paramIndex = 0;
+        if(!func->arg_empty())
+        {
+            for (Function::arg_iterator AI = func->arg_begin(); paramIndex < parameters.size(); ++AI, ++paramIndex) 
+            {
+                AI->setName( parameters[paramIndex]->getParamName() );
             }
         }
+
+        paramIndex = 0;
+
+        if(!func->arg_empty())
+        {
+            for (auto &Arg : func->args()) 
+            {
+                // Create an alloca for this variable.
+                AllocaInst *Alloca = CreateEntryBlockAlloca(func, parameters[paramIndex]->getParamName(), Arg.getType());
+
+                // Store the initial value into the alloca.
+                Builder.CreateStore(&Arg, Alloca);
+
+                // Add the alloca to the symbol table.
+                
+                currentSymTab->setVarStackMemory( parameters[paramIndex]->getParamName(), Alloca );
+
+                ++paramIndex;
+
+                std::cout << "Ok till here\n";          // Not printed --> ERROR in this for loop's body
+            }
+        }
+
+
+        // Creating entry BB
+
+        llvm::BasicBlock *BB = llvm::BasicBlock::Create(TheContext, "entry", func);
+        Builder.SetInsertPoint(BB);
         
         if(node.getStmtList() != nullptr)
         {
@@ -165,10 +320,24 @@ class IRGenVisitor : public ASTvisitor
 
         node.getReturnStmt()->accept(*this);
 
+        // Builder.GetInsertBlock()->getParent();
+
+        // std::string Str;
+        // raw_string_ostream OS(Str);
+        // OS << *currentValue;
+        // std::cout << Str << "\n";        // This snippet printed the value correctly
+
+        Builder.CreateRet(currentValue);
+
+        llvm::verifyFunction(*func, &llvm::errs());
+        // verifyFunction(*func);
+    
         ++functionNum;
         
         currentSymTab = rootSymbolTable;
     }
+
+
 
     virtual void visit(ASTParam& node)
     {
@@ -190,6 +359,7 @@ class IRGenVisitor : public ASTvisitor
         node.getExpr()->accept(*this);
         // std::cout << " ) \n";
     }
+
 
     virtual void visit(ASTLocationExpr& node) {}
     
@@ -225,6 +395,8 @@ class IRGenVisitor : public ASTvisitor
         currentDataType = tempSymTab->getIdentifierDataType(varName);
     }
 
+
+
     virtual void visit(ASTOneDarrayLocation& node)
     {
         std::string varName = node.getLocationName();
@@ -254,6 +426,8 @@ class IRGenVisitor : public ASTvisitor
         currentDataType = tempSymTab->getIdentifierDataType(varName);
         
     }
+
+
 
     virtual void visit(ASTTwoDarrayLocation& node)
     {
@@ -286,6 +460,8 @@ class IRGenVisitor : public ASTvisitor
 
         currentDataType = tempSymTab->getIdentifierDataType(varName);
     }
+
+
 
 
     virtual void visit(ASTUnaryExpr& node)
@@ -345,6 +521,8 @@ class IRGenVisitor : public ASTvisitor
     }
 
 
+
+
     virtual void visit(ASTTernaryExpr& node)
     {
         node.getFirst()->accept(*this);
@@ -372,25 +550,39 @@ class IRGenVisitor : public ASTvisitor
 
         // std::cout << intVal << "\n";
 
+
         if(signedInteger == true)
         {
-            if ( intVal > std::numeric_limits<int>::min() && intVal < std::numeric_limits<int>::max() )
+            if ( intVal >= std::numeric_limits<int>::min() && intVal <= std::numeric_limits<int>::max() )
             {
                 currentDataType = "int";
+
+                currentValue = ConstantInt::get(TheContext, APInt(32, static_cast<uint64_t>(intVal), true));    // true -> signed integer
+
             }
-            else if ( intVal > std::numeric_limits<long>::min() && intVal < std::numeric_limits<long>::max() )
+            else if ( intVal >= std::numeric_limits<long>::min() && intVal <= std::numeric_limits<long>::max() )
             {
                 currentDataType = "long";
+
+                currentValue = ConstantInt::get(TheContext, APInt(64, static_cast<uint64_t>(intVal), true));
+
             }
         }
-        else {
-            if ( intVal > std::numeric_limits<unsigned int>::min() && intVal < std::numeric_limits<unsigned int>::max() )
+        else 
+        {
+            if ( intVal >= std::numeric_limits<unsigned int>::min() && intVal <= std::numeric_limits<unsigned int>::max() )
             {
                 currentDataType = "uint";
+
+                currentValue = ConstantInt::get(TheContext, APInt(32, static_cast<uint64_t>(intVal), false));
+
             }
-            else if ( intVal > std::numeric_limits<unsigned long>::min() && intVal < std::numeric_limits<unsigned long>::max() )
+            else if ( intVal >= std::numeric_limits<unsigned long>::min() && intVal <= std::numeric_limits<unsigned long>::max() )
             {
                 currentDataType = "ulong";
+
+                currentValue = ConstantInt::get(TheContext, APInt(64, static_cast<uint64_t>(intVal), false));
+
             }
         }
 

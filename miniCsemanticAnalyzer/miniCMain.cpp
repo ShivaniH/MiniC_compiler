@@ -61,6 +61,13 @@ int main(int argc, const char* argv[])
 
         std::cout << "\n\nSemantic checks:\n";
         semanticChecker.visit(*ast.root);
+
+        
+        IRGenVisitor LLVM_IR_generator(fillSymTab.rootSymTab);
+
+        std::cout << "\n\nGenerating LLVM IR:\n";
+        LLVM_IR_generator.visit(*ast.root);
+
     }
 
     return 0;

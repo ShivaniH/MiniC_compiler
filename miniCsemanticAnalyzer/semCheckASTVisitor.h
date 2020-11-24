@@ -363,21 +363,21 @@ class semCheckASTVisitor : public ASTvisitor
 
         if(signedInteger == true)
         {
-            if ( intVal > std::numeric_limits<int>::min() && intVal < std::numeric_limits<int>::max() )
+            if ( intVal >= std::numeric_limits<int>::min() && intVal <= std::numeric_limits<int>::max() )
             {
                 currentDataType = "int";
             }
-            else if ( intVal > std::numeric_limits<long>::min() && intVal < std::numeric_limits<long>::max() )
+            else if ( intVal >= std::numeric_limits<long>::min() && intVal <= std::numeric_limits<long>::max() )
             {
                 currentDataType = "long";
             }
         }
         else {
-            if ( intVal > std::numeric_limits<unsigned int>::min() && intVal < std::numeric_limits<unsigned int>::max() )
+            if ( intVal >= std::numeric_limits<unsigned int>::min() && intVal <= std::numeric_limits<unsigned int>::max() )
             {
                 currentDataType = "uint";
             }
-            else if ( intVal > std::numeric_limits<unsigned long>::min() && intVal < std::numeric_limits<unsigned long>::max() )
+            else if ( intVal >= std::numeric_limits<unsigned long>::min() && intVal <= std::numeric_limits<unsigned long>::max() )
             {
                 currentDataType = "ulong";
             }
