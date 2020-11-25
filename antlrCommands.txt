@@ -57,7 +57,16 @@ g++ -I ../miniCParser/antlr -I /usr/local/include/antlr4-runtime -L /usr/local/l
 
 
 
+
+
 ICKY, but may help to create makefile:
 
 g++ -I ../miniCParser/antlr -I /usr/local/include/antlr4-runtime -L /usr/local/lib -lantlr4-runtime  -I/home/shivanih/Desktop/IIITHsem3/Compilers/llvm-project/llvm/include -I/home/shivanih/Desktop/IIITHsem3/Compilers/llvm-project/build/include -D_GNU_SOURCE -D_DEBUG -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -D__STDC_LIMIT_MACROS -L/home/shivanih/Desktop/IIITHsem3/Compilers/llvm-project/build/lib  -lLLVM-12git  -o miniCcompiler  ../miniCParser/antlr/miniCgrammarLexer.cpp ../miniCParser/antlr/miniCgrammarParser.cpp miniCMain.cpp
 
+
+
+
+
+FOR GDB, WITH -g:
+
+g++ -g -I ../miniCParser/antlr -I /usr/local/include/antlr4-runtime -L /usr/local/lib -lantlr4-runtime  `$LLVM_CONFIG --system-libs --cppflags --ldflags --libs core`  -o miniCcompiler  ../miniCParser/antlr/miniCgrammarLexer.cpp ../miniCParser/antlr/miniCgrammarParser.cpp miniCMain.cpp

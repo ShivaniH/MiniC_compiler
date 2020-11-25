@@ -363,21 +363,22 @@ class semCheckASTVisitor : public ASTvisitor
 
         if(signedInteger == true)
         {
-            if ( intVal >= std::numeric_limits<int>::min() && intVal <= std::numeric_limits<int>::max() )
+            if( (intVal == static_cast<int>(intVal)) && (static_cast<int>(intVal) >= std::numeric_limits<int>::min()) && (static_cast<int>(intVal) <= std::numeric_limits<int>::max()) )
             {
                 currentDataType = "int";
             }
-            else if ( intVal >= std::numeric_limits<long>::min() && intVal <= std::numeric_limits<long>::max() )
+            else if ((intVal == static_cast<long>(intVal)) && (static_cast<long>(intVal) >= std::numeric_limits<long>::min()) && (static_cast<long>(intVal) <= std::numeric_limits<long>::max()) )
             {
                 currentDataType = "long";
             }
         }
-        else {
-            if ( intVal >= std::numeric_limits<unsigned int>::min() && intVal <= std::numeric_limits<unsigned int>::max() )
+        else 
+        {
+            if ((intVal == static_cast<unsigned int>(intVal)) && static_cast<unsigned int>(intVal) >= std::numeric_limits<unsigned int>::min() && static_cast<unsigned int>(intVal) <= std::numeric_limits<unsigned int>::max() )
             {
                 currentDataType = "uint";
             }
-            else if ( intVal >= std::numeric_limits<unsigned long>::min() && intVal <= std::numeric_limits<unsigned long>::max() )
+            else if ((intVal == static_cast<unsigned long>(intVal)) && static_cast<unsigned long>(intVal) >= std::numeric_limits<unsigned long>::min() && static_cast<unsigned long>(intVal) <= std::numeric_limits<unsigned long>::max() )
             {
                 currentDataType = "ulong";
             }

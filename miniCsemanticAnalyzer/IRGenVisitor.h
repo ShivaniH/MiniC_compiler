@@ -25,6 +25,7 @@ static llvm::IRBuilder<> Builder(TheContext);
 
 class IRGenVisitor : public ASTvisitor
 {   
+
     SymTab *rootSymbolTable;
 
     SymTab *currentSymTab;
@@ -34,6 +35,8 @@ class IRGenVisitor : public ASTvisitor
     bool signedInteger;
 
     llvm::Value* currentValue;
+
+    llvm::AllocaInst *currentAlloca;
 
     int functionNum, ifNum, elseNum, forNum, whileNum;
 
@@ -52,6 +55,7 @@ class IRGenVisitor : public ASTvisitor
         currentDataType = "";
         signedInteger = false;
         currentValue = nullptr;
+        currentAlloca = nullptr;
     }
 
     IRGenVisitor(SymTab *symTab) : rootSymbolTable(symTab)
@@ -65,6 +69,7 @@ class IRGenVisitor : public ASTvisitor
         currentDataType = "";
         signedInteger = false;
         currentValue = nullptr;
+        currentAlloca = nullptr;
     }
 
 
@@ -100,7 +105,7 @@ class IRGenVisitor : public ASTvisitor
 
 
 
-    static AllocaInst *CreateEntryBlockAlloca(Function *TheFunction, const std::string varName, llvm::Type *varDataType) 
+    AllocaInst *CreateEntryBlockAlloca(Function *TheFunction, std::string varName, llvm::Type *varDataType)
     {
         IRBuilder<> TmpB(&TheFunction->getEntryBlock(), TheFunction->getEntryBlock().begin());
         
@@ -168,6 +173,51 @@ class IRGenVisitor : public ASTvisitor
     {
         std::string varName = node.getVariableName();
         // std::cout << varName << "\n";
+
+        llvm::Function *TheFunction = Builder.GetInsertBlock()->getParent();
+
+        llvm::Value *initval = nullptr;
+        llvm::AllocaInst *Alloca = nullptr;
+
+        std::string varDataType = currentSymTab->getIdentifierDataType(varName);
+
+        if (varDataType == "int")
+        {
+            initval = ConstantInt::get(TheContext, APInt(32, 0, true));
+            Alloca = CreateEntryBlockAlloca(TheFunction, varName, getLLVMType("int"));
+        }
+        else if (varDataType == "uint")
+        {
+            initval = ConstantInt::get(TheContext, APInt(32, 0, false));
+            Alloca = CreateEntryBlockAlloca(TheFunction, varName, getLLVMType("uint"));
+        }
+        else if (varDataType == "long")
+        {
+            initval = ConstantInt::get(TheContext, APInt(64, 0, true));
+            Alloca = CreateEntryBlockAlloca(TheFunction, varName, getLLVMType("long"));
+        }
+        else if (varDataType == "ulong")
+        {
+            initval = ConstantInt::get(TheContext, APInt(64, 0, false));
+            Alloca = CreateEntryBlockAlloca(TheFunction, varName, getLLVMType("ulong"));
+        }
+        else if (varDataType == "bool")
+        {
+            initval = ConstantInt::get(TheContext, APInt(1, 0, false));     // default value false
+            Alloca = CreateEntryBlockAlloca(TheFunction, varName, getLLVMType("bool"));
+        }
+        else if (varDataType == "char")
+        {
+            initval = ConstantInt::get(TheContext, APInt(8, 0, false));
+            Alloca = CreateEntryBlockAlloca(TheFunction, varName, getLLVMType("char"));
+        }
+
+        Builder.CreateStore(initval, Alloca);
+
+        // TODO: CHECK IF YOU ARE IN THE ROOT SYMBOL TABLE. IN THAT CASE, MAKE IT A GLOBAL VARIABLE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+        currentSymTab->setVarStackMemory( varName, Alloca );
+
     }
 
 
@@ -244,9 +294,10 @@ class IRGenVisitor : public ASTvisitor
         std::string dataType;
 
 
+
         // Getting LLVM Types for arguments
 
-        llvm::Function *func = nullptr;
+        FunctionType *FT = nullptr;
 
         if(parameters.size() != 0)
         {
@@ -256,27 +307,31 @@ class IRGenVisitor : public ASTvisitor
                 args.push_back( getLLVMType(dataType) );
             }
 
-            func = llvm::Function::Create(
-            llvm::FunctionType::get(returnType, args, false),
-            llvm::Function::ExternalLinkage,
-            funName,
-            TheModule
-            );
+            FT = FunctionType::get(returnType, args, false);
+
         }
         else {
-            func = llvm::Function::Create(
-            llvm::FunctionType::get(returnType, false),
-            llvm::Function::ExternalLinkage,
-            funName,
-            TheModule
-            );
+
+            FT = FunctionType::get(returnType, false);
         }
 
+
+
         // Creating LLVM Function
+
+        llvm::Function *func = llvm::Function::Create(
+                                FT,
+                                llvm::Function::ExternalLinkage,
+                                funName,
+                                TheModule
+                                );
+
+
 
         // Setting arg names in LLVM Function args
 
         int paramIndex = 0;
+
         if(!func->arg_empty())
         {
             for (Function::arg_iterator AI = func->arg_begin(); paramIndex < parameters.size(); ++AI, ++paramIndex) 
@@ -286,6 +341,13 @@ class IRGenVisitor : public ASTvisitor
         }
 
         paramIndex = 0;
+
+
+
+        // Creating entry BB
+
+        llvm::BasicBlock *BB = llvm::BasicBlock::Create(TheContext, "entry", func);
+        Builder.SetInsertPoint(BB);
 
         if(!func->arg_empty())
         {
@@ -302,16 +364,8 @@ class IRGenVisitor : public ASTvisitor
                 currentSymTab->setVarStackMemory( parameters[paramIndex]->getParamName(), Alloca );
 
                 ++paramIndex;
-
-                std::cout << "Ok till here\n";          // Not printed --> ERROR in this for loop's body
             }
         }
-
-
-        // Creating entry BB
-
-        llvm::BasicBlock *BB = llvm::BasicBlock::Create(TheContext, "entry", func);
-        Builder.SetInsertPoint(BB);
         
         if(node.getStmtList() != nullptr)
         {
@@ -369,30 +423,20 @@ class IRGenVisitor : public ASTvisitor
         std::string varName = node.getLocationName();
         // std::cout << varName << "\n";
 
-        // Check if it's present in the symTab
-
         bool present = currentSymTab->searchEntry(varName);
 
         SymTab *tempSymTab = currentSymTab;
-
-        // std::cout << "symtab = " << tempSymTab->getName() << "present = " << present << "\n";
 
         while(!present && (tempSymTab->getParent() != nullptr) )
         {
             tempSymTab = tempSymTab->getParent();
             present = tempSymTab->searchEntry(varName);
-
-            // std::cout << "symtab = " << tempSymTab->getName() << "present = " << present << "\n";
-        }
-
-        if(!present)
-        {
-            // std::cout<< "ERROR: Variable " << varName << " is undeclared\n";
-
-            // exit(EXIT_FAILURE);
         }
 
         currentDataType = tempSymTab->getIdentifierDataType(varName);
+
+        currentAlloca = tempSymTab->getVarStackMemory(varName);
+        currentValue = Builder.CreateLoad(currentAlloca);
     }
 
 
@@ -476,48 +520,95 @@ class IRGenVisitor : public ASTvisitor
 
         node.getOperand()->accept(*this);
 
-        // if (unaryOp == "-" && ( currentDataType == "bool" || currentDataType == "char" ) )
-        // {
-        //     std::cout << "ERROR: Type mismatch, cannot apply " << unaryOp << " to " << currentDataType << "\n";
+        if(unaryOp == "-")
+        {
+            currentValue = Builder.CreateNeg(currentValue, "negation");
+        }
+        else if(unaryOp == "!")
+        {
+            currentValue = Builder.CreateNot(currentValue, "not");
+        }
 
-        //     exit(EXIT_FAILURE);
-        // }
-        // else if (unaryOp == "!" && currentDataType == "char")
-        // {
-        //     std::cout << "ERROR: Type mismatch, cannot apply ! to a char\n";
-
-        //     exit(EXIT_FAILURE);
-        // }
     }
+
 
 
     virtual void visit(ASTBinaryExpr& node)
     {
         std::string leftDT, rightDT;
 
+        Value *leftValue, *rightValue;
+
         node.getLeft()->accept(*this);
         leftDT = currentDataType;
+        leftValue = currentValue;
 
         // std::cout << node.getBin_operator() << "\n";
 
         node.getRight()->accept(*this);
         rightDT = currentDataType;
+        rightValue = currentValue;
 
-        // if(leftDT != rightDT)
-        // {
-        //     if ( (leftDT == "int" || leftDT == "uint" || leftDT == "long" || leftDT == "ulong") && (rightDT == "int" || rightDT == "uint" || rightDT == "long" || rightDT == "ulong") )
-        //     {
-        //         // This is fine. Not handling overflows.
-        //     }
-        //     else
-        //     {
-        //         std::cout << "ERROR: Type mismatch, cannot apply " << node.getBin_operator() << " to " << leftDT << " and " << rightDT << "\n";
+        Value *v = nullptr;
 
-        //         exit(EXIT_FAILURE);
-        //     }
-        // }
+        std::string op = node.getBin_operator();
+
+        if (op == "+") 
+        {
+            v = Builder.CreateAdd(leftValue, rightValue, "addition");
+        } 
+        else if (op == "-") 
+        {
+            v = Builder.CreateSub(leftValue, rightValue, "subtraction");
+        } 
+        else if (op == "*") 
+        {
+            v = Builder.CreateMul(leftValue, rightValue, "multiplication");
+        } 
+        else if (op == "/") 
+        {
+            v = Builder.CreateSDiv(leftValue, rightValue, "division");
+        } 
+        else if (op == "%") 
+        {
+            v = Builder.CreateSRem(leftValue, rightValue, "modulus");
+        } 
+        else if (op == "<") 
+        {
+            v = Builder.CreateICmpSLT(leftValue, rightValue, "lessthan");
+        } 
+        else if (op == ">") 
+        {
+            v = Builder.CreateICmpSGT(leftValue, rightValue, "greaterthan");
+        } 
+        else if (op == "<=") 
+        {
+            v = Builder.CreateICmpSLE(leftValue, rightValue, "lessequal");
+        } 
+        else if (op == ">=") 
+        {
+            v = Builder.CreateICmpSGE(leftValue, rightValue, "greaterequal");
+        } 
+        else if (op == "==") 
+        {
+            v = Builder.CreateICmpEQ(leftValue, rightValue, "equal");
+        } 
+        else if (op == "!=") 
+        {
+            v = Builder.CreateICmpNE(leftValue, rightValue, "notequal");
+        }
+        else if (op == "||") 
+        {
+            v = Builder.Insert(BinaryOperator::Create(Instruction::Or, leftValue, rightValue, "or"));
+        } 
+        else if (op == "&&") 
+        {
+            v = Builder.Insert(BinaryOperator::Create(Instruction::And, leftValue, rightValue, "and"));
+        }
 
         currentDataType = leftDT;
+
+        currentValue = v;
     }
 
 
@@ -526,13 +617,6 @@ class IRGenVisitor : public ASTvisitor
     virtual void visit(ASTTernaryExpr& node)
     {
         node.getFirst()->accept(*this);
-
-        // if(currentDataType != "bool" && currentDataType != "int")
-        // {
-        //     std::cout << "ERROR: Type mismatch, the first operand of ?: must have the type bool or int\n";
-
-        //     exit(EXIT_FAILURE);
-        // }
 
         // std::cout << " ? ";
         node.getSecond()->accept(*this);
@@ -548,41 +632,36 @@ class IRGenVisitor : public ASTvisitor
     {
         unsigned long int intVal = node.getIntLit();
 
-        // std::cout << intVal << "\n";
-
+        // The 2nd and 3rd checks in each if condition here seem to be redundant!
 
         if(signedInteger == true)
         {
-            if ( intVal >= std::numeric_limits<int>::min() && intVal <= std::numeric_limits<int>::max() )
+            if( (intVal == static_cast<int>(intVal)) && (static_cast<int>(intVal) >= std::numeric_limits<int>::min()) && (static_cast<int>(intVal) <= std::numeric_limits<int>::max()) )
             {
                 currentDataType = "int";
-
+                
                 currentValue = ConstantInt::get(TheContext, APInt(32, static_cast<uint64_t>(intVal), true));    // true -> signed integer
-
             }
-            else if ( intVal >= std::numeric_limits<long>::min() && intVal <= std::numeric_limits<long>::max() )
+            else if ((intVal == static_cast<long>(intVal)) && (static_cast<long>(intVal) >= std::numeric_limits<long>::min()) && (static_cast<long>(intVal) <= std::numeric_limits<long>::max()) )
             {
                 currentDataType = "long";
 
                 currentValue = ConstantInt::get(TheContext, APInt(64, static_cast<uint64_t>(intVal), true));
-
             }
         }
         else 
         {
-            if ( intVal >= std::numeric_limits<unsigned int>::min() && intVal <= std::numeric_limits<unsigned int>::max() )
+            if ((intVal == static_cast<unsigned int>(intVal)) && static_cast<unsigned int>(intVal) >= std::numeric_limits<unsigned int>::min() && static_cast<unsigned int>(intVal) <= std::numeric_limits<unsigned int>::max() )
             {
                 currentDataType = "uint";
 
                 currentValue = ConstantInt::get(TheContext, APInt(32, static_cast<uint64_t>(intVal), false));
-
             }
-            else if ( intVal >= std::numeric_limits<unsigned long>::min() && intVal <= std::numeric_limits<unsigned long>::max() )
+            else if ((intVal == static_cast<unsigned long>(intVal)) && static_cast<unsigned long>(intVal) >= std::numeric_limits<unsigned long>::min() && static_cast<unsigned long>(intVal) <= std::numeric_limits<unsigned long>::max() )
             {
                 currentDataType = "ulong";
 
                 currentValue = ConstantInt::get(TheContext, APInt(64, static_cast<uint64_t>(intVal), false));
-
             }
         }
 
@@ -592,26 +671,37 @@ class IRGenVisitor : public ASTvisitor
     virtual void visit(ASTStringLitNode& node)
     {
         // std::cout << node.getStringLit() << "\n";
+
+        // TODO: CREATE A CHARACTER ARRAY ---- Try Builder.CreateGlobalStringPtr(value);
+
     }
 
     virtual void visit(ASTCharLitNode& node)
     {
         // std::cout << node.getCharLit() << "\n";
 
+        char charVal = node.getCharLit();
+
         currentDataType = "char";
+
+        currentValue = ConstantInt::get(TheContext, APInt(8, static_cast<uint64_t>(charVal), false));
     }
 
     virtual void visit(ASTBoolLitNode& node)
     {
+        currentDataType = "bool";
+
         if(node.getBoolLit() == true)   // true is taken as 1, false is taken as 0
         {
             // std::cout << "true" << "\n";
+
+            currentValue = ConstantInt::get(TheContext, APInt(1, 1, false));
         }
         else {
             // std::cout << "false" << "\n";
-        }
 
-        currentDataType = "bool";
+            currentValue = ConstantInt::get(TheContext, APInt(1, 0, false));
+        }
     }
 
     /*********************************** GROUP 4 ***************************************/
@@ -637,33 +727,36 @@ class IRGenVisitor : public ASTvisitor
     virtual void visit(ASTAssignmentStmt& node)
     {
         std::string LHSdataType, RHSdataType;
+        Value *leftValue, *rightValue;
 
         node.getLocation()->accept(*this);
         LHSdataType = currentDataType;
+        leftValue = currentValue;
+        AllocaInst *location = currentAlloca;
 
         // std::cout << node.getAssignOp() << "\n";
 
         node.getExpression()->accept(*this);
         RHSdataType = currentDataType;
+        rightValue = currentValue;
 
-        // if(LHSdataType != RHSdataType)
-        // {
-        //     if( (LHSdataType == "uint" || LHSdataType == "ulong") && (RHSdataType == "int" || RHSdataType == "long") )
-        //     {
-        //         std::cout << "ERROR: Type mismatch, cannot assign " << RHSdataType << " to " << LHSdataType << "\n";
+        std::string assignOp = node.getAssignOp();
 
-        //         exit(EXIT_FAILURE);
-        //     }
-        //     else if ( (LHSdataType == "int" || LHSdataType == "uint" || LHSdataType == "long" || LHSdataType == "ulong") && (RHSdataType == "int" || RHSdataType == "uint" || RHSdataType == "long" || RHSdataType == "ulong") )
-        //     {
-        //         // Fine otherwise
-        //     }
-        //     else {
-        //         std::cout << "ERROR: Type mismatch, cannot assign " << RHSdataType << " to " << LHSdataType << "\n";
-
-        //         exit(EXIT_FAILURE);
-        //     }
-        // }
+        if(assignOp == "=")
+        {
+            Builder.CreateStore(rightValue, location);
+        }
+        else if(assignOp == "+=")
+        {
+            rightValue = Builder.CreateAdd(leftValue, rightValue, "addEqual");
+            Builder.CreateStore(rightValue, location);
+        }
+        else if(assignOp == "-=")
+        {
+            rightValue = Builder.CreateSub(leftValue, rightValue, "subtractEqual");
+            Builder.CreateStore(rightValue, location);
+        }
+        
     }
 
     virtual void visit(ASTReturnStmt& node)

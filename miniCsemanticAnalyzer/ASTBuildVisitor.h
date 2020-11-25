@@ -520,9 +520,9 @@ class ASTBuildVisitor : public miniCgrammarBaseVisitor {
         
         std::string value = ctx->CharLiteral()->getSymbol()->getText();
 
-        std::cout << "visited char lit node with value " << value[0] << "\n";
+        std::cout << "visited char lit node with value " << value[1] << "\n";
 
-        return (ASTnode*)(new ASTCharLitNode(value[0]));
+        return (ASTnode*)(new ASTCharLitNode(value[1]));
 
     }
 
