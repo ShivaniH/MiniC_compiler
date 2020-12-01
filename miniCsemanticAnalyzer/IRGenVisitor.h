@@ -38,9 +38,12 @@ class IRGenVisitor : public ASTvisitor
 
     llvm::AllocaInst *currentAlloca;
 
+    BasicBlock *blkAfterLoop;
+
     int functionNum, ifNum, elseNum, forNum, whileNum;
 
-
+    bool returnPresent, breakPresent;
+    bool breakPresentInAnIf, breakPresentInAnElse;
 
     public:
 
@@ -56,6 +59,12 @@ class IRGenVisitor : public ASTvisitor
         signedInteger = false;
         currentValue = nullptr;
         currentAlloca = nullptr;
+        blkAfterLoop = nullptr;
+
+        returnPresent = false;
+        breakPresent = false;
+        breakPresentInAnIf = false;
+        breakPresentInAnElse = false;
     }
 
     IRGenVisitor(SymTab *symTab) : rootSymbolTable(symTab)
@@ -70,6 +79,12 @@ class IRGenVisitor : public ASTvisitor
         signedInteger = false;
         currentValue = nullptr;
         currentAlloca = nullptr;
+        blkAfterLoop = nullptr;
+
+        returnPresent = false;
+        breakPresent = false;
+        breakPresentInAnIf = false;
+        breakPresentInAnElse = false;
     }
 
 
@@ -136,10 +151,10 @@ class IRGenVisitor : public ASTvisitor
         raw_string_ostream OS(Str);
         OS << *TheModule;
         std::cout << Str;
-        // OS.flush();
-        // std::ofstream out("output.txt");
-        // out << Str;
-        // out.close();
+        OS.flush();
+        std::ofstream out("output.bc");
+        out << Str;
+        out.close();
     }
 
 
@@ -573,6 +588,10 @@ class IRGenVisitor : public ASTvisitor
         {
             v = Builder.CreateSRem(leftValue, rightValue, "modulus");
         } 
+        else if (op == "^") 
+        {
+            // v = (leftValue, rightValue, "exponentiation");
+        } 
         else if (op == "<") 
         {
             v = Builder.CreateICmpSLT(leftValue, rightValue, "lessthan");
@@ -668,12 +687,32 @@ class IRGenVisitor : public ASTvisitor
         signedInteger = false;
     }
 
+    std::string replaceNewline(std::string str) {
+        size_t index = 0;
+        std::string search = "\\n";
+        while (true) {
+            index = str.find(search, index);
+            if (index == std::string::npos) break;
+            str.erase(index, search.length());
+            str.insert(index, "\n");
+            index += 1;
+        }
+        return str;
+    }
+
     virtual void visit(ASTStringLitNode& node)
     {
         // std::cout << node.getStringLit() << "\n";
 
-        // TODO: CREATE A CHARACTER ARRAY ---- Try Builder.CreateGlobalStringPtr(value);
+        // std::string stringLiteral = "%d\n";
 
+        // currentValue = Builder.CreateGlobalStringPtr( "%d\n" );
+
+        std::string stringLiteral = node.getStringLit();
+
+        stringLiteral = replaceNewline(stringLiteral);
+
+        currentValue = Builder.CreateGlobalStringPtr( stringLiteral );
     }
 
     virtual void visit(ASTCharLitNode& node)
@@ -763,11 +802,15 @@ class IRGenVisitor : public ASTvisitor
     {
         // std::cout << "return ";
         node.getReturnExpr()->accept(*this);
+
+        returnPresent = true;
     }
 
     virtual void visit(ASTBreakStmt& node)
     {
         // std::cout << "break;\n";
+
+        breakPresent = true;
     }
 
     virtual void visit(ASTContinueStmt& node)
@@ -799,10 +842,54 @@ class IRGenVisitor : public ASTvisitor
         // std::cout << "if ";
         node.getCondition()->accept(*this);
 
+        Value *cond = currentValue;
+
+        bool returnPresentIf = false;
+
+        Function *TheFunction = Builder.GetInsertBlock()->getParent();
+        BasicBlock *ifBlock = BasicBlock::Create(TheContext, "if", TheFunction);
+        BasicBlock *thenBlock = BasicBlock::Create(TheContext, "then");
+
+        Builder.CreateCondBr(cond, ifBlock, thenBlock);
+        Builder.SetInsertPoint(ifBlock);
+
         if(node.getStatements() != nullptr)
         {
             node.getStatements()->accept(*this);
         }
+
+        returnPresentIf = returnPresent;
+        returnPresent = false;      // So that other statements' correctness is not affected
+
+        breakPresentInAnIf = breakPresent;
+        breakPresent = false;       // So that other statements' correctness is not affected
+
+        if (!returnPresentIf && !breakPresentInAnIf) {
+            Builder.CreateBr(thenBlock);
+        }
+
+        if(returnPresentIf)
+        {
+            Builder.CreateRet(currentValue);
+        }
+
+        if(breakPresentInAnIf)
+        {
+            std::cout << "Here at least :( \n";
+            if(blkAfterLoop != nullptr)
+            {
+                Builder.CreateBr(blkAfterLoop);
+                std::cout << "THIS WORKED\n";
+            }
+            else {
+                std::cout << "\n blkAfterLoop is null though it shouldn't be! \n";
+            }
+        }
+
+        TheFunction->getBasicBlockList().push_back(thenBlock);
+        Builder.SetInsertPoint(thenBlock);
+
+        //If there's a break stmt, this if had better be inside a loop! The loop will take care of that
 
         currentSymTab = currentSymTab->getParent();
     }
@@ -832,9 +919,47 @@ class IRGenVisitor : public ASTvisitor
         // std::cout << "if ";
         node.getCondition()->accept(*this);
 
+        Value *cond = currentValue;
+
+        bool returnPresentIf = false;
+
+        Function *TheFunction = Builder.GetInsertBlock()->getParent();
+        BasicBlock *ifBlock = BasicBlock::Create(TheContext, "if", TheFunction);
+        BasicBlock *thenBlock = BasicBlock::Create(TheContext, "then");
+        BasicBlock *elseBlock = BasicBlock::Create(TheContext, "else");
+
+        Builder.CreateCondBr(cond, ifBlock, elseBlock);
+        Builder.SetInsertPoint(ifBlock);
+
         if(node.getThenStatements() != nullptr)
         {
             node.getThenStatements()->accept(*this);
+        }
+
+        returnPresentIf = returnPresent;
+        returnPresent = false;      // So that other statements' correctness is not affected
+
+        breakPresentInAnIf = breakPresent;
+        breakPresent = false;       // So that other statements' correctness is not affected
+
+        if (!returnPresentIf && !breakPresentInAnIf) {
+            Builder.CreateBr(thenBlock);
+        }
+
+        if(returnPresentIf)
+        {
+            Builder.CreateRet(currentValue);
+        }
+
+        if(breakPresentInAnIf)
+        {
+            if(blkAfterLoop != nullptr)
+            {
+                Builder.CreateBr(blkAfterLoop);
+            }
+            else {
+                std::cout << "\n blkAfterLoop is null though it shouldn't be! -- Is break not in a loop? \n";
+            }
         }
 
         currentSymTab = currentSymTab->getParent();
@@ -863,10 +988,44 @@ class IRGenVisitor : public ASTvisitor
 
         // std::cout << "else ";
 
+        bool returnPresentElse = false;
+
+        TheFunction->getBasicBlockList().push_back(elseBlock);
+        Builder.SetInsertPoint(elseBlock);
+
         if(node.getElseStatements() != nullptr)
         {
             node.getElseStatements()->accept(*this);
         }
+
+        returnPresentElse = returnPresent;
+        returnPresent = false;      // So that other statements' correctness is not affected
+
+        breakPresentInAnElse = breakPresent;
+        breakPresent = false;       // So that other statements' correctness is not affected
+
+        if (!returnPresentElse && !breakPresentInAnElse) {
+            Builder.CreateBr(thenBlock);
+        }
+
+        if(returnPresentElse)
+        {
+            Builder.CreateRet(currentValue);
+        }
+
+        if(breakPresentInAnElse)
+        {
+            if(blkAfterLoop != nullptr)
+            {
+                Builder.CreateBr(blkAfterLoop);
+            }
+            else {
+                std::cout << "\n blkAfterLoop is null though it shouldn't be! -- Is break not in a loop? \n";
+            }
+        }
+
+        TheFunction->getBasicBlockList().push_back(thenBlock);
+        Builder.SetInsertPoint(thenBlock);
 
         currentSymTab = currentSymTab->getParent();
     }
@@ -895,20 +1054,82 @@ class IRGenVisitor : public ASTvisitor
 
         // std::cout << "for ";
 
+        /********** Initialization **************/
+
+        std::string LHSdataType, RHSdataType;
+        Value *leftValue, *rightValue;
+
         node.getInitLoc()->accept(*this);
+
+        LHSdataType = currentDataType;
+        AllocaInst *location = currentAlloca;
+
         // std::cout << " = ";
         node.getInitExpr()->accept(*this);
 
-        node.getConditionExpr()->accept(*this);
+        RHSdataType = currentDataType;
+        rightValue = currentValue;
 
-        node.getUpdateLoc()->accept(*this);
-        // std::cout << node.getAssignOp();
-        node.getUpdateExpr()->accept(*this);
+        Builder.CreateStore(rightValue, location);
+
+        /********** Condition check (before entering loop) **************/
+
+        Function *TheFunction = Builder.GetInsertBlock()->getParent();
+        BasicBlock *loopBody = BasicBlock::Create(TheContext, "loop", TheFunction);
+        BasicBlock *afterLoop = BasicBlock::Create(TheContext, "afterLoop", TheFunction);
+
+        Value *condition = nullptr;
+        node.getConditionExpr()->accept(*this);
+        condition = currentValue;
+
+        Builder.CreateCondBr(condition, loopBody, afterLoop);
+
+        /********** Loop body **************/
+
+        Builder.SetInsertPoint(loopBody);
+
+        blkAfterLoop = afterLoop;
 
         if(node.getStatements() != nullptr)
         {
             node.getStatements()->accept(*this);
         }
+
+        node.getUpdateLoc()->accept(*this);
+        LHSdataType = currentDataType;
+        leftValue = currentValue;
+        location = currentAlloca;
+
+        // std::cout << node.getAssignOp();
+        std::string assignOp = node.getAssignOp();
+
+        node.getUpdateExpr()->accept(*this);
+        RHSdataType = currentDataType;
+        rightValue = currentValue;
+
+        if(assignOp == "=")
+        {
+            Builder.CreateStore(rightValue, location);
+        }
+        else if(assignOp == "+=")
+        {
+            rightValue = Builder.CreateAdd(leftValue, rightValue, "addEqual");
+            Builder.CreateStore(rightValue, location);
+        }
+        else if(assignOp == "-=")
+        {
+            rightValue = Builder.CreateSub(leftValue, rightValue, "subtractEqual");
+            Builder.CreateStore(rightValue, location);
+        }
+
+        // Either loop back to the start of the loop body, or exit loop
+
+        node.getConditionExpr()->accept(*this);
+        condition = currentValue;
+
+        Builder.CreateCondBr(condition, loopBody, afterLoop);
+
+        Builder.SetInsertPoint(afterLoop);
 
         currentSymTab = currentSymTab->getParent();
     }
@@ -966,7 +1187,6 @@ class IRGenVisitor : public ASTvisitor
 
         currentDataType = rootSymbolTable->getIdentifierDataType(funName);
 
-        // std::cout << " ) \n";
     }
 
 
@@ -977,30 +1197,75 @@ class IRGenVisitor : public ASTvisitor
 
         std::vector<ASTLibFunArg*> args = node.getArgs();
 
+        std::vector<Type*> argTypes;
+        std::vector<Value*> argValues;
+
         if(args.size() != 0)
         {
             for(ASTLibFunArg* arg : args)
             {
                 arg->accept(*this);
+
+                argValues.push_back(currentValue);
+                argTypes.push_back(currentValue->getType());
             }
+
         }
 
-        // This is bad
+        FunctionCallee func;
 
+        ArrayRef<Type*> argsRef(argTypes);
+        ArrayRef<Value*> funcArgs(argValues);
+
+        if(libFunName == "printf")
+        {
+            func = TheModule->getOrInsertFunction(libFunName,
+                                                   FunctionType::get(IntegerType::getInt32Ty(TheContext), PointerType::get(Type::getInt8Ty(TheContext), 0), true /* this is var arg func type*/) 
+                                                   );
+
+            if (!func) {
+                std::cout << "Unknown in-built function: " + libFunName;
+            }
+            
+            Builder.CreateCall(func, funcArgs);
+        }
         if(libFunName == "scanInt")
         {
             currentDataType = "int";
+
+            FunctionType *FType = FunctionType::get(Type::getInt32Ty(TheContext), false);
+            func = TheModule->getOrInsertFunction(libFunName, FType);
+
+            if (!func) {
+                std::cout << "Unknown in-built function: " + libFunName;
+            }
+            
+            Builder.CreateCall(func);
         }
         else if (libFunName == "scanString")
         {
-            currentDataType = "char";
+            FunctionType *FType = FunctionType::get(PointerType::get(Type::getInt8Ty(TheContext), 0), false);
+            func = TheModule->getOrInsertFunction(libFunName, FType);
+
+            if (!func) {
+                std::cout << "Unknown in-built function: " + libFunName;
+            }
+            
+            Builder.CreateCall(func);
         }
         else if (libFunName == "strlen")
         {
             currentDataType = "int";
-        }
 
-        // std::cout << " ) \n";
+            FunctionType *FType = FunctionType::get(Type::getInt32Ty(TheContext), argsRef, false);
+            func = TheModule->getOrInsertFunction(libFunName, FType);
+
+            if (!func) {
+                std::cout << "Unknown in-built function: " + libFunName;
+            }
+            
+            Builder.CreateCall(func, funcArgs);
+        }
     }
 
 

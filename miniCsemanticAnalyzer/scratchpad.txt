@@ -2,17 +2,14 @@
 
 2. Set/get this value in the IRGenVisitor's visit functions
 
-3. IF this doesn't work as expected, just leave your existing symbol table alone, and create that NamedValues map like they have
-
-
 
 Priority order:
 1. simple var dec   --- done
 2. simple var ref   --- done
 3. binary expr      --- done
 4. asgmt stmt       --- done
-5. if else
-6. for 
-7. printf and scanint (libfn)
------------------------------
-8. arrays
+5. if else          --- done
+6. for              --- done
+7. break stmt       --- done
+8. printf and scanint (libfn)   --- done
+9. arrays

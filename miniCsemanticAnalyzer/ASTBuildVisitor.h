@@ -509,7 +509,11 @@ class ASTBuildVisitor : public miniCgrammarBaseVisitor {
 
     virtual antlrcpp::Any visitStringLitExpr(miniCgrammarParser::StringLitExprContext *ctx) override {
 
-        std::string value = ctx->StringLiteral()->getSymbol()->getText();
+        // std::string value = ctx->StringLiteral()->getSymbol()->getText();
+
+        std::string value = ctx->StringLiteral()->getText();
+
+        value.erase(std::remove( value.begin(), value.end(), '\"' ), value.end());
 
         std::cout << "visited string lit node with value " << value << "\n";
 

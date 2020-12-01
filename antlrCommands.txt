@@ -48,11 +48,34 @@ g++ -I ../miniCParser/antlr -I /usr/local/include/antlr4-runtime -L /usr/local/l
 
 UPDATED COMMANDS TO SUPPORT LLVM:
 
+
+ONE TIME:
+
 export LD_LIBRARY_PATH="/home/shivanih/Desktop/IIITHsem3/Compilers/llvm-project/build/lib:/usr/local/lib:$LD_LIBRARY_PATH"
 
 LLVM_CONFIG="/home/shivanih/Desktop/IIITHsem3/Compilers/llvm-project/build/bin/llvm-config"
 
 g++ -I ../miniCParser/antlr -I /usr/local/include/antlr4-runtime -L /usr/local/lib -lantlr4-runtime  `$LLVM_CONFIG --system-libs --cppflags --ldflags --libs core`  -o miniCcompiler  ../miniCParser/antlr/miniCgrammarLexer.cpp ../miniCParser/antlr/miniCgrammarParser.cpp miniCMain.cpp
+
+clang -emit-llvm -c -g libcFunctions.c
+
+
+
+FOR EACH PROGRAM:    
+
+./miniCcompiler IRtest.mc
+
+llvm-link output.bc libcFunctions.bc -o outputExe.bc
+
+llc -filetype=obj outputExe.bc
+
+gcc -o finalOutput outputExe.o
+
+./finalOutput
+
+
+
+
 
 
 

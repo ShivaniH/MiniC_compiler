@@ -72,36 +72,3 @@ int main(int argc, const char* argv[])
 
     return 0;
 }
-
-
-
-
-
-
-
- /*
-    ASTnode *root;
-    
-    antlrcpp::Any anyObject;
-    anyObject = abv.visitProgram(miniCparsetree);
-    
-    bool whatIs = anyObject.is<ASTnode*>();
-
-    if(whatIs) 
-    {
-        std::cout << "It's an ASTnode!\n" ;
-    }
-    else {
-        std::cout << ":( \n";
-    }
-    
-    ast.root = anyObject.as<ASTnode*>();
-
-    ASTIntLitNode* tryNode = dynamic_cast<ASTIntLitNode*>(ast.root);
-    if(tryNode != NULL)
-        std::cout << "This is at the root : " << "\n";
-
-    ASTProgram* tryAnotherNode = dynamic_cast<ASTProgram*>(ast.root);
-    if(tryAnotherNode != NULL)
-        std::cout << "ASTProgram is at the root : " << "\n";
-*/

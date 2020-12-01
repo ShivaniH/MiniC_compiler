@@ -43,8 +43,6 @@ statement : variableDecl                                                # variab
           | Continue ';'                                                # continueStmt
           ;
 
-// semantic phase: break and continue must be inside a loop
-
 location : Id                                   # simpleVarLocation
          | Id '['expr']'                        # oneDarrayLocation
          | Id '['expr']''['expr']'              # twoDarrayLocation
@@ -84,7 +82,6 @@ conditionalStmt : If '(' expr ')' '{' statementList? '}'                        
 iterativeStmt : While '(' expr ')' '{' statementList? '}'                                                                 # whileStmt
               | For '(' location '=' expr ';' expr ';' location op=('='|'+='|'-=') expr ')' '{' statementList? '}'        # forStmt
               ;
-                                                        // should this (loc assign expr) be right associative too?
 
 /* ----------------------------------------- Lexer Rules ----------------------------------------- */
 
