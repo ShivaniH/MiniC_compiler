@@ -40,11 +40,11 @@ int main()
 
                 if (flag == 0)
                 {
-                    callout("printf", "%d is a prime number.", n);
+                    callout("printf", "%d is a prime number.\n", n);
                 }
                 else
                 {
-                    callout("printf", "%d is not a prime number.", n);
+                    callout("printf", "%d is not a prime number.\n", n);
                 }
             }
         }

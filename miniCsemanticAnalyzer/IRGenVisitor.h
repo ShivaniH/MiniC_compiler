@@ -36,6 +36,8 @@ class IRGenVisitor : public ASTvisitor
 
     llvm::Value* currentValue;
 
+    unsigned long int currentIntVal;
+
     llvm::AllocaInst *currentAlloca;
 
     BasicBlock *blkAfterLoop;
@@ -60,6 +62,7 @@ class IRGenVisitor : public ASTvisitor
         currentValue = nullptr;
         currentAlloca = nullptr;
         blkAfterLoop = nullptr;
+        currentIntVal = 0;
 
         returnPresent = false;
         breakPresent = false;
@@ -80,6 +83,7 @@ class IRGenVisitor : public ASTvisitor
         currentValue = nullptr;
         currentAlloca = nullptr;
         blkAfterLoop = nullptr;
+        currentIntVal = 0;
 
         returnPresent = false;
         breakPresent = false;
@@ -120,11 +124,11 @@ class IRGenVisitor : public ASTvisitor
 
 
 
-    AllocaInst *CreateEntryBlockAlloca(Function *TheFunction, std::string varName, llvm::Type *varDataType)
+    AllocaInst *CreateEntryBlockAlloca(Function *TheFunction, std::string varName, llvm::Type *varDataType, Value *arraySize = ConstantInt::get(TheContext, APInt(32, 0, false)))
     {
         IRBuilder<> TmpB(&TheFunction->getEntryBlock(), TheFunction->getEntryBlock().begin());
         
-        AllocaInst *alloca_instruction = TmpB.CreateAlloca( varDataType, 0, varName);
+        AllocaInst *alloca_instruction = TmpB.CreateAlloca( varDataType, arraySize, varName);
  
         return alloca_instruction;
     }
@@ -229,8 +233,6 @@ class IRGenVisitor : public ASTvisitor
 
         Builder.CreateStore(initval, Alloca);
 
-        // TODO: CHECK IF YOU ARE IN THE ROOT SYMBOL TABLE. IN THAT CASE, MAKE IT A GLOBAL VARIABLE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
         currentSymTab->setVarStackMemory( varName, Alloca );
 
     }
@@ -245,6 +247,36 @@ class IRGenVisitor : public ASTvisitor
         int dim = node.getDim();
         // std::cout << dim << "\n";
 
+        std::string varDataType = currentSymTab->getIdentifierDataType(varName);
+
+        ArrayType *arrType = ArrayType::get(getLLVMType(varDataType), dim);
+
+        // GlobalVariable *gv = new GlobalVariable(*(TheModule), arrType, false, GlobalValue::ExternalLinkage, nullptr, varName);
+        // gv->setInitializer(ConstantAggregateZero::get(arrType));
+
+        llvm::AllocaInst *Alloca = nullptr;
+
+        llvm::Function *TheFunction = Builder.GetInsertBlock()->getParent();
+
+        Value *dimension = ConstantInt::get(TheContext, APInt(32, static_cast<uint64_t>(dim), false));
+
+        Alloca = CreateEntryBlockAlloca(TheFunction, varName, arrType, dimension);
+        
+        auto zero = llvm::ConstantInt::get(TheContext, llvm::APInt(64, 0, true));
+
+        for(int i = 0; i < dim; ++i)
+        {
+            std::vector<Value*> indices;
+            indices.push_back(Builder.getInt32(0));
+            
+            auto index = llvm::ConstantInt::get(TheContext, llvm::APInt(32, i, true));
+            indices.push_back(index);
+            
+            auto ptr = Builder.CreateGEP(Alloca, indices, "");
+            Builder.CreateStore(zero, ptr); 
+        }
+
+        currentSymTab->setVarStackMemory( varName, Alloca );
     }
 
 
@@ -370,6 +402,7 @@ class IRGenVisitor : public ASTvisitor
             {
                 // Create an alloca for this variable.
                 AllocaInst *Alloca = CreateEntryBlockAlloca(func, parameters[paramIndex]->getParamName(), Arg.getType());
+                // AllocaInst *Alloca = CreateEntryBlockAlloca(func, parameters[paramIndex]->getParamName(), args[paramIndex]);
 
                 // Store the initial value into the alloca.
                 Builder.CreateStore(&Arg, Alloca);
@@ -480,11 +513,25 @@ class IRGenVisitor : public ASTvisitor
             // exit(EXIT_FAILURE);
         }
 
+        Value *index = nullptr;
+
         node.getDim()->accept(*this);
+
+        index = currentValue;
+
 
         currentDataType = tempSymTab->getIdentifierDataType(varName);
         
-    }
+        currentAlloca = tempSymTab->getVarStackMemory(varName);
+
+        std::vector<Value*> indices;
+        indices.push_back(Builder.getInt32(0));
+        indices.push_back(index);
+
+        Value *computedAddress = Builder.CreateGEP(currentAlloca, indices, varName+"_index");
+
+        currentValue = Builder.CreateLoad(computedAddress);
+    }  
 
 
 
@@ -564,6 +611,20 @@ class IRGenVisitor : public ASTvisitor
         rightDT = currentDataType;
         rightValue = currentValue;
 
+        if(leftDT != rightDT)
+        {
+            if(leftDT == "long")
+            {
+                // typecast rightValue to ConstantInt::get(TheContext, APInt(64, static_cast<uint64_t>(intVal), true));
+
+                rightValue = Builder.CreateIntCast(rightValue, Type::getInt64Ty(TheContext), true);
+            }
+            else if(leftDT == "ulong")
+            {
+                rightValue = Builder.CreateIntCast(rightValue, Type::getInt64Ty(TheContext), false);
+            }
+        }
+
         Value *v = nullptr;
 
         std::string op = node.getBin_operator();
@@ -587,11 +648,7 @@ class IRGenVisitor : public ASTvisitor
         else if (op == "%") 
         {
             v = Builder.CreateSRem(leftValue, rightValue, "modulus");
-        } 
-        else if (op == "^") 
-        {
-            // v = (leftValue, rightValue, "exponentiation");
-        } 
+        }  
         else if (op == "<") 
         {
             v = Builder.CreateICmpSLT(leftValue, rightValue, "lessthan");
@@ -658,12 +715,16 @@ class IRGenVisitor : public ASTvisitor
             if( (intVal == static_cast<int>(intVal)) && (static_cast<int>(intVal) >= std::numeric_limits<int>::min()) && (static_cast<int>(intVal) <= std::numeric_limits<int>::max()) )
             {
                 currentDataType = "int";
+
+                currentIntVal = intVal;
                 
                 currentValue = ConstantInt::get(TheContext, APInt(32, static_cast<uint64_t>(intVal), true));    // true -> signed integer
             }
             else if ((intVal == static_cast<long>(intVal)) && (static_cast<long>(intVal) >= std::numeric_limits<long>::min()) && (static_cast<long>(intVal) <= std::numeric_limits<long>::max()) )
             {
                 currentDataType = "long";
+
+                currentIntVal = intVal;
 
                 currentValue = ConstantInt::get(TheContext, APInt(64, static_cast<uint64_t>(intVal), true));
             }
@@ -674,11 +735,15 @@ class IRGenVisitor : public ASTvisitor
             {
                 currentDataType = "uint";
 
+                currentIntVal = intVal;
+
                 currentValue = ConstantInt::get(TheContext, APInt(32, static_cast<uint64_t>(intVal), false));
             }
             else if ((intVal == static_cast<unsigned long>(intVal)) && static_cast<unsigned long>(intVal) >= std::numeric_limits<unsigned long>::min() && static_cast<unsigned long>(intVal) <= std::numeric_limits<unsigned long>::max() )
             {
                 currentDataType = "ulong";
+
+                currentIntVal = intVal;
 
                 currentValue = ConstantInt::get(TheContext, APInt(64, static_cast<uint64_t>(intVal), false));
             }
@@ -778,6 +843,20 @@ class IRGenVisitor : public ASTvisitor
         node.getExpression()->accept(*this);
         RHSdataType = currentDataType;
         rightValue = currentValue;
+
+        if(LHSdataType != RHSdataType)
+        {
+            if(LHSdataType == "long")
+            {
+                // typecast rightValue to ConstantInt::get(TheContext, APInt(64, static_cast<uint64_t>(intVal), true));
+
+                rightValue = Builder.CreateIntCast(rightValue, Type::getInt64Ty(TheContext), true);
+            }
+            else if(LHSdataType == "ulong")
+            {
+                rightValue = Builder.CreateIntCast(rightValue, Type::getInt64Ty(TheContext), false);
+            }
+        }
 
         std::string assignOp = node.getAssignOp();
 
@@ -1070,6 +1149,20 @@ class IRGenVisitor : public ASTvisitor
         RHSdataType = currentDataType;
         rightValue = currentValue;
 
+        if(LHSdataType != RHSdataType)
+        {
+            if(LHSdataType == "long")
+            {
+                // typecast rightValue to ConstantInt::get(TheContext, APInt(64, static_cast<uint64_t>(intVal), true));
+
+                rightValue = Builder.CreateIntCast(rightValue, Type::getInt64Ty(TheContext), true);
+            }
+            else if(LHSdataType == "ulong")
+            {
+                rightValue = Builder.CreateIntCast(rightValue, Type::getInt64Ty(TheContext), false);
+            }
+        }
+
         Builder.CreateStore(rightValue, location);
 
         /********** Condition check (before entering loop) **************/
@@ -1106,6 +1199,20 @@ class IRGenVisitor : public ASTvisitor
         node.getUpdateExpr()->accept(*this);
         RHSdataType = currentDataType;
         rightValue = currentValue;
+
+        if(LHSdataType != RHSdataType)
+        {
+            if(LHSdataType == "long")
+            {
+                // typecast rightValue to ConstantInt::get(TheContext, APInt(64, static_cast<uint64_t>(intVal), true));
+
+                rightValue = Builder.CreateIntCast(rightValue, Type::getInt64Ty(TheContext), true);
+            }
+            else if(LHSdataType == "ulong")
+            {
+                rightValue = Builder.CreateIntCast(rightValue, Type::getInt64Ty(TheContext), false);
+            }
+        }
 
         if(assignOp == "=")
         {
@@ -1157,12 +1264,39 @@ class IRGenVisitor : public ASTvisitor
         ++whileNum;
 
         // std::cout << "while ";
+
+
+        Function *TheFunction = Builder.GetInsertBlock()->getParent();
+        BasicBlock *loopBody = BasicBlock::Create(TheContext, "loop", TheFunction);
+        BasicBlock *afterLoop = BasicBlock::Create(TheContext, "afterLoop", TheFunction);
+
+        Value *condition = nullptr;
+
+        /********** Condition check (before entering loop) **************/
+
         node.getCondition()->accept(*this);
+
+        condition = currentValue;
+
+        Builder.CreateCondBr(condition, loopBody, afterLoop);
+
+        /********** Loop body **************/
+
+        Builder.SetInsertPoint(loopBody);
+
+        blkAfterLoop = afterLoop;
         
         if(node.getStatements() != nullptr)
         {
             node.getStatements()->accept(*this);
         }
+
+        node.getCondition()->accept(*this);
+        condition = currentValue;
+
+        Builder.CreateCondBr(condition, loopBody, afterLoop);
+
+        Builder.SetInsertPoint(afterLoop);
         
         currentSymTab = currentSymTab->getParent();
     }
@@ -1240,7 +1374,7 @@ class IRGenVisitor : public ASTvisitor
                 std::cout << "Unknown in-built function: " + libFunName;
             }
             
-            Builder.CreateCall(func);
+            currentValue = Builder.CreateCall(func);
         }
         else if (libFunName == "scanString")
         {
@@ -1251,7 +1385,7 @@ class IRGenVisitor : public ASTvisitor
                 std::cout << "Unknown in-built function: " + libFunName;
             }
             
-            Builder.CreateCall(func);
+            currentValue = Builder.CreateCall(func);
         }
         else if (libFunName == "strlen")
         {
@@ -1264,7 +1398,7 @@ class IRGenVisitor : public ASTvisitor
                 std::cout << "Unknown in-built function: " + libFunName;
             }
             
-            Builder.CreateCall(func, funcArgs);
+            currentValue = Builder.CreateCall(func, funcArgs);
         }
     }
 

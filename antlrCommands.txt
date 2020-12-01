@@ -63,7 +63,7 @@ clang -emit-llvm -c -g libcFunctions.c
 
 FOR EACH PROGRAM:    
 
-./miniCcompiler IRtest.mc
+./miniCcompiler ../samplePrograms/sample1.mc
 
 llvm-link output.bc libcFunctions.bc -o outputExe.bc
 

@@ -1,5 +1,4 @@
-
-int main() 
+int main()
 {
     int n, k, i, j, sum;
     sum = 0;
@@ -24,7 +23,7 @@ int main()
         sum += value;
     }
 
-    callout("printf", "The sum is %d", sum);
+    callout("printf", "The sum is %d \n", sum);
 
     return 0;
 }
