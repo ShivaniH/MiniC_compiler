@@ -1,8 +1,15 @@
+int something()
+{
+    return 1;
+}
+
 char main(int arg1)
 {
     long i, w, a;
 
     w = 1;
+
+    int y = something();
 
     a = w + 3;
 
@@ -29,7 +36,7 @@ char main(int arg1)
 
     i = 0;
 
-    int arr[5];
+    // int arr[5];
 
     while(i < 5)
     {
@@ -41,7 +48,7 @@ char main(int arg1)
 
     while(i < 5)
     {
-        callout("printf", "%d\n", arr[i]);
+        // callout("printf", "%d\n", arr[i]);
         i += 1;
     }
 

@@ -262,18 +262,21 @@ class IRGenVisitor : public ASTvisitor
 
         Alloca = CreateEntryBlockAlloca(TheFunction, varName, arrType, dimension);
         
-        auto zero = llvm::ConstantInt::get(TheContext, llvm::APInt(64, 0, true));
+        auto zero = llvm::ConstantInt::get(TheContext, llvm::APInt(64, 0, false));
 
         for(int i = 0; i < dim; ++i)
         {
             std::vector<Value*> indices;
             indices.push_back(Builder.getInt32(0));
             
-            auto index = llvm::ConstantInt::get(TheContext, llvm::APInt(32, i, true));
+            auto index = llvm::ConstantInt::get(TheContext, llvm::APInt(32, i, false));
             indices.push_back(index);
             
             auto ptr = Builder.CreateGEP(Alloca, indices, "");
+
             Builder.CreateStore(zero, ptr); 
+
+            std::cout << "here\n";
         }
 
         currentSymTab->setVarStackMemory( varName, Alloca );
@@ -1308,19 +1311,27 @@ class IRGenVisitor : public ASTvisitor
     virtual void visit(ASTUserFunCall& node)
     {
         std::string funName = node.getFuncName();
+
+        Function *calle = TheModule->getFunction(funName);
+
         // std::cout << funName << " ( ";
         std::vector<ASTUserFunArg*> args = node.getArgs();
 
+        std::vector<Value *> Args;
         if(args.size() != 0)
         {
             for(ASTUserFunArg* arg : args)
             {
                 arg->accept(*this);
+                Args.push_back(currentValue);
             }
         }
 
         currentDataType = rootSymbolTable->getIdentifierDataType(funName);
 
+        FunctionType *FTy = calle->getFunctionType();
+
+        currentValue = Builder.CreateCall(calle, Args);
     }
 
 
